@@ -127,6 +127,10 @@
       background: var(--paper);
     }
 
+    .publication + .publication {
+      margin-top: 14px;
+    }
+
     .meta {
       color: var(--muted);
       font-size: 0.95rem;
@@ -187,7 +191,7 @@
       <h2>About Me</h2>
       <p class="about">
         I am a third-year undergraduate researcher interested in AI infrastructure and ML systems.
-        I am currently working with
+        I am currently conducting research under the supervision of
         <a href="https://binhangyuan.github.io/site/">Binhang Yuan</a> on efficient systems for
         large language model training and inference, with recent work on Tree Attention and
         distributed training for multi-turn reinforcement learning. Before that, I worked with
@@ -196,19 +200,28 @@
     </section>
 
     <section>
-      <h2>Publication</h2>
+      <h2>Publications</h2>
       <article class="publication">
         <span class="badge">ICML 2026 Accepted</span>
         <h3>AREAL-DTA: Dynamic Tree Attention for Efficient Reinforcement Learning of Large Language Models</h3>
         <p class="meta">
           Jiarui Zhang*, Yuchen Yang*, Ran Yan*, Zhiyu Mei, Liyuan Zhang, Daifeng Li,
-          Wei Fu, Jiaxuan Gao, Shusheng Xu,
-          <a href="https://jxwuyi.weebly.com/">Yi Wu</a>,
-          <a href="https://binhangyuan.github.io/site/">Binhang Yuan</a>.
+          Wei Fu, Jiaxuan Gao, Shusheng Xu, Yi Wu, Binhang Yuan.
         </p>
         <div class="paper-links">
           <a href="https://arxiv.org/abs/2602.00482">Paper</a>
           <a href="https://github.com/areal-project/AReaL/tree/feat/dta">Code</a>
+        </div>
+      </article>
+      <article class="publication">
+        <span class="badge">arXiv preprint</span>
+        <h3>D<sup>2</sup>SD: Accelerating Speculative Decoding with Dual Diffusion Draft Models</h3>
+        <p class="meta">
+          Liyuan Zhang, Jiarui Zhang, Jinwei Yao, Ran Yan, Yuchen Yang,
+          Jiahao Zhang, Tongkai Yang, Yi Wu, Binhang Yuan.
+        </p>
+        <div class="paper-links">
+          <a href="https://arxiv.org/abs/2606.04446">Paper</a>
         </div>
       </article>
     </section>
