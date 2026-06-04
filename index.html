@@ -1,11 +1,218 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>我的个人主页</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jiarui Zhang</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172026;
+      --muted: #52606d;
+      --line: #d9e2ec;
+      --accent: #0a7c86;
+      --accent-soft: #e6f4f1;
+      --bg: #f8fafc;
+      --paper: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+
+    main {
+      width: min(960px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 56px 0 48px;
+    }
+
+    header {
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(2.1rem, 5vw, 3.5rem);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .tagline {
+      max-width: 760px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.08rem;
+    }
+
+    .contact {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .button,
+    .text-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      border-radius: 6px;
+      font-weight: 650;
+      text-decoration: none;
+    }
+
+    .button {
+      padding: 0 18px;
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    .text-link {
+      padding: 0 4px;
+      color: var(--accent);
+    }
+
+    section {
+      padding: 28px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      color: var(--accent);
+      font-size: 0.98rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h3 {
+      margin: 0 0 5px;
+      font-size: 1.08rem;
+      line-height: 1.35;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .about {
+      max-width: 820px;
+      font-size: 1.02rem;
+    }
+
+    .publication {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .detail {
+      margin-top: 8px;
+      color: var(--muted);
+    }
+
+    .badge {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .paper-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .paper-links a,
+    a {
+      color: var(--accent);
+    }
+
+    @media (max-width: 720px) {
+      main {
+        padding-top: 36px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>你好，这是我的个人网站</h1>
-  <p>欢迎来到我的 GitHub Pages。</p>
+  <main>
+    <header>
+      <h1>Jiarui Zhang</h1>
+      <p class="tagline">
+        Undergraduate @ Yao Class, Tsinghua University
+      </p>
+      <div class="contact">
+        <span>Beijing, China</span>
+        <span>jiarui-z23@mails.tsinghua.edu.cn</span>
+      </div>
+      <div class="actions">
+        <a class="button" href="resume.pdf" download>Download Resume</a>
+      </div>
+    </header>
+
+    <section>
+      <h2>About Me</h2>
+      <p class="about">
+        I am a third-year undergraduate researcher interested in AI infrastructure and ML systems.
+        I am currently working with
+        <a href="https://binhangyuan.github.io/site/">Binhang Yuan</a> on efficient systems for
+        large language model training and inference, with recent work on Tree Attention and
+        distributed training for multi-turn reinforcement learning. Before that, I worked with
+        <a href="https://jxwuyi.weebly.com/">Yi Wu</a> on reinforcement learning systems.
+      </p>
+    </section>
+
+    <section>
+      <h2>Publication</h2>
+      <article class="publication">
+        <span class="badge">ICML 2026 Accepted</span>
+        <h3>AREAL-DTA: Dynamic Tree Attention for Efficient Reinforcement Learning of Large Language Models</h3>
+        <p class="meta">
+          Jiarui Zhang*, Yuchen Yang*, Ran Yan*, Zhiyu Mei, Liyuan Zhang, Daifeng Li,
+          Wei Fu, Jiaxuan Gao, Shusheng Xu,
+          <a href="https://jxwuyi.weebly.com/">Yi Wu</a>,
+          <a href="https://binhangyuan.github.io/site/">Binhang Yuan</a>.
+        </p>
+        <div class="paper-links">
+          <a href="https://arxiv.org/abs/2602.00482">Paper</a>
+          <a href="https://github.com/areal-project/AReaL/tree/feat/dta">Code</a>
+        </div>
+      </article>
+    </section>
+
+  </main>
 </body>
 </html>
