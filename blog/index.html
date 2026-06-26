@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog | Jiarui Zhang</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172026;
+      --muted: #52606d;
+      --line: #d9e2ec;
+      --accent: #0a7c86;
+      --accent-soft: #e6f4f1;
+      --bg: #f8fafc;
+      --paper: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+
+    main {
+      width: min(900px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 48px 0;
+    }
+
+    .nav {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 28px;
+      font-size: 0.95rem;
+      font-weight: 650;
+    }
+
+    a {
+      color: var(--accent);
+    }
+
+    .nav a {
+      text-decoration: none;
+    }
+
+    header {
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 5vw, 3rem);
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .tagline {
+      max-width: 720px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.04rem;
+    }
+
+    section {
+      padding-top: 28px;
+    }
+
+    .post {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+
+    .post + .post {
+      margin-top: 14px;
+    }
+
+    .post h2 {
+      margin: 0 0 8px;
+      font-size: 1.12rem;
+      line-height: 1.35;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    .post h2 a {
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .post h2 a:hover {
+      color: var(--accent);
+    }
+
+    .meta,
+    .post-meta {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .meta {
+      margin: 0 0 8px;
+    }
+
+    .summary {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .article-card {
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      line-height: 1.68;
+    }
+
+    .article-card h2 {
+      margin: 34px 0 12px;
+      color: var(--accent);
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .article-card h3 {
+      margin: 28px 0 10px;
+      font-size: 1.12rem;
+      line-height: 1.35;
+    }
+
+    .article-card p {
+      margin: 0 0 16px;
+    }
+
+    .post-meta {
+      margin: 0 0 24px;
+    }
+
+    blockquote {
+      margin: 20px 0;
+      padding: 12px 18px;
+      border-left: 4px solid var(--accent);
+      background: var(--bg);
+      color: var(--muted);
+    }
+
+    .math.display {
+      display: block;
+      max-width: 100%;
+      overflow-x: auto;
+      padding: 2px 0;
+    }
+
+    @media (max-width: 720px) {
+      main {
+        padding-top: 32px;
+      }
+
+      .article-card {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <nav class="nav">
+      <a href="../">Home</a>
+      <a href="../resume.pdf">Resume</a>
+    </nav>
+
+    <header>
+      <h1>Blog</h1>
+      <p class="tagline">Technical notes on machine learning systems, theory, and infrastructure.</p>
+    </header>
+
+    <section aria-label="Posts">
+      <article class="post">
+        <h2><a href="theorem-4-5-tight-round-complexity/">Tight round complexity for Theorem 4.5</a></h2>
+        <p class="meta">June 26, 2026 - diffusion language models, parallel sampling, circuit complexity</p>
+        <p class="summary">A tight lower and upper bound for the number of monotone DLM rounds needed to sample exactly from the even-parity distribution.</p>
+      </article>
+    </section>
+  </main>
+</body>
+</html>
