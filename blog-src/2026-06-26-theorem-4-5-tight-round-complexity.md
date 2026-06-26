@@ -8,8 +8,9 @@ summary: "A tight lower and upper bound for the number of monotone DLM rounds ne
 
 # Tight round complexity for Theorem 4.5
 
-Theorem 4.5 of Jiang, Haghtalab, and Chen [1] rules out $O(1)$ rounds. Here we
-prove the tight bound.
+Theorem 4.5 of Jiang, Haghtalab, and Chen [1] shows that exact sampling
+requires superconstant, i.e., $\omega(1)$, rounds. Here we prove the tight
+bound.
 
 ## Problem setup
 
