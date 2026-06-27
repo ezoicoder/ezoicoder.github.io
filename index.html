@@ -127,15 +127,26 @@
       font-size: 1.02rem;
     }
 
-    .publication {
+    .publication,
+    .blog-post {
       padding: 18px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: var(--paper);
     }
 
-    .publication + .publication {
+    .publication + .publication,
+    .blog-post + .blog-post {
       margin-top: 14px;
+    }
+
+    .blog-post h3 a {
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .blog-post h3 a:hover {
+      color: var(--accent);
     }
 
     .meta {
@@ -232,6 +243,18 @@
         <div class="paper-links">
           <a href="https://arxiv.org/abs/2606.04446">Paper</a>
         </div>
+      </article>
+    </section>
+
+    <section>
+      <h2>Blog</h2>
+      <article class="blog-post">
+        <h3><a href="blog/theorem-4-5-tight-round-complexity/">Tight round complexity for Theorem 4.5</a></h3>
+        <p class="meta">June 26, 2026 - diffusion language models, parallel sampling, circuit complexity</p>
+        <p class="detail">
+          A tight lower and upper bound for the number of monotone DLM rounds needed to sample exactly
+          from the even-parity distribution.
+        </p>
       </article>
     </section>
 
