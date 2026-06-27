@@ -149,11 +149,11 @@ $$
 $$
 
 If the $AC^0$ implementation is restricted to a finite number of fair random
-bits, then every exactly representable probability is dyadic, while
-$1/(n-1)$ is not dyadic for $n=2^t$. Under this implementation model, the
-monotone sequential construction cannot be realized exactly. This is a
-probability-representation obstruction, separate from the round-complexity
-obstruction.
+bits, then every exactly representable probability is dyadic, i.e., it has a
+finite binary expansion. But $1/(n-1)$ is not dyadic for $n=2^t$. Under this
+implementation model, the monotone sequential construction cannot be realized
+exactly. This is a probability-representation obstruction, separate from the
+round-complexity obstruction.
 
 With revision, however, $U_n$ has a very short exact sampler.
 Use the first $t$ positions as temporary workspace. In the first round, sample a
