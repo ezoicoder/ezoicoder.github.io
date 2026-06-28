@@ -11,16 +11,68 @@ summary: "Notes on exact sampling round complexity for one-hot and even-parity d
 This note records a few exact-sampling examples for diffusion language models
 and tracks how the required number of rounds changes when revision is allowed.
 Here, remasking is included as a form of revision, since we view updates such as
-$0\to M$ as revisions. I separate two regimes:
-
-- a general regime, where the predictor $p$ and unmasking policy $F$ are allowed to use arbitrary
-  computation and arbitrary real probabilities;
-- an $AC^0$ regime, where each DLM round must be implemented by
-  polynomial-size constant-depth circuits.
+$0\to M$ as revisions. I first define the two update models, and then separate
+the computational regimes used in the examples.
 
 Throughout the note, a **round** means one parallel DLM update. The predictor is
 denoted by $p(\cdot \mid x)$. Target distributions are denoted by
 $\mathcal{T}$.
+
+## Model conventions
+
+We use the binary vocabulary
+
+$$
+V=\{0,1\},
+$$
+
+together with a mask symbol $M$. The state space is $(V\cup\{M\})^L$. In this
+note we consider unconditional generation, so the initial state is
+
+$$
+x^{(0)}=M^L.
+$$
+
+The standard, no-revision DLM follows the usual masked-decoding rule from
+Jiang, Haghtalab, and Chen \[1\]: an unmasking policy $F$ first chooses which
+currently masked positions to decode, and only those positions are sampled.
+Once a position is unmasked, it cannot change.
+
+```text
+No-revision DLM
+Input: length L, rounds D, predictor p, unmasking policy F
+Initialize x <- M^L
+for t = 1,...,D:
+    S <- F(x)                         // S must be a subset of {i : x_i = M}
+    for each i in S independently:
+        x_i ~ p_i(. | x) over {0,1}
+    all positions outside S stay unchanged
+Output x
+```
+
+With revision, I use the simpler abstraction that there is no separate
+unmasking policy. Every position is updated in every round, and each coordinate
+may freely take values in $\{0,1,M\}$. This includes remasking, since a
+transition such as $0\to M$ is allowed.
+
+```text
+DLM with revision
+Input: length L, rounds D, predictor p
+Initialize x <- M^L
+for t = 1,...,D:
+    for each i in [L] independently:
+        x_i ~ p_i(. | x) over {0,1,M}
+Output x                              // for exact sampling over {0,1}^L, x has no M
+```
+
+For a target distribution over $\{0,1\}^L$, a valid exact sampler must output a
+fully unmasked string with probability $1$.
+
+The update model is independent of the computational regime. In the general
+regime, the update rules may use arbitrary computation and arbitrary real
+probabilities. In the $AC^0$ regime, the relevant predictors and, for the
+no-revision model, the unmasking policy $F$, are implemented by polynomial-size
+constant-depth circuits.
 
 ## General predictors
 
@@ -57,11 +109,10 @@ With revision, the situation changes completely. In the unrestricted-predictor
 regime, any target distribution over $\{0,1\}^n$ can be sampled in at most three
 rounds.
 
-The key is the following elementary coupling lemma.
-
-**Lemma.** Let $\alpha=(\alpha_0,\ldots,\alpha_{L-1})$ be any distribution over
-$[L]=\{0,1,\ldots,L-1\}$. There exist numbers
-$\tau_0,\ldots,\tau_{L-1}\in[0,1]$ and indices
+The key is the classical alias-method view of discrete sampling \[3\]. For any
+distribution $\alpha=(\alpha_0,\ldots,\alpha_{L-1})$ over
+$[L]=\{0,1,\ldots,L-1\}$, there is an alias table with keep probabilities
+$\tau_0,\ldots,\tau_{L-1}\in[0,1]$ and aliases
 $q_0,\ldots,q_{L-1}\in[L]$ such that the following experiment outputs
 $Y\sim\alpha$:
 
@@ -76,32 +127,8 @@ $$
   (1-\tau_i)\mathbf{1}[y=q_i].
 $$
 
-The proof is by induction on $L$. Relabel the points so that
-$\alpha_0\le \alpha_1\le\cdots\le \alpha_{L-1}$. Then
-$\alpha_0\le 1/L\le \alpha_{L-1}$. Set
-
-$$
-\tau_0 = L\alpha_0,
-\qquad
-q_0=L-1.
-$$
-
-Then source point $0$ contributes exactly $\alpha_0$ mass to target point $0$
-and sends the remaining mass $1/L-\alpha_0$ to target point $L-1$. Remove source
-point $0$ and target point $0$. On the remaining $L-1$ points, the residual
-target mass is
-
-$$
-\alpha'_{L-1}
-  =
-  \alpha_{L-1}-\left(\frac{1}{L}-\alpha_0\right),
-\qquad
-\alpha'_j=\alpha_j \quad (1\le j\le L-2).
-$$
-
-These residual masses sum to $(L-1)/L$. After normalization, apply the induction
-hypothesis to the remaining $L-1$ points and scale back. This gives the desired
-$\tau_i$ and $q_i$ for all source points.
+Equivalently, one first chooses a uniform bucket and then uses one biased coin
+to decide whether to keep the bucket index or jump to its alias.
 
 Now let $\mathcal{T}$ be an arbitrary target distribution over $\{0,1\}^n$.
 For a prefix $a\in\{0,1\}^{n-1}$, define its target marginal
@@ -110,8 +137,8 @@ $$
 \mu(a)=\sum_{z\in\{0,1\}}\mathcal{T}(a,z).
 $$
 
-Apply the lemma to $\mu$, with $L=2^{n-1}$. This gives a keep probability
-$\tau_a$ and a redirect prefix $q_a$ for every prefix $a$.
+Apply the alias method to $\mu$, with $L=2^{n-1}$. This gives a keep probability
+$\tau_a$ and an alias prefix $q_a$ for every prefix $a$.
 
 The three-round sampler is:
 
@@ -130,10 +157,131 @@ $$
 Z \sim \mathcal{T}(x_{n-1}=\cdot \mid x_{<n-1}=B).
 $$
 
-By the lemma, the prefix $B$ has marginal distribution $\mu$. The final token
-$Z$ is then sampled from the correct conditional distribution under
+By the alias table, the prefix $B$ has marginal distribution $\mu$. The final
+token $Z$ is then sampled from the correct conditional distribution under
 $\mathcal{T}$. Therefore the final output $(B,Z)$ is exactly distributed as
 $\mathcal{T}$.
+
+### Some distributions need three rounds
+
+The three-round upper bound is tight in the general regime, at least for
+sufficiently large $n$. We prove this by a dimension argument.
+
+For each distribution $\mu$ over the state index set
+$\mathcal{Y}=\{0,1\}^{n-1}$, define a distribution $\mathcal{P}_\mu$ over
+$\{0,1\}^n$ by
+
+$$
+\mathcal{P}_\mu(x)
+  =
+  \mu(x_{<n-1})
+  \mathbf{1}\left[
+    x_{n-1}
+    =
+    \bigoplus_{i<n-1} x_i
+  \right].
+$$
+
+Thus $\mathcal{P}_\mu$ is supported on the graph of the parity function, and
+the free parameter is the distribution $\mu$ over the $2^{n-1}$ graph states.
+
+Now consider any two-round sampler with revision. To make the lower bound only
+stronger, allow the first round to sample each position independently from
+$\{0,1,M\}$. Hence the first-round state $S$ lies in $\{0,1,M\}^n$, and its
+product distribution is described by $3n$ probability parameters, with one
+normalization constraint per position.
+
+Conditioned on a first-round state $S=s$, the second round again samples the
+final positions independently. If the output distribution is exactly
+$\mathcal{P}_\mu$, then every such conditional product distribution must be
+supported on the parity graph. But a product distribution supported on a parity
+graph is a point mass: if any coordinate has both values with positive
+probability, flipping that coordinate leaves the parity graph. Therefore the
+second round is deterministic on every first-round state with positive
+probability.
+
+So a two-round sampler induces a deterministic map
+
+$$
+g:\{0,1,M\}^n \to \{0,1\}^{n-1},
+$$
+
+where $g(s)$ is the state index $y\in\mathcal{Y}$ of the final parity-graph
+output. There are at most
+
+$$
+\left(2^{n-1}\right)^{3^n}
+$$
+
+possible maps $g$.
+
+Fix such a map $g$. Let $\theta_i=(\theta_{i,0},\theta_{i,1},\theta_{i,M})$ be
+the first-round distribution at position $i$, and let
+$\theta=(\theta_i)_{i=0}^{n-1}$. This gives a product distribution over
+$S\in\{0,1,M\}^n$:
+
+$$
+\Pr_\theta[S=s]
+  =
+  \prod_{i=0}^{n-1}\theta_{i,s_i}.
+$$
+
+To view the output distribution as a point in Euclidean space, choose one
+reference state $y_\star\in\mathcal{Y}$ and keep only the other
+$2^{n-1}-1$ state coordinates:
+
+$$
+A=\mathcal{Y}\setminus\{y_\star\}.
+$$
+
+These coordinates give the coordinate image of the simplex of all distributions
+over $\mathcal{Y}$:
+
+$$
+\Delta_A \cong \Delta_{2^{n-1}-1}
+  \subset \mathbb{R}^{2^{n-1}-1}.
+$$
+
+The set $\Delta_A$ has dimension $2^{n-1}-1$ and therefore has a natural
+Lebesgue volume, denoted by $\operatorname{Vol}$.
+
+Define
+
+$$
+\Phi_g(\theta)
+  =
+  \left(
+    \Pr_\theta[g(S)=y]
+  \right)_{y\in A}
+  \in \mathbb{R}^{2^{n-1}-1}.
+$$
+
+The omitted coordinate at $y_\star$ is determined by normalization. The map
+$\Phi_g$ is polynomial in these $3n$ probability parameters, equivalently in a
+parameter space with at most $2n$ degrees of freedom.
+
+For $n\ge 6$, even the conservative bound $3n < 2^{n-1}-1$ holds. Hence
+
+$$
+\operatorname{Vol}\left(\Phi_g(\Theta)\right)=0
+$$
+
+inside $\Delta_A$, where $\Theta$ is the first-round parameter space.
+Taking the finite union over all possible maps $g$ still gives
+
+$$
+\operatorname{Vol}\left(
+  \bigcup_g \Phi_g(\Theta)
+\right)
+=0.
+$$
+
+Therefore, for almost every coordinate vector $(\mu(y))_{y\in A}\in\Delta_A$,
+the corresponding full distribution $\mu$ over $\mathcal{Y}$ gives a
+distribution $\mathcal{P}_\mu$ that cannot be sampled exactly in two rounds. The
+alias-method construction above \[3\] samples every $\mathcal{P}_\mu$ in three
+rounds, so some distributions have exact round complexity equal to $3$ in this
+general unrestricted-predictor regime.
 
 ## $AC^0$ examples for the one-hot distribution
 
@@ -177,9 +325,13 @@ this $AC^0$ setting.
 
 ## $AC^0$ round complexity for the parity distribution
 
-Theorem 4.5 of Jiang, Haghtalab, and Chen [1] shows that exact sampling
-requires superconstant, i.e., $\omega(1)$, rounds. Here we prove the tight
-bound.
+With revision, the parity distribution is easy in the $AC^0$ regime. Jiang,
+Haghtalab, and Chen \[1, Theorem 4.1\] show that a DLM with revision and length
+$n$ can sample $D_n^\oplus$ in two rounds.
+
+Without revision, Theorem 4.5 of Jiang, Haghtalab, and Chen \[1\] shows that
+exact sampling requires superconstant, i.e., $\omega(1)$, rounds. Here we prove
+the tight bound.
 
 ### Problem setup
 
@@ -449,9 +601,9 @@ $$
 
 ## Outlook
 
-The constructions above do not model the effect of chain-of-thought style
-intermediate reasoning. Understanding whether such intermediate tokens change
-the right round-complexity model is a separate question.
+The constructions above keep the sequence length fixed and do not add extra
+CoT-style scratch positions. Understanding how additional intermediate states
+affect the right round-complexity model is a separate question.
 
 ## References
 
@@ -460,3 +612,7 @@ Provably Optimal Parallel Samplers*. ICLR 2026. https://openreview.net/forum?id=
 
 [2] Johan Hastad. *Almost Optimal Lower Bounds for Small Depth Circuits*. STOC
 1986.
+
+[3] Alastair J. Walker. *An Efficient Method for Generating Discrete Random
+Variables with General Distributions*. ACM Transactions on Mathematical
+Software, 1977.

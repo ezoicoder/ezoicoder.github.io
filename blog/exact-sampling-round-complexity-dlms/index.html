@@ -195,12 +195,37 @@
     <article class="article-card">
       <h1>Exact sampling round complexity for diffusion language models</h1>
       <p class="post-meta">June 26, 2026 - diffusion language models, parallel sampling, circuit complexity</p>
-      <p>This note records a few exact-sampling examples for diffusion language models and tracks how the required number of rounds changes when revision is allowed. Here, remasking is included as a form of revision, since we view updates such as <span class="math inline">\(0\to M\)</span> as revisions. I separate two regimes:</p>
-      <ul>
-      <li>a general regime, where the predictor <span class="math inline">\(p\)</span> and unmasking policy <span class="math inline">\(F\)</span> are allowed to use arbitrary computation and arbitrary real probabilities;</li>
-      <li>an <span class="math inline">\(AC^0\)</span> regime, where each DLM round must be implemented by polynomial-size constant-depth circuits.</li>
-      </ul>
+      <p>This note records a few exact-sampling examples for diffusion language models and tracks how the required number of rounds changes when revision is allowed. Here, remasking is included as a form of revision, since we view updates such as <span class="math inline">\(0\to M\)</span> as revisions. I first define the two update models, and then separate the computational regimes used in the examples.</p>
       <p>Throughout the note, a <strong>round</strong> means one parallel DLM update. The predictor is denoted by <span class="math inline">\(p(\cdot \mid x)\)</span>. Target distributions are denoted by <span class="math inline">\(\mathcal{T}\)</span>.</p>
+      <h2 id="model-conventions">Model conventions</h2>
+      <p>We use the binary vocabulary</p>
+      <p><span class="math display">\[
+      V=\{0,1\},
+      \]</span></p>
+      <p>together with a mask symbol <span class="math inline">\(M\)</span>. The state space is <span class="math inline">\((V\cup\{M\})^L\)</span>. In this note we consider unconditional generation, so the initial state is</p>
+      <p><span class="math display">\[
+      x^{(0)}=M^L.
+      \]</span></p>
+      <p>The standard, no-revision DLM follows the usual masked-decoding rule from Jiang, Haghtalab, and Chen [1]: an unmasking policy <span class="math inline">\(F\)</span> first chooses which currently masked positions to decode, and only those positions are sampled. Once a position is unmasked, it cannot change.</p>
+      <pre class="text"><code>No-revision DLM
+      Input: length L, rounds D, predictor p, unmasking policy F
+      Initialize x &lt;- M^L
+      for t = 1,...,D:
+          S &lt;- F(x)                         // S must be a subset of {i : x_i = M}
+          for each i in S independently:
+              x_i ~ p_i(. | x) over {0,1}
+          all positions outside S stay unchanged
+      Output x</code></pre>
+      <p>With revision, I use the simpler abstraction that there is no separate unmasking policy. Every position is updated in every round, and each coordinate may freely take values in <span class="math inline">\(\{0,1,M\}\)</span>. This includes remasking, since a transition such as <span class="math inline">\(0\to M\)</span> is allowed.</p>
+      <pre class="text"><code>DLM with revision
+      Input: length L, rounds D, predictor p
+      Initialize x &lt;- M^L
+      for t = 1,...,D:
+          for each i in [L] independently:
+              x_i ~ p_i(. | x) over {0,1,M}
+      Output x                              // for exact sampling over {0,1}^L, x has no M</code></pre>
+      <p>For a target distribution over <span class="math inline">\(\{0,1\}^L\)</span>, a valid exact sampler must output a fully unmasked string with probability <span class="math inline">\(1\)</span>.</p>
+      <p>The update model is independent of the computational regime. In the general regime, the update rules may use arbitrary computation and arbitrary real probabilities. In the <span class="math inline">\(AC^0\)</span> regime, the relevant predictors and, for the no-revision model, the unmasking policy <span class="math inline">\(F\)</span>, are implemented by polynomial-size constant-depth circuits.</p>
       <h2 id="general-predictors">General predictors</h2>
       <p>In this section, the predictor has unrestricted computational power. The point is only to understand the information flow caused by masking, unmasking, and revision.</p>
       <h3 id="the-one-hot-distribution-without-revision">The one-hot distribution without revision</h3>
@@ -213,8 +238,7 @@
       <p>Thus a monotone sampler can resolve at most one remaining candidate for the unique <span class="math inline">\(1\)</span> in each round. Starting from <span class="math inline">\(n\)</span> possible locations, exact sampling from <span class="math inline">\(U_n\)</span> therefore needs <span class="math inline">\(n\)</span> rounds.</p>
       <h3 id="arbitrary-target-distributions-with-revision">Arbitrary target distributions with revision</h3>
       <p>With revision, the situation changes completely. In the unrestricted-predictor regime, any target distribution over <span class="math inline">\(\{0,1\}^n\)</span> can be sampled in at most three rounds.</p>
-      <p>The key is the following elementary coupling lemma.</p>
-      <p><strong>Lemma.</strong> Let <span class="math inline">\(\alpha=(\alpha_0,\ldots,\alpha_{L-1})\)</span> be any distribution over <span class="math inline">\([L]=\{0,1,\ldots,L-1\}\)</span>. There exist numbers <span class="math inline">\(\tau_0,\ldots,\tau_{L-1}\in[0,1]\)</span> and indices <span class="math inline">\(q_0,\ldots,q_{L-1}\in[L]\)</span> such that the following experiment outputs <span class="math inline">\(Y\sim\alpha\)</span>:</p>
+      <p>The key is the classical alias-method view of discrete sampling [3]. For any distribution <span class="math inline">\(\alpha=(\alpha_0,\ldots,\alpha_{L-1})\)</span> over <span class="math inline">\([L]=\{0,1,\ldots,L-1\}\)</span>, there is an alias table with keep probabilities <span class="math inline">\(\tau_0,\ldots,\tau_{L-1}\in[0,1]\)</span> and aliases <span class="math inline">\(q_0,\ldots,q_{L-1}\in[L]\)</span> such that the following experiment outputs <span class="math inline">\(Y\sim\alpha\)</span>:</p>
       <ol type="1">
       <li>sample <span class="math inline">\(X\sim \mathrm{Unif}([L])\)</span>;</li>
       <li>conditioned on <span class="math inline">\(X=i\)</span>, sample</li>
@@ -226,26 +250,12 @@
         +
         (1-\tau_i)\mathbf{1}[y=q_i].
       \]</span></p>
-      <p>The proof is by induction on <span class="math inline">\(L\)</span>. Relabel the points so that <span class="math inline">\(\alpha_0\le \alpha_1\le\cdots\le \alpha_{L-1}\)</span>. Then <span class="math inline">\(\alpha_0\le 1/L\le \alpha_{L-1}\)</span>. Set</p>
-      <p><span class="math display">\[
-      \tau_0 = L\alpha_0,
-      \qquad
-      q_0=L-1.
-      \]</span></p>
-      <p>Then source point <span class="math inline">\(0\)</span> contributes exactly <span class="math inline">\(\alpha_0\)</span> mass to target point <span class="math inline">\(0\)</span> and sends the remaining mass <span class="math inline">\(1/L-\alpha_0\)</span> to target point <span class="math inline">\(L-1\)</span>. Remove source point <span class="math inline">\(0\)</span> and target point <span class="math inline">\(0\)</span>. On the remaining <span class="math inline">\(L-1\)</span> points, the residual target mass is</p>
-      <p><span class="math display">\[
-      \alpha&#39;_{L-1}
-        =
-        \alpha_{L-1}-\left(\frac{1}{L}-\alpha_0\right),
-      \qquad
-      \alpha&#39;_j=\alpha_j \quad (1\le j\le L-2).
-      \]</span></p>
-      <p>These residual masses sum to <span class="math inline">\((L-1)/L\)</span>. After normalization, apply the induction hypothesis to the remaining <span class="math inline">\(L-1\)</span> points and scale back. This gives the desired <span class="math inline">\(\tau_i\)</span> and <span class="math inline">\(q_i\)</span> for all source points.</p>
+      <p>Equivalently, one first chooses a uniform bucket and then uses one biased coin to decide whether to keep the bucket index or jump to its alias.</p>
       <p>Now let <span class="math inline">\(\mathcal{T}\)</span> be an arbitrary target distribution over <span class="math inline">\(\{0,1\}^n\)</span>. For a prefix <span class="math inline">\(a\in\{0,1\}^{n-1}\)</span>, define its target marginal</p>
       <p><span class="math display">\[
       \mu(a)=\sum_{z\in\{0,1\}}\mathcal{T}(a,z).
       \]</span></p>
-      <p>Apply the lemma to <span class="math inline">\(\mu\)</span>, with <span class="math inline">\(L=2^{n-1}\)</span>. This gives a keep probability <span class="math inline">\(\tau_a\)</span> and a redirect prefix <span class="math inline">\(q_a\)</span> for every prefix <span class="math inline">\(a\)</span>.</p>
+      <p>Apply the alias method to <span class="math inline">\(\mu\)</span>, with <span class="math inline">\(L=2^{n-1}\)</span>. This gives a keep probability <span class="math inline">\(\tau_a\)</span> and an alias prefix <span class="math inline">\(q_a\)</span> for every prefix <span class="math inline">\(a\)</span>.</p>
       <p>The three-round sampler is:</p>
       <p><strong>Round 1.</strong> Sample the first <span class="math inline">\(n-1\)</span> positions uniformly and independently. Call the resulting prefix <span class="math inline">\(A\)</span>. Leave the last position masked.</p>
       <p><strong>Round 2.</strong> Use the last position as a temporary marker. Conditioned on the current prefix <span class="math inline">\(A=a\)</span>, set this marker to <span class="math inline">\(0\)</span> with probability <span class="math inline">\(\tau_a\)</span> and to <span class="math inline">\(1\)</span> with probability <span class="math inline">\(1-\tau_a\)</span>.</p>
@@ -253,7 +263,70 @@
       <p><span class="math display">\[
       Z \sim \mathcal{T}(x_{n-1}=\cdot \mid x_{&lt;n-1}=B).
       \]</span></p>
-      <p>By the lemma, the prefix <span class="math inline">\(B\)</span> has marginal distribution <span class="math inline">\(\mu\)</span>. The final token <span class="math inline">\(Z\)</span> is then sampled from the correct conditional distribution under <span class="math inline">\(\mathcal{T}\)</span>. Therefore the final output <span class="math inline">\((B,Z)\)</span> is exactly distributed as <span class="math inline">\(\mathcal{T}\)</span>.</p>
+      <p>By the alias table, the prefix <span class="math inline">\(B\)</span> has marginal distribution <span class="math inline">\(\mu\)</span>. The final token <span class="math inline">\(Z\)</span> is then sampled from the correct conditional distribution under <span class="math inline">\(\mathcal{T}\)</span>. Therefore the final output <span class="math inline">\((B,Z)\)</span> is exactly distributed as <span class="math inline">\(\mathcal{T}\)</span>.</p>
+      <h3 id="some-distributions-need-three-rounds">Some distributions need three rounds</h3>
+      <p>The three-round upper bound is tight in the general regime, at least for sufficiently large <span class="math inline">\(n\)</span>. We prove this by a dimension argument.</p>
+      <p>For each distribution <span class="math inline">\(\mu\)</span> over the state index set <span class="math inline">\(\mathcal{Y}=\{0,1\}^{n-1}\)</span>, define a distribution <span class="math inline">\(\mathcal{P}_\mu\)</span> over <span class="math inline">\(\{0,1\}^n\)</span> by</p>
+      <p><span class="math display">\[
+      \mathcal{P}_\mu(x)
+        =
+        \mu(x_{&lt;n-1})
+        \mathbf{1}\left[
+          x_{n-1}
+          =
+          \bigoplus_{i&lt;n-1} x_i
+        \right].
+      \]</span></p>
+      <p>Thus <span class="math inline">\(\mathcal{P}_\mu\)</span> is supported on the graph of the parity function, and the free parameter is the distribution <span class="math inline">\(\mu\)</span> over the <span class="math inline">\(2^{n-1}\)</span> graph states.</p>
+      <p>Now consider any two-round sampler with revision. To make the lower bound only stronger, allow the first round to sample each position independently from <span class="math inline">\(\{0,1,M\}\)</span>. Hence the first-round state <span class="math inline">\(S\)</span> lies in <span class="math inline">\(\{0,1,M\}^n\)</span>, and its product distribution is described by <span class="math inline">\(3n\)</span> probability parameters, with one normalization constraint per position.</p>
+      <p>Conditioned on a first-round state <span class="math inline">\(S=s\)</span>, the second round again samples the final positions independently. If the output distribution is exactly <span class="math inline">\(\mathcal{P}_\mu\)</span>, then every such conditional product distribution must be supported on the parity graph. But a product distribution supported on a parity graph is a point mass: if any coordinate has both values with positive probability, flipping that coordinate leaves the parity graph. Therefore the second round is deterministic on every first-round state with positive probability.</p>
+      <p>So a two-round sampler induces a deterministic map</p>
+      <p><span class="math display">\[
+      g:\{0,1,M\}^n \to \{0,1\}^{n-1},
+      \]</span></p>
+      <p>where <span class="math inline">\(g(s)\)</span> is the state index <span class="math inline">\(y\in\mathcal{Y}\)</span> of the final parity-graph output. There are at most</p>
+      <p><span class="math display">\[
+      \left(2^{n-1}\right)^{3^n}
+      \]</span></p>
+      <p>possible maps <span class="math inline">\(g\)</span>.</p>
+      <p>Fix such a map <span class="math inline">\(g\)</span>. Let <span class="math inline">\(\theta_i=(\theta_{i,0},\theta_{i,1},\theta_{i,M})\)</span> be the first-round distribution at position <span class="math inline">\(i\)</span>, and let <span class="math inline">\(\theta=(\theta_i)_{i=0}^{n-1}\)</span>. This gives a product distribution over <span class="math inline">\(S\in\{0,1,M\}^n\)</span>:</p>
+      <p><span class="math display">\[
+      \Pr_\theta[S=s]
+        =
+        \prod_{i=0}^{n-1}\theta_{i,s_i}.
+      \]</span></p>
+      <p>To view the output distribution as a point in Euclidean space, choose one reference state <span class="math inline">\(y_\star\in\mathcal{Y}\)</span> and keep only the other <span class="math inline">\(2^{n-1}-1\)</span> state coordinates:</p>
+      <p><span class="math display">\[
+      A=\mathcal{Y}\setminus\{y_\star\}.
+      \]</span></p>
+      <p>These coordinates give the coordinate image of the simplex of all distributions over <span class="math inline">\(\mathcal{Y}\)</span>:</p>
+      <p><span class="math display">\[
+      \Delta_A \cong \Delta_{2^{n-1}-1}
+        \subset \mathbb{R}^{2^{n-1}-1}.
+      \]</span></p>
+      <p>The set <span class="math inline">\(\Delta_A\)</span> has dimension <span class="math inline">\(2^{n-1}-1\)</span> and therefore has a natural Lebesgue volume, denoted by <span class="math inline">\(\operatorname{Vol}\)</span>.</p>
+      <p>Define</p>
+      <p><span class="math display">\[
+      \Phi_g(\theta)
+        =
+        \left(
+          \Pr_\theta[g(S)=y]
+        \right)_{y\in A}
+        \in \mathbb{R}^{2^{n-1}-1}.
+      \]</span></p>
+      <p>The omitted coordinate at <span class="math inline">\(y_\star\)</span> is determined by normalization. The map <span class="math inline">\(\Phi_g\)</span> is polynomial in these <span class="math inline">\(3n\)</span> probability parameters, equivalently in a parameter space with at most <span class="math inline">\(2n\)</span> degrees of freedom.</p>
+      <p>For <span class="math inline">\(n\ge 6\)</span>, even the conservative bound <span class="math inline">\(3n &lt; 2^{n-1}-1\)</span> holds. Hence</p>
+      <p><span class="math display">\[
+      \operatorname{Vol}\left(\Phi_g(\Theta)\right)=0
+      \]</span></p>
+      <p>inside <span class="math inline">\(\Delta_A\)</span>, where <span class="math inline">\(\Theta\)</span> is the first-round parameter space. Taking the finite union over all possible maps <span class="math inline">\(g\)</span> still gives</p>
+      <p><span class="math display">\[
+      \operatorname{Vol}\left(
+        \bigcup_g \Phi_g(\Theta)
+      \right)
+      =0.
+      \]</span></p>
+      <p>Therefore, for almost every coordinate vector <span class="math inline">\((\mu(y))_{y\in A}\in\Delta_A\)</span>, the corresponding full distribution <span class="math inline">\(\mu\)</span> over <span class="math inline">\(\mathcal{Y}\)</span> gives a distribution <span class="math inline">\(\mathcal{P}_\mu\)</span> that cannot be sampled exactly in two rounds. The alias-method construction above [3] samples every <span class="math inline">\(\mathcal{P}_\mu\)</span> in three rounds, so some distributions have exact round complexity equal to <span class="math inline">\(3\)</span> in this general unrestricted-predictor regime.</p>
       <h2 id="ac0-examples-for-the-one-hot-distribution"><span class="math inline">\(AC^0\)</span> examples for the one-hot distribution</h2>
       <p>Now consider the one-hot distribution <span class="math inline">\(U_n\)</span> in a circuit-restricted setting. Assume <span class="math inline">\(n=2^t\)</span>.</p>
       <p>Without revision, the same monotone argument still gives the <span class="math inline">\(n\)</span>-round obstruction. There is also a separate exact-representation issue: the natural one-position-at-a-time sampler would need transition probabilities such as</p>
@@ -272,7 +345,8 @@
       \]</span></p>
       <p>The comparison <span class="math inline">\(j=I\)</span> is an AND of <span class="math inline">\(t=\log n\)</span> literals for each fixed <span class="math inline">\(j\)</span>, so all <span class="math inline">\(n\)</span> comparisons are computable by polynomial-size constant-depth circuits. Thus with workspace-style revision, exact sampling from <span class="math inline">\(U_n\)</span> takes two rounds in this <span class="math inline">\(AC^0\)</span> setting.</p>
       <h2 id="ac0-round-complexity-for-the-parity-distribution"><span class="math inline">\(AC^0\)</span> round complexity for the parity distribution</h2>
-      <p>Theorem 4.5 of Jiang, Haghtalab, and Chen [1] shows that exact sampling requires superconstant, i.e., <span class="math inline">\(\omega(1)\)</span>, rounds. Here we prove the tight bound.</p>
+      <p>With revision, the parity distribution is easy in the <span class="math inline">\(AC^0\)</span> regime. Jiang, Haghtalab, and Chen [1, Theorem 4.1] show that a DLM with revision and length <span class="math inline">\(n\)</span> can sample <span class="math inline">\(D_n^\oplus\)</span> in two rounds.</p>
+      <p>Without revision, Theorem 4.5 of Jiang, Haghtalab, and Chen [1] shows that exact sampling requires superconstant, i.e., <span class="math inline">\(\omega(1)\)</span>, rounds. Here we prove the tight bound.</p>
       <h3 id="problem-setup">Problem setup</h3>
       <p>Let</p>
       <p><span class="math display">\[
@@ -416,10 +490,11 @@
       R_\oplus(n) = \Theta\left(\frac{\log n}{\log \log n}\right).
       \]</span></p>
       <h2 id="outlook">Outlook</h2>
-      <p>The constructions above do not model the effect of chain-of-thought style intermediate reasoning. Understanding whether such intermediate tokens change the right round-complexity model is a separate question.</p>
+      <p>The constructions above keep the sequence length fixed and do not add extra CoT-style scratch positions. Understanding how additional intermediate states affect the right round-complexity model is a separate question.</p>
       <h2 id="references">References</h2>
       <p>[1] Haozhe Jiang, Nika Haghtalab, and Lijie Chen. <em>Diffusion Language Models are Provably Optimal Parallel Samplers</em>. ICLR 2026. https://openreview.net/forum?id=5bkAbueJwM</p>
       <p>[2] Johan Hastad. <em>Almost Optimal Lower Bounds for Small Depth Circuits</em>. STOC 1986.</p>
+      <p>[3] Alastair J. Walker. <em>An Efficient Method for Generating Discrete Random Variables with General Distributions</em>. ACM Transactions on Mathematical Software, 1977.</p>
     </article>
   </main>
 </body>
