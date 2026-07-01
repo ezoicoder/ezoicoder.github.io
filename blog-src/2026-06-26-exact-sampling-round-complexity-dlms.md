@@ -799,5 +799,5 @@ Provably Optimal Parallel Samplers*. ICLR 2026. https://openreview.net/forum?id=
 Variables with General Distributions*. ACM Transactions on Mathematical
 Software, 1977.
 
-[3] Jiarui Zhang. [*Near-perfect average-case computation of MOD_q still
-requires large AC^0 depth*](../near-perfect-mod-q-ac-depth/). July 1, 2026.
+[3] Jiarui Zhang. [*Near-perfect average-case MOD_q requires log n / log log n
+AC^0 circuit depth*](../near-perfect-mod-q-ac-depth/). July 1, 2026.
