@@ -362,6 +362,18 @@ def write(path: Path, content: str) -> None:
     path.write_text(content, encoding="utf-8")
 
 
+def copy_assets() -> None:
+    source_assets = SOURCE_DIR / "assets"
+    if not source_assets.exists():
+        return
+
+    output_assets = OUTPUT_DIR / "assets"
+    output_assets.mkdir(parents=True, exist_ok=True)
+    for source in source_assets.iterdir():
+        if source.is_file() and source.suffix.lower() in {".avif", ".gif", ".jpg", ".jpeg", ".png", ".svg", ".webp"}:
+            shutil.copy2(source, output_assets / source.name)
+
+
 def main() -> int:
     try:
         posts = [parse_front_matter(path) for path in sorted(SOURCE_DIR.glob("*.md"))]
@@ -372,6 +384,7 @@ def main() -> int:
         write(OUTPUT_DIR / "index.html", render_index(posts))
         for post in posts:
             write(OUTPUT_DIR / post.slug / "index.html", render_post(post))
+        copy_assets()
     except (RuntimeError, ValueError, subprocess.CalledProcessError) as exc:
         print(f"build_blog.py: {exc}", file=sys.stderr)
         return 1

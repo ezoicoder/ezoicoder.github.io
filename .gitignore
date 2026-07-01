@@ -1,8 +1,8 @@
 resume.tex
-resume.aux
-resume.fdb_latexmk
-resume.fls
-resume.log
-resume.out
-resume.synctex.gz
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
 __pycache__/
