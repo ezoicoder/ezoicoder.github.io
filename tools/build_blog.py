@@ -20,6 +20,7 @@ OUTPUT_DIR = ROOT / "blog"
 class Post:
     title: str
     date: date
+    updated: date
     slug: str
     tags: tuple[str, ...]
     summary: str
@@ -35,9 +36,20 @@ class Post:
         return self.date.strftime("%B %-d, %Y")
 
     @property
+    def formatted_updated(self) -> str:
+        return self.updated.strftime("%B %-d, %Y")
+
+    @property
     def meta_text(self) -> str:
         tags = ", ".join(self.tags)
-        return f"{self.formatted_date} - {tags}" if tags else self.formatted_date
+        dates = f"Published {self.formatted_date}"
+        if self.updated != self.date:
+            dates = f"{dates} - Updated {self.formatted_updated}"
+        return f"{dates} - {tags}" if tags else dates
+
+    @property
+    def timestamp_text(self) -> str:
+        return f"Published {self.formatted_date}. Updated {self.formatted_updated}."
 
 
 def parse_front_matter(path: Path) -> Post:
@@ -77,6 +89,7 @@ def parse_front_matter(path: Path) -> Post:
     return Post(
         title=str(meta["title"]),
         date=datetime.strptime(str(meta["date"]), "%Y-%m-%d").date(),
+        updated=datetime.strptime(str(meta.get("updated", meta["date"])), "%Y-%m-%d").date(),
         slug=str(meta["slug"]),
         tags=tuple(tags),
         summary=str(meta["summary"]),
@@ -261,6 +274,14 @@ def page_shell(title: str, body: str, extra_head: str = "") -> str:
       margin: 0 0 24px;
     }}
 
+    .timestamps {{
+      margin-top: 34px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.92rem;
+    }}
+
     blockquote {{
       margin: 20px 0;
       padding: 12px 18px;
@@ -333,6 +354,7 @@ def render_post(post: Post) -> str:
       <h1>{html.escape(post.title)}</h1>
       <p class="post-meta">{html.escape(post.meta_text)}</p>
 {indent(fragment.rstrip(), "      ")}
+      <p class="timestamps">{html.escape(post.timestamp_text)}</p>
     </article>
   </main>
 """

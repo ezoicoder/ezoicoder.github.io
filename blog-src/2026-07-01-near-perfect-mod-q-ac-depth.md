@@ -1,6 +1,7 @@
 ---
 title: "Near-perfect average-case computation of MOD_q still requires large AC^0 depth"
 date: 2026-07-01
+updated: 2026-07-01
 slug: near-perfect-mod-q-ac-depth
 tags: [circuit complexity, average-case lower bounds, AC circuits]
 summary: "A theorem-note draft on polynomial-size AC^0 circuits that compute MOD_q with near-perfect average-case accuracy, and why their depth must be Omega(log n / log log n)."

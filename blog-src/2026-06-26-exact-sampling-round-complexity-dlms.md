@@ -1,6 +1,7 @@
 ---
 title: "Exact sampling round complexity for diffusion language models"
 date: 2026-06-26
+updated: 2026-07-01
 slug: exact-sampling-round-complexity-dlms
 tags: [diffusion language models, parallel sampling, circuit complexity]
 summary: "Exact-sampling round complexity for DLMs: three-round tightness with revision and a tight log n / log log n bound in the AC^0 no-revision regime."
@@ -798,6 +799,5 @@ Provably Optimal Parallel Samplers*. ICLR 2026. https://openreview.net/forum?id=
 Variables with General Distributions*. ACM Transactions on Mathematical
 Software, 1977.
 
-[3] Jiarui Zhang. *Near-perfect average-case computation of MOD_q still requires
-large AC^0 depth*. July 1, 2026.
-<../near-perfect-mod-q-ac-depth/>.
+[3] Jiarui Zhang. [*Near-perfect average-case computation of MOD_q still
+requires large AC^0 depth*](../near-perfect-mod-q-ac-depth/). July 1, 2026.

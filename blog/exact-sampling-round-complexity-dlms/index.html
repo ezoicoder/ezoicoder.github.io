@@ -159,6 +159,14 @@
       margin: 0 0 24px;
     }
 
+    .timestamps {
+      margin-top: 34px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
     blockquote {
       margin: 20px 0;
       padding: 12px 18px;
@@ -194,7 +202,7 @@
 
     <article class="article-card">
       <h1>Exact sampling round complexity for diffusion language models</h1>
-      <p class="post-meta">June 26, 2026 - diffusion language models, parallel sampling, circuit complexity</p>
+      <p class="post-meta">Published June 26, 2026 - Updated July 1, 2026 - diffusion language models, parallel sampling, circuit complexity</p>
       <p>This note records a few exact-sampling examples for diffusion language models and tracks how the required number of rounds changes when revision is allowed. Here, remasking is included as a form of revision, since we view updates such as <span class="math inline">\(0\to M\)</span> as revisions. I first define the two update models, and then separate the computational regimes used in the examples.</p>
       <p>Throughout the note, a <strong>round</strong> means one parallel DLM update. The predictor is denoted by <span class="math inline">\(p(\cdot \mid x)\)</span>. Target distributions are denoted by <span class="math inline">\(\mathcal{T}\)</span>.</p>
       <h2 id="model-conventions">Model conventions</h2>
@@ -581,7 +589,8 @@
       <h2 id="references">References</h2>
       <p>[1] Haozhe Jiang, Nika Haghtalab, and Lijie Chen. <em>Diffusion Language Models are Provably Optimal Parallel Samplers</em>. ICLR 2026. https://openreview.net/forum?id=5bkAbueJwM</p>
       <p>[2] Alastair J. Walker. <em>An Efficient Method for Generating Discrete Random Variables with General Distributions</em>. ACM Transactions on Mathematical Software, 1977.</p>
-      <p>[3] Jiarui Zhang. <em>Near-perfect average-case computation of MOD_q still requires large AC^0 depth</em>. July 1, 2026. &lt;../near-perfect-mod-q-ac-depth/&gt;.</p>
+      <p>[3] Jiarui Zhang. <a href="../near-perfect-mod-q-ac-depth/"><em>Near-perfect average-case computation of MOD_q still requires large AC^0 depth</em></a>. July 1, 2026.</p>
+      <p class="timestamps">Published June 26, 2026. Updated July 1, 2026.</p>
     </article>
   </main>
 </body>
