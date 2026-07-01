@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Near-perfect average-case computation of MOD_q still requires large AC depth | Jiarui Zhang</title>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172026;
+      --muted: #52606d;
+      --line: #d9e2ec;
+      --accent: #0a7c86;
+      --accent-soft: #e6f4f1;
+      --bg: #f8fafc;
+      --paper: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+
+    main {
+      width: min(900px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 48px 0;
+    }
+
+    .nav {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 28px;
+      font-size: 0.95rem;
+      font-weight: 650;
+    }
+
+    a {
+      color: var(--accent);
+    }
+
+    .nav a {
+      text-decoration: none;
+    }
+
+    header {
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 5vw, 3rem);
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .tagline {
+      max-width: 720px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.04rem;
+    }
+
+    section {
+      padding-top: 28px;
+    }
+
+    .post {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+
+    .post + .post {
+      margin-top: 14px;
+    }
+
+    .post h2 {
+      margin: 0 0 8px;
+      font-size: 1.12rem;
+      line-height: 1.35;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    .post h2 a {
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .post h2 a:hover {
+      color: var(--accent);
+    }
+
+    .meta,
+    .post-meta {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .meta {
+      margin: 0 0 8px;
+    }
+
+    .summary {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .article-card {
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      line-height: 1.68;
+    }
+
+    .article-card h2 {
+      margin: 34px 0 12px;
+      color: var(--accent);
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .article-card h3 {
+      margin: 28px 0 10px;
+      font-size: 1.12rem;
+      line-height: 1.35;
+    }
+
+    .article-card p {
+      margin: 0 0 16px;
+    }
+
+    .post-meta {
+      margin: 0 0 24px;
+    }
+
+    blockquote {
+      margin: 20px 0;
+      padding: 12px 18px;
+      border-left: 4px solid var(--accent);
+      background: var(--bg);
+      color: var(--muted);
+    }
+
+    .math.display {
+      display: block;
+      max-width: 100%;
+      overflow-x: auto;
+      padding: 2px 0;
+    }
+
+    @media (max-width: 720px) {
+      main {
+        padding-top: 32px;
+      }
+
+      .article-card {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <nav class="nav">
+      <a href="../../">Home</a>
+      <a href="../">Blog</a>
+    </nav>
+
+    <article class="article-card">
+      <h1>Near-perfect average-case computation of MOD_q still requires large AC depth</h1>
+      <p class="post-meta">July 1, 2026 - circuit complexity, average-case lower bounds, AC circuits</p>
+      <p>This note records a simple average-case consequence of the low-degree polynomial method for modular counting. Fix an integer <span class="math inline">\(q\ge 2\)</span> and a constant <span class="math inline">\(\lambda&gt;0\)</span>. For uniformly random <span class="math inline">\(x\in\{0,1\}^n\)</span>, let</p>
+      <p><span class="math display">\[
+      MOD_q(x)=1\left[\sum_{i=1}^n x_i \equiv 0 \pmod q\right]
+      \]</span></p>
+      <p>and let <span class="math inline">\(\{C_n\}\)</span> be a polynomial-size <span class="math inline">\(AC\)</span> circuit family with unbounded-fan-in AND, OR, and NOT gates. If, for all sufficiently large <span class="math inline">\(n\)</span>,</p>
+      <p><span class="math display">\[
+      \Pr_{x\sim\{0,1\}^n}[C_n(x)=MOD_q(x)]\ge 1-\frac1q+\lambda,
+      \]</span></p>
+      <p>then the depth of <span class="math inline">\(C_n\)</span> must satisfy</p>
+      <p><span class="math display">\[
+      d(n)=\Omega\left(\frac{\log n}{\log\log n}\right).
+      \]</span></p>
+      <p>In particular, near-perfect average-case accuracy <span class="math inline">\(1-o(1)\)</span> is impossible below this depth.</p>
+      <h2 id="proof">Proof</h2>
+      <p>We prove the stronger statement for <span class="math inline">\(AC[p]\)</span> circuits. Fix a prime <span class="math inline">\(p\)</span> that is coprime to <span class="math inline">\(q\)</span>, and consider circuits over the unbounded-fan-in gate set</p>
+      <p><span class="math display">\[
+      \{\mathrm{AND},\mathrm{OR},\mathrm{NOT},\mathrm{MOD}_p\},
+      \]</span></p>
+      <p>which contains ordinary <span class="math inline">\(AC\)</span> as the special case with no <span class="math inline">\(\mathrm{MOD}_p\)</span> gates. I use the notation and results of Beck and Li [1]. Their Theorem 7.1 gives the following Razborov-Smolensky approximation statement: if <span class="math inline">\(C\)</span> is a size-<span class="math inline">\(S\)</span>, depth-<span class="math inline">\(d\)</span> circuit in this <span class="math inline">\(AC[p]\)</span> model, then for every <span class="math inline">\(\ell&gt;0\)</span> there is a polynomial</p>
+      <p><span class="math display">\[
+      P\in \mathbb{F}_p[x_1,\ldots,x_n]/(x_i^2=x_i)
+      \]</span></p>
+      <p>such that</p>
+      <p><span class="math display">\[
+      \deg(P)\le ((p-1)\ell)^d
+      \]</span></p>
+      <p>and</p>
+      <p><span class="math display">\[
+      \Pr_x[P(x)\ne C(x)]\le \frac{S}{2^\ell}.
+      \]</span></p>
+      <p>This is only a slight rephrasing of Beck and Li, Theorem 7.1. The theorem is stated there for <span class="math inline">\(AC^0[p]\)</span>, but the statement itself keeps the depth parameter <span class="math inline">\(d\)</span> explicit, so we use it in this per-circuit form.</p>
+      <p>Now suppose <span class="math inline">\(C\)</span> has polynomial size, say <span class="math inline">\(S\le n^\alpha\)</span>. Choose</p>
+      <p><span class="math display">\[
+      \ell=(\alpha+2)\log_2 n.
+      \]</span></p>
+      <p>Then</p>
+      <p><span class="math display">\[
+      \Pr_x[P(x)\ne C(x)]\le n^{-2},
+      \]</span></p>
+      <p>and the degree bound becomes</p>
+      <p><span class="math display">\[
+      \deg(P)\le O_{p,\alpha}((\log n)^d).
+      \]</span></p>
+      <p>If</p>
+      <p><span class="math display">\[
+      d\le \left(\frac12-\delta\right)\frac{\log n}{\log\log n}
+      \]</span></p>
+      <p>for some fixed <span class="math inline">\(\delta&gt;0\)</span>, then</p>
+      <p><span class="math display">\[
+      \begin{aligned}
+      (\log n)^d
+      &amp;\le
+      (\log n)^{(1/2-\delta)\log n/\log\log n} \\
+      &amp;=
+      \exp\left(\left(\frac12-\delta\right)\log n\right) \\
+      &amp;=
+      n^{1/2-\delta}.
+      \end{aligned}
+      \]</span></p>
+      <p>Absorbing the constant depending on <span class="math inline">\(p\)</span> and <span class="math inline">\(\alpha\)</span>, this gives</p>
+      <p><span class="math display">\[
+      \deg(P)=o(\sqrt n).
+      \]</span></p>
+      <p>On the other hand, the consequence of Theorem 7.3 used in [1] says that <span class="math inline">\(MOD_q\)</span> differs from every degree-<span class="math inline">\(o(\sqrt n)\)</span> polynomial over <span class="math inline">\(\mathbb{F}_p\)</span> on at least</p>
+      <p><span class="math display">\[
+      2^n\left(\frac1q-o(1)\right)
+      \]</span></p>
+      <p>inputs, where nonzero field values are interpreted as Boolean value <span class="math inline">\(1\)</span>. Therefore <span class="math inline">\(P\)</span> differs from <span class="math inline">\(MOD_q\)</span> on a <span class="math inline">\((1/q-o(1))\)</span> fraction of inputs, while <span class="math inline">\(P\)</span> differs from <span class="math inline">\(C\)</span> on at most an <span class="math inline">\(n^{-2}\)</span> fraction of inputs. By the triangle inequality,</p>
+      <p><span class="math display">\[
+      \Pr_x[C(x)\ne MOD_q(x)]\ge \frac1q-o(1).
+      \]</span></p>
+      <p>Consequently, for any fixed <span class="math inline">\(\lambda&gt;0\)</span>, a polynomial-size <span class="math inline">\(AC\)</span> circuit family with agreement at least <span class="math inline">\(1-1/q+\lambda\)</span> for all sufficiently large <span class="math inline">\(n\)</span> must have</p>
+      <p><span class="math display">\[
+      d(n)\ge \left(\frac12-o(1)\right)\frac{\log n}{\log\log n},
+      \]</span></p>
+      <p>and in particular</p>
+      <p><span class="math display">\[
+      d(n)=\Omega\left(\frac{\log n}{\log\log n}\right).
+      \]</span></p>
+      <h2 id="references">References</h2>
+      <p>[1] Chris Beck and Yuan Li. "Represent MOD function by low degree polynomial with unbounded one-sided error." arXiv:1304.0713, 2013. <a href="https://arxiv.org/abs/1304.0713" class="uri">https://arxiv.org/abs/1304.0713</a>.</p>
+    </article>
+  </main>
+</body>
+</html>
