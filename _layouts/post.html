@@ -1,0 +1,32 @@
+---
+layout: default
+mathjax: true
+---
+<main class="blog-main">
+  <nav class="nav">
+    <a href="{{ '/' | relative_url }}">Home</a>
+    <a href="{{ '/blog/' | relative_url }}">Blog</a>
+  </nav>
+
+  <article class="article-card">
+    <h1>{{ page.title | escape }}</h1>
+    <p class="post-meta">
+      Published {{ page.date | date: "%B %-d, %Y" }}
+      {% assign published = page.date | date: "%Y-%m-%d" %}
+      {% assign updated = page.updated | date: "%Y-%m-%d" %}
+      {% if page.updated and updated != published %}
+        - Updated {{ page.updated | date: "%B %-d, %Y" }}
+      {% endif %}
+      {% if page.tags and page.tags.size > 0 %}
+        - {{ page.tags | join: ", " }}
+      {% endif %}
+    </p>
+
+    {{ content }}
+
+    <p class="timestamps">
+      Published {{ page.date | date: "%B %-d, %Y" }}.
+      Updated {{ page.updated | default: page.date | date: "%B %-d, %Y" }}.
+    </p>
+  </article>
+</main>

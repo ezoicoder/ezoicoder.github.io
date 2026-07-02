@@ -3,11 +3,10 @@ title: "Near-perfect average-case MOD_q requires log n / log log n AC^0 circuit 
 date: 2026-07-01
 updated: 2026-07-01
 slug: near-perfect-mod-q-ac-depth
+permalink: /blog/near-perfect-mod-q-ac-depth/
 tags: [circuit complexity, average-case lower bounds, AC circuits]
 summary: "A theorem-note draft on polynomial-size AC^0 circuits that compute MOD_q with near-perfect average-case accuracy, and why their depth must be Omega(log n / log log n)."
 ---
-
-# Near-perfect average-case MOD_q requires log n / log log n AC^0 circuit depth
 
 This note records a simple average-case consequence of the low-degree
 polynomial method for modular counting. Fix an integer $q\ge 2$ and a constant

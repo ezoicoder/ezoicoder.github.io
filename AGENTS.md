@@ -1,84 +1,101 @@
 # Repository Instructions
 
-## Blog Source And Generated HTML
+## Site Structure
 
-- Blog source files live in `blog-src/*.md`.
-- Generated public HTML lives in `blog/`.
-- Do not edit generated blog HTML by hand unless explicitly requested. Prefer
-  editing the Markdown source and then running:
+- This is a GitHub Pages site built with Jekyll from the repository root.
+- The homepage source is `index.md` and uses Jekyll front matter plus Liquid.
+- The blog listing source is `blog.md`, with `permalink: /blog/`.
+- Shared layouts live in `_layouts/`.
+- Shared CSS lives in `assets/css/site.css`.
+- Blog images and other public assets live under `assets/`.
+- The resume source and PDF live at `assets/resume.tex` and
+  `assets/resume.pdf`.
+- For generated figures, keep the source `.tex` and corresponding `.pdf` under
+  `assets/` alongside the web-facing image when they are useful for future
+  edits.
 
-  ```bash
-  python3 tools/build_blog.py
+## Blog Posts
+
+- Blog posts live in `_posts/*.md`.
+- Do not edit generated `_site/` output. Jekyll builds it locally and GitHub
+  Pages builds it remotely.
+- Each post should start with YAML front matter:
+
+  ```yaml
+  ---
+  title: "Post title"
+  date: YYYY-MM-DD
+  updated: YYYY-MM-DD
+  slug: stable-url-slug
+  permalink: /blog/stable-url-slug/
+  tags: [tag one, tag two]
+  summary: "Short list-page summary."
+  ---
   ```
 
-- After editing any `blog-src/*.md` file, always rebuild the blog HTML and
-  include the corresponding generated files in the same commit.
-- The root homepage `index.html` is currently hand-maintained. Adding or
-  retitling a blog post does not automatically update the homepage Blog section;
-  update `index.html` manually when the homepage list should change.
-
-## Blog Front Matter
-
-Each blog source file should start with YAML-style front matter:
-
-```yaml
----
-title: "Post title"
-date: YYYY-MM-DD
-updated: YYYY-MM-DD
-slug: stable-url-slug
-tags: [tag one, tag two]
-summary: "Short list-page summary."
----
-```
-
 - `date` is the original publication date.
-- `updated` is the last substantive update date. If omitted, the build script
-  treats it as equal to `date`, but new posts should include it explicitly.
-- `slug` controls the public URL under `/blog/<slug>/`. The title does not
-  control the URL.
-- Changing a title is safe for existing links if `slug` is unchanged.
-- Changing a `slug` breaks the old URL unless a redirect file is kept under the
-  old `blog/<old-slug>/index.html`.
+- `updated` is the last substantive update date. New posts should include it
+  explicitly.
+- `permalink` controls the public URL and should keep the `/blog/<slug>/`
+  shape unless intentionally changing URLs.
+- The title does not control the URL when `permalink` is present.
+- Do not put a duplicate top-level `# Title` at the start of a post body; the
+  post layout renders the page title.
 
 ## Links, Redirects, And References
 
-- Internal blog references should use Markdown links in source files, for
+- Internal blog references should use Jekyll-aware links where practical, for
   example:
 
   ```markdown
-  [*Post title*](../post-slug/)
+  [*Post title*]({{ '/blog/post-slug/' | relative_url }})
   ```
 
-- If an old blog URL should remain valid, keep or add a small redirect HTML file
-  at the old generated path. The current build script does not create redirects
-  automatically.
+- Static blog assets should live under `assets/blog/`.
+- Old generated blog HTML should not be kept unless a specific legacy URL must
+  remain valid.
+- Do not commit LaTeX intermediate files such as `.aux`, `.log`, `.fls`,
+  `.fdb_latexmk`, or `.out`.
 - When one post references a newer post, make sure the older post has an
   `updated` date reflecting the update.
 
-## Assets
+## Local Preview
 
-- Source assets for posts should go in `blog-src/assets/`.
-- Web-facing image assets are copied to `blog/assets/` by
-  `tools/build_blog.py`.
-- Commit both source assets and generated/copied assets when publishing.
+- Install dependencies with:
+
+  ```bash
+  bundle install
+  ```
+
+- Preview locally with:
+
+  ```bash
+  bundle exec jekyll serve
+  ```
+
+- Build locally with:
+
+  ```bash
+  bundle exec jekyll build
+  ```
+
+- `_site/`, `.jekyll-cache/`, and `.sass-cache/` are local build outputs and
+  should not be committed.
 
 ## Publishing Checklist
 
-Before committing blog changes:
+Before committing blog or site changes:
 
-1. Edit `blog-src/*.md`.
-2. Run `python3 tools/build_blog.py`.
-3. If the root homepage blog list should change, update `index.html`.
-4. Check `git diff --check`.
-5. Check that generated `blog/index.html` and relevant
-   `blog/<slug>/index.html` reflect the source changes.
-6. Commit source Markdown, generated HTML, assets, and any homepage updates
-   together.
+1. Edit source files such as `_posts/*.md`, layouts, CSS, or `index.md`.
+2. If local Jekyll is available, run `bundle exec jekyll build`.
+3. Check `git diff --check`.
+4. Check that homepage and blog Liquid loops still point at the intended posts.
+5. Commit source files, layouts, CSS, and assets together.
 
 ## GitHub Pages
 
-- GitHub Pages serves files from `main` at the repository root.
+- GitHub Pages serves files from `main` at the repository root and runs Jekyll
+  automatically.
 - After pushing, Pages may take a few minutes to build and CDN/browser caches
   may take additional time to refresh.
 - If the GitHub raw file is updated but `https://ezoicoder.github.io/` is not,

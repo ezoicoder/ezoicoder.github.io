@@ -3,11 +3,10 @@ title: "Exact sampling round complexity for diffusion language models"
 date: 2026-06-26
 updated: 2026-07-01
 slug: exact-sampling-round-complexity-dlms
+permalink: /blog/exact-sampling-round-complexity-dlms/
 tags: [diffusion language models, parallel sampling, circuit complexity]
 summary: "Exact-sampling round complexity for DLMs: three-round tightness with revision and a tight log n / log log n bound in the AC^0 no-revision regime."
 ---
-
-# Exact sampling round complexity for diffusion language models
 
 This note records a few exact-sampling examples for diffusion language models
 and tracks how the required number of rounds changes when revision is allowed.
@@ -702,7 +701,7 @@ $$
 O(\log_B n)=O\left(\frac{\log n}{\log\log n}\right).
 $$
 
-![Marker profiles for the regular-language upper-bound construction](../assets/regular-language-segments.png)
+![Marker profiles for the regular-language upper-bound construction]({{ '/assets/blog/regular-language-segments.png' | relative_url }})
 
 At the top, add the special node $\mathrm{root}^{\prime}$. Unlike an ordinary
 node, $\mathrm{root}^{\prime}$ has
@@ -800,4 +799,4 @@ Variables with General Distributions*. ACM Transactions on Mathematical
 Software, 1977.
 
 [3] Jiarui Zhang. [*Near-perfect average-case MOD_q requires log n / log log n
-AC^0 circuit depth*](../near-perfect-mod-q-ac-depth/). July 1, 2026.
+AC^0 circuit depth*]({{ '/blog/near-perfect-mod-q-ac-depth/' | relative_url }}). July 1, 2026.

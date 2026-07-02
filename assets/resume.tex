@@ -1,0 +1,100 @@
+% Jiarui Zhang - English Resume (LaTeX)
+\documentclass[11pt,a4paper]{article}
+
+% Basic layout
+\usepackage[margin=1in]{geometry}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage{CJKutf8}
+\usepackage{fontawesome5}
+
+% Color theme similar to the reference layout
+\definecolor{accent}{HTML}{0A7C86}
+\definecolor{textgray}{HTML}{333333}
+\definecolor{gold}{HTML}{FFD700}
+
+% Section formatting
+\titleformat{\section}{\large\bfseries\color{accent}}{}{0pt}{}
+\titlespacing*{\section}{0pt}{8pt}{4pt}
+\setlist[itemize]{leftmargin=*, itemsep=2pt, topsep=2pt}
+\newcommand{\reslink}[2]{\href{#1}{\textcolor{blue}{#2}}}
+
+\begin{document}
+\begin{CJK*}{UTF8}{gbsn}
+
+% ===== Header =====
+\begin{center}
+    {\LARGE\bfseries \textcolor{textgray}{ZHANG, JIARUI 张家瑞}}\\[4pt]
+    {\color{accent}\rule{\textwidth}{1.2pt}}
+\end{center}
+
+% Top two-column: contact on left, profile on right
+\vspace{2pt}
+\begin{tabularx}{\textwidth}{@{}p{0.36\textwidth}@{\hspace{2ex}}X@{}}
+\raggedright
+\textbf{Phone:} +86 189 2512 1908\\
+\textbf{Email:} jiarui-z23@mails.tsinghua.edu.cn\\
+\textbf{Website:} \reslink{https://ezoicoder.github.io}{ezoicoder.github.io}
+&
+\raggedright
+\textbf{PROFILE}\\
+I am a third-year undergraduate researcher in \textbf{Yao Class}, passionate about \textbf{AI infrastructure} and \textbf{ML systems}. I am dedicated to building high-performance, scalable systems for large-scale model training and inference.
+\end{tabularx}
+
+\vspace{6pt}
+
+% ===== Education =====
+\section*{EDUCATION}
+\noindent\textbf{Tsinghua University, Beijing, China} \hfill {\small Sep 2023 \textendash{} Jun 2027 (expected)}\\
+Bachelor of Engineering in Artificial Intelligence, Institute for Interdisciplinary Information Sciences \\
+GPA: 3.77/4.0
+
+% ===== Experience =====
+\section*{EXPERIENCE}
+
+\noindent \textbf{Research Intern, \reslink{https://binhangyuan.github.io/site/}{Binhang Yuan} (袁彬航) Research Group, Hong Kong, China} \hfill {\small Jan 2026 \textendash{} Present}
+\begin{itemize}
+    \item Developing a distributed training system optimized for \textbf{Tree Attention}, aiming to reduce memory usage and increase throughput for multi-turn LLM training.
+\end{itemize}
+
+% Tsinghua Course Project
+\noindent\textbf{Research Intern, \reslink{https://jxwuyi.weebly.com/}{Yi Wu} (吴翼) Research Group, Beijing, China} \hfill {\small Oct 2025 \textendash{} Dec 2025}
+\begin{itemize}
+    \item Participated in the development of a \textbf{serverless} reinforcement learning platform for scalable training.
+\end{itemize}
+
+\vspace{6pt}
+
+
+% Tencent
+\noindent\textbf{Applied Research Intern, CDG, Tencent, Shenzhen, China} \hfill {\small Jul 2025 \textendash{} Sep 2025}
+\begin{itemize}
+    \item Optimized financial large language model \textbf{instruction-following} capability using \textbf{verl} reinforcement learning framework; implemented \textbf{model-based} approaches and \textbf{prompt-engineering-driven} reward scoring to achieve significant business metric improvements.
+    \item Results: citation format accuracy 40\% \textrightarrow{} 98\%; content accuracy \& timeliness accuracy 78\% \textrightarrow{} 97\%; general instruction-following benchmark IFEval accuracy 38\% \textrightarrow{} 80\%.
+\end{itemize}
+
+\section*{PUBLICATIONS}
+\begin{itemize}
+    \item \textbf{Jiarui Zhang}\textsuperscript{*}, Yuchen Yang\textsuperscript{*}, Ran Yan\textsuperscript{*}, Zhiyu Mei, Liyuan Zhang, Daifeng Li, Wei Fu, Jiaxuan Gao, Shusheng Xu, \reslink{https://jxwuyi.weebly.com/}{Yi Wu}, \reslink{https://binhangyuan.github.io/site/}{Binhang Yuan}. \emph{AREAL-DTA: Dynamic Tree Attention for Efficient Reinforcement Learning of Large Language Models}. \textbf{ICML 2026 Accepted} [\reslink{https://arxiv.org/abs/2602.00482}{Paper}] [\reslink{https://github.com/areal-project/AReaL/tree/feat/dta}{Code}]
+    \item Liyuan Zhang, \textbf{Jiarui Zhang}, Jinwei Yao, Ran Yan, Yuchen Yang, Jiahao Zhang, Tongkai Yang, \reslink{https://jxwuyi.weebly.com/}{Yi Wu}, \reslink{https://binhangyuan.github.io/site/}{Binhang Yuan}. \emph{$D^2$SD: Accelerating Speculative Decoding with Dual Diffusion Draft Models}. \textbf{arXiv preprint} [\reslink{https://arxiv.org/abs/2606.04446}{Paper}]
+\end{itemize}
+
+
+% ===== Awards =====
+\section*{AWARDS}
+\begin{itemize}
+    \item \textbf{National Olympiad in Informatics 2021 Gold Medal} \textcolor{gold}{\faMedal}\end{itemize}
+
+% ===== Interests =====
+\section*{INTERESTS}
+Competitive Shuttlecock (Jianzi) - Member of Tsinghua University Shuttlecock Team\\
+Hiking (beginner, enjoys single-day hikes with $\sim$1000m elevation)
+
+\end{CJK*}
+\end{document}
