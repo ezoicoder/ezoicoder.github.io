@@ -1,7 +1,7 @@
 ---
 title: "Near-perfect average-case MOD_q requires log n / log log n AC circuit depth"
 date: 2026-07-01
-updated: 2026-07-01
+updated: 2026-07-02
 slug: near-perfect-mod-q-ac-depth
 permalink: /blog/near-perfect-mod-q-ac-depth/
 tags: [circuit complexity, average-case lower bounds, AC circuits]

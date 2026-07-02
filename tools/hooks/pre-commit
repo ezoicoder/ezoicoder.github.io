@@ -2,3 +2,4 @@
 set -eu
 
 ruby tools/check_kramdown_math.rb --staged
+ruby tools/check_post_updated_dates.rb --staged
