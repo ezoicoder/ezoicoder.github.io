@@ -41,6 +41,12 @@
 - The title does not control the URL when `permalink` is present.
 - Do not put a duplicate top-level `# Title` at the start of a post body; the
   post layout renders the page title.
+- For inline math in blog Markdown, prefer Kramdown math spans
+  `$$...$$` instead of single-dollar `$...$`. Single-dollar spans are left as
+  ordinary text until browser-side MathJax runs, so Kramdown can first parse
+  TeX underscores such as `\mathcal{G}_{L,n}` and later `x_{n-2}` as Markdown
+  emphasis, producing broken HTML like `<em>...</em>` inside formulas.
+- Enable the Markdown math pre-commit hook with `tools/install_hooks.sh`.
 
 ## Links, Redirects, And References
 
@@ -59,35 +65,13 @@
 - When one post references a newer post, make sure the older post has an
   `updated` date reflecting the update.
 
-## Local Preview
-
-- Install dependencies with:
-
-  ```bash
-  bundle install
-  ```
-
-- Preview locally with:
-
-  ```bash
-  bundle exec jekyll serve
-  ```
-
-- Build locally with:
-
-  ```bash
-  bundle exec jekyll build
-  ```
-
-- `_site/`, `.jekyll-cache/`, and `.sass-cache/` are local build outputs and
-  should not be committed.
-
 ## Publishing Checklist
 
 Before committing blog or site changes:
 
 1. Edit source files such as `_posts/*.md`, layouts, CSS, or `index.md`.
-2. If local Jekyll is available, run `bundle exec jekyll build`.
+2. For Markdown changes, run `ruby tools/check_kramdown_math.rb` if the
+   pre-commit hook is not enabled.
 3. Check `git diff --check`.
 4. Check that homepage and blog Liquid loops still point at the intended posts.
 5. Commit source files, layouts, CSS, and assets together.

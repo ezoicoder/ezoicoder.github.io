@@ -279,10 +279,10 @@ $$
 =0.
 $$
 
-Therefore, for almost every coordinate vector $(\mu(y))_{y\in A}\in\Delta_A$,
-the corresponding full distribution $\mu$ over $\mathcal{Y}$ gives a
-distribution $\mathcal{P}_\mu$ that cannot be sampled exactly in two rounds. The
-alias-method construction above \[2\] samples every $\mathcal{P}_\mu$ in three
+Therefore, for almost every coordinate vector $$(\mu(y))_{y\in A}\in\Delta_A$$,
+the corresponding full distribution $$\mu$$ over $$\mathcal{Y}$$ gives a
+distribution $$\mathcal{P}_\mu$$ that cannot be sampled exactly in two rounds. The
+alias-method construction above \[2\] samples every $$\mathcal{P}_\mu$$ in three
 rounds, so some distributions have exact round complexity equal to $3$ in this
 general unrestricted-predictor regime.
 
@@ -546,12 +546,12 @@ $$
 $$
 
 **Observation 6 (autoregressive recognition of regular-language graphs).**
-For a string $x_0\cdots x_{n-2}x_{n-1}$ sampled from $\mathcal{G}_{L,n}$, the
-last coordinate must be sampled after the prefix $x_0\cdots x_{n-2}$ is known.
-Thus, in an $AC^0$ autoregressive regime, the final predictor can realize this
+For a string $$x_0\cdots x_{n-2}x_{n-1}$$ sampled from $$\mathcal{G}_{L,n}$$, the
+last coordinate must be sampled after the prefix $$x_0\cdots x_{n-2}$$ is known.
+Thus, in an $$AC^0$$ autoregressive regime, the final predictor can realize this
 graph distribution exactly only by recognizing whether
-$x_0\cdots x_{n-2}\in L$. This is recognizable exactly when
-$L\in AC^0$.
+$$x_0\cdots x_{n-2}\in L$$. This is recognizable exactly when
+$$L\in AC^0$$.
 
 **Theorem 7 (no-revision graph distributions for regular languages).** In the
 no-revision $AC^0$ DLM model, exact sampling from $\mathcal{G}_{L,n}$ has the

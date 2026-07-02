@@ -174,7 +174,7 @@ probability $1$.
 
 ## Regular-language pointwise reductions
 
-Let $L\subseteq\{0,1\}^*$ be a regular language whose syntactic monoid contains
+Let $$L\subseteq\{0,1\}^*$$ be a regular language whose syntactic monoid contains
 an element of order $q>1$. Suppose $f_L=\mathbf{1}_L$ has randomized
 polynomial-size AND/OR/NOT circuits $A_R$ of depth $d(n)$ with pointwise success
 probability at least $2/3$:
@@ -193,7 +193,7 @@ $$
 Proof. The regular-language reduction of Barrington, Compton, Straubing, and
 Thérien \[2\] gives fixed words $a,b$ of the same constant length $h$, fixed
 contexts $\ell_r,v_r$, and labels $c_r\in\{0,1\}$ for
-$r=1,\ldots,q-1$, such that the block morphism $\phi:\{0,1\}^*\to\{0,1\}^*$,
+$$r=1,\ldots,q-1$$, such that the block morphism $$\phi:\{0,1\}^*\to\{0,1\}^*$$,
 
 $$
 \phi(0)=a,\qquad \phi(1)=b,
