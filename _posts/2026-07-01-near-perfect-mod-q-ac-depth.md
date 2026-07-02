@@ -1,11 +1,11 @@
 ---
-title: "Near-perfect average-case MOD_q requires log n / log log n AC^0 circuit depth"
+title: "Near-perfect average-case MOD_q requires log n / log log n AC circuit depth"
 date: 2026-07-01
 updated: 2026-07-01
 slug: near-perfect-mod-q-ac-depth
 permalink: /blog/near-perfect-mod-q-ac-depth/
 tags: [circuit complexity, average-case lower bounds, AC circuits]
-summary: "A theorem-note draft on polynomial-size AC^0 circuits that compute MOD_q with near-perfect average-case accuracy, and why their depth must be Omega(log n / log log n)."
+summary: "A theorem-note draft on polynomial-size AC circuits that compute MOD_q with near-perfect average-case accuracy, and why their depth must be Omega(log n / log log n)."
 ---
 
 This note records a simple average-case consequence of the low-degree
@@ -16,7 +16,7 @@ $$
 \mathrm{MOD}_q(x)=\mathbf{1}\left[\sum_{i=1}^n x_i \equiv 0 \pmod q\right]
 $$
 
-and let $\{C_n\}$ be a polynomial-size $AC^0$ circuit family with
+and let $\{C_n\}$ be a polynomial-size $AC$ circuit family with
 unbounded-fan-in AND, OR, and NOT gates. If, for all sufficiently large $n$,
 
 $$
@@ -34,17 +34,17 @@ this depth.
 
 ## Proof
 
-We prove the stronger statement for $AC^0[p]$ circuits. Fix a prime $p$ that is
+We prove the stronger statement for $AC[p]$ circuits. Fix a prime $p$ that is
 coprime to $q$, and consider circuits over the unbounded-fan-in gate set
 
 $$
 \{\mathrm{AND},\mathrm{OR},\mathrm{NOT},\mathrm{MOD}_p\},
 $$
 
-which contains ordinary $AC^0$ as the special case with no $\mathrm{MOD}_p$
-gates. I use the notation and results of Beck and Li \[1\]. Their Theorem 7.1
+which contains ordinary $AC$ as the special case with no $\mathrm{MOD}_p$
+gates. I use the notation and results of Beck and Li [1]. Their Theorem 7.1
 gives the following Razborov-Smolensky approximation statement: if $C$ is a
-size-$S$, depth-$d$ circuit in this $AC^0[p]$ model, then for every $\ell>0$
+size-$S$, depth-$d$ circuit in this $AC[p]$ model, then for every $\ell>0$
 there is a polynomial
 
 $$
@@ -64,7 +64,7 @@ $$
 $$
 
 This is only a slight rephrasing of Beck and Li, Theorem 7.1. The theorem is
-stated there for $AC^0[p]$, but the statement itself keeps the depth parameter
+stated there for $AC[p]$, but the statement itself keeps the depth parameter
 $d$ explicit, so we use it in this per-circuit form.
 
 Now suppose $C$ has polynomial size, say $S\le n^\alpha$. Choose
@@ -111,7 +111,7 @@ $$
 \deg(P)=o(\sqrt n).
 $$
 
-On the other hand, the consequence of Theorem 7.3 used in \[1\] says that
+On the other hand, the consequence of Theorem 7.3 used in [1] says that
 $\mathrm{MOD}_q$ differs from every degree-$o(\sqrt n)$ polynomial over $\mathbb{F}_p$
 on at least
 
@@ -128,7 +128,7 @@ $$
 \Pr_x[C(x)\ne \mathrm{MOD}_q(x)]\ge \frac1q-o(1).
 $$
 
-Consequently, for any fixed $\lambda>0$, a polynomial-size $AC^0$ circuit family
+Consequently, for any fixed $\lambda>0$, a polynomial-size $AC$ circuit family
 with agreement at least $1-1/q+\lambda$ for all sufficiently large $n$ must have
 
 $$
@@ -174,10 +174,13 @@ probability $1$.
 
 ## Regular-language pointwise reductions
 
-Let $$L\subseteq\{0,1\}^*$$ be a regular language whose syntactic monoid contains
-an element of order $q>1$. Suppose $f_L=\mathbf{1}_L$ has randomized
-polynomial-size AND/OR/NOT circuits $A_R$ of depth $d(n)$ with pointwise success
-probability at least $2/3$:
+Let $$L\subseteq\{0,1\}^*$$ be a regular language that is not in $AC^0$
+(constant-depth polynomial-size AND/OR/NOT circuits). By the
+regular-language characterization of Barrington, Compton, Straubing, and
+Thérien [2], this is equivalent to the syntactic monoid of $L$ containing a
+nontrivial group; fix an element of order $q>1$ in that monoid. Suppose
+$f_L=\mathbf{1}_L$ has randomized polynomial-size AND/OR/NOT circuits $A_R$ of
+depth $d(n)$ with pointwise success probability at least $2/3$:
 
 $$
 \Pr_R[A_R(x)=f_L(x)]\ge \frac23
@@ -191,7 +194,7 @@ d(n)=\Omega\left(\frac{\log n}{\log\log n}\right).
 $$
 
 Proof. The regular-language reduction of Barrington, Compton, Straubing, and
-Thérien \[2\] gives fixed words $a,b$ of the same constant length $h$, fixed
+Thérien [2] gives fixed words $a,b$ of the same constant length $h$, fixed
 contexts $\ell_r,v_r$, and labels $c_r\in\{0,1\}$ for
 $$r=1,\ldots,q-1$$, such that the block morphism $$\phi:\{0,1\}^*\to\{0,1\}^*$$,
 
@@ -256,10 +259,10 @@ length.
 
 ## References
 
-\[1\] Chris Beck and Yuan Li. "Represent MOD function by low degree polynomial
+[1] Chris Beck and Yuan Li. "Represent MOD function by low degree polynomial
 with unbounded one-sided error." arXiv:1304.0713, 2013.
 <https://arxiv.org/abs/1304.0713>.
 
-\[2\] David A. Mix Barrington, Kevin Compton, Howard Straubing, and Denis
+[2] David A. Mix Barrington, Kevin Compton, Howard Straubing, and Denis
 Thérien. *Regular Languages in NC1*. Journal of Computer and System Sciences,
 44(3):478-499, 1992. <https://doi.org/10.1016/0022-0000(92)90014-A>.

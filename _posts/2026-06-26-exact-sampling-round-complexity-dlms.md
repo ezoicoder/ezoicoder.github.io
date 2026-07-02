@@ -34,7 +34,7 @@ x^{(0)}=M^L.
 $$
 
 The standard, no-revision DLM follows the usual masked-decoding rule from
-Jiang, Haghtalab, and Chen \[1\]: an unmasking policy $F$ first chooses which
+Jiang, Haghtalab, and Chen [1]: an unmasking policy $F$ first chooses which
 currently masked positions to decode, and only those positions are sampled.
 Once a position is unmasked, it cannot change.
 
@@ -114,7 +114,7 @@ predictor regime, any target distribution over $\{0,1\}^n$ can be sampled in at
 most three rounds when revision is allowed. For all sufficiently large $n$, this
 is tight: some target distributions cannot be sampled exactly in two rounds.
 
-The key is the classical alias-method view of discrete sampling \[2\]. For any
+The key is the classical alias-method view of discrete sampling [2]. For any
 distribution $\alpha=(\alpha_0,\ldots,\alpha_{L-1})$ over
 $[L]=\{0,1,\ldots,L-1\}$, there is an alias table with keep probabilities
 $\tau_0,\ldots,\tau_{L-1}\in[0,1]$ and aliases
@@ -282,7 +282,7 @@ $$
 Therefore, for almost every coordinate vector $$(\mu(y))_{y\in A}\in\Delta_A$$,
 the corresponding full distribution $$\mu$$ over $$\mathcal{Y}$$ gives a
 distribution $$\mathcal{P}_\mu$$ that cannot be sampled exactly in two rounds. The
-alias-method construction above \[2\] samples every $$\mathcal{P}_\mu$$ in three
+alias-method construction above [2] samples every $$\mathcal{P}_\mu$$ in three
 rounds, so some distributions have exact round complexity equal to $3$ in this
 general unrestricted-predictor regime.
 
@@ -299,7 +299,7 @@ model the unmasking policy $F$, are implemented by polynomial-size
 constant-depth circuits. This is the regime in which we model DLM updates as
 $AC^0$ circuits: constant-precision constant-depth Transformers with
 polynomial-size embedding dimension can be simulated by $AC^0$ circuits
-\[3\].
+[3].
 
 ### A one-hot example
 
@@ -623,7 +623,7 @@ zero-probability decisions are never accepted. Unrolling the $D$ rounds and the
 parallel repetitions gives, for every constant $\eta>0$, a randomized
 polynomial-size AND/OR/NOT recognizer for $L$ of depth $O(D)$ with one-sided
 pointwise error. The regular-language lower bound is recorded separately in
-\[3\], so it implies
+[3], so it implies
 
 $$
 D=\Omega\left(\frac{\log n}{\log\log n}\right)
@@ -777,7 +777,7 @@ $Y=f_L(X)$.
 
 ### Parity as a corollary
 
-**Corollary 8 (parity separates revision from no revision).** Let
+**Corollary 8 (parity separates autoregressive, no-revision, and revision).** Let
 
 $$
 D_n^\oplus
@@ -785,9 +785,12 @@ D_n^\oplus
   \mathrm{Unif}\{x\in\{0,1\}^n:\bigoplus_{i=0}^{n-1}x_i=0\}
 $$
 
-be the uniform even-parity distribution. With revision, $D_n^\oplus$ is sampled
-in constant rounds by Proposition 5, using the special case
-$p_i(0)=p_i(1)=1/2$. Without revision, take
+be the uniform even-parity distribution.
+
+By Observation 6, $D_n^\oplus$ is not exactly sampleable in the $AC^0$
+autoregressive regime.
+
+In the no-revision $AC^0$ DLM model, take
 
 $$
 L=\{x\in\{0,1\}^*: \bigoplus_i x_i=1\}.
@@ -796,12 +799,18 @@ $$
 This is a regular language outside $AC^0$. The graph distribution
 $\mathcal{G}_{L,n}$ is exactly $D_n^\oplus$: the graph bit is $1$ precisely
 when the prefix parity is odd. Therefore Theorem 7 gives
+
 $$
 \Theta\left(\frac{\log n}{\log\log n}\right)
 $$
 
-rounds for exact no-revision sampling of parity, while revision gives constant
-rounds.
+rounds for exact no-revision sampling of parity.
+
+With revision, the same distribution is sampled in constant rounds by
+Proposition 5, using the special case $p_i(0)=p_i(1)=1/2$. Thus uniform parity is
+not exactly sampleable by $AC^0$ autoregressive predictors, needs
+$\Theta(\log n/\log\log n)$ rounds without revision, and needs only $O(1)$
+rounds with revision.
 
 ## Outlook
 
