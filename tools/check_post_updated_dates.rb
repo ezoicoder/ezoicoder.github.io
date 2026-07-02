@@ -50,7 +50,7 @@ paths =
     ARGV
   end
 
-today = Date.today
+today = Time.now.getlocal("+08:00").to_date
 bad = []
 
 paths.each do |path|
