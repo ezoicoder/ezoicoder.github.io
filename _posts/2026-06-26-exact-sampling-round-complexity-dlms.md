@@ -288,6 +288,12 @@ general unrestricted-predictor regime.
 
 ## $AC^0$ regime
 
+$AC^0$ is the class of Boolean functions computable by polynomial-size,
+constant-depth circuits with unbounded-fan-in AND and OR gates, together with
+NOT gates. It captures computations with a fixed number of highly parallel
+layers, but without a growing chain of sequential dependence. A standard
+consequence is that global functions such as parity are not in $AC^0$.
+
 From this point on, assume the relevant predictors, and in the no-revision
 model the unmasking policy $F$, are implemented by polynomial-size
 constant-depth circuits. This is the regime in which we model DLM updates as
