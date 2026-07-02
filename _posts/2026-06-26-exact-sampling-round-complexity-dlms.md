@@ -1,7 +1,7 @@
 ---
 title: "Exact sampling round complexity for diffusion language models"
 date: 2026-06-26
-updated: 2026-07-01
+updated: 2026-07-02
 slug: exact-sampling-round-complexity-dlms
 permalink: /blog/exact-sampling-round-complexity-dlms/
 tags: [diffusion language models, parallel sampling, circuit complexity]
@@ -94,6 +94,7 @@ $$
 where $e_i \in \{0,1\}^n$ is the string with a single $1$ at position $i$ and
 $0$ everywhere else.
 
+**Observation 1 (one-hot sampling without revision needs $n$ rounds).**
 The obstruction is independence inside one DLM round. Consider a history in
 which all positions written so far are $0$, and suppose that two still-masked
 positions both have positive conditional probability of eventually being the
@@ -108,7 +109,7 @@ from $U_n$ therefore needs $n$ rounds.
 
 ### Three-round tightness with revision
 
-**Theorem 1 (three-round tightness with revision).** In the unrestricted
+**Theorem 2 (three-round tightness with revision).** In the unrestricted
 predictor regime, any target distribution over $\{0,1\}^n$ can be sampled in at
 most three rounds when revision is allowed. For all sufficiently large $n$, this
 is tight: some target distributions cannot be sampled exactly in two rounds.
@@ -289,13 +290,18 @@ general unrestricted-predictor regime.
 
 From this point on, assume the relevant predictors, and in the no-revision
 model the unmasking policy $F$, are implemented by polynomial-size
-constant-depth circuits.
+constant-depth circuits. This is the regime in which we model DLM updates as
+$AC^0$ circuits: constant-precision constant-depth Transformers with
+polynomial-size embedding dimension can be simulated by $AC^0$ circuits
+\[3\].
 
 ### A one-hot example
 
 Now consider the one-hot distribution $U_n$ in a circuit-restricted setting.
 Assume $n=2^t$.
 
+**Observation 3 (one-hot sampling separates revision from no revision in
+$AC^0$).**
 Without revision, the same no-revision argument still gives the $n$-round
 obstruction. There is also a separate exact-representation issue: the natural
 one-position-at-a-time sampler would need transition probabilities such as
@@ -333,7 +339,7 @@ this $AC^0$ setting.
 
 ### Accelerating autoregressive sampling
 
-**Proposition 2 (with-revision simulation of autoregressive sampling).** An
+**Proposition 4 (accelerating autoregressive sampling with revision).** An
 autoregressive sampler whose predictor is implemented by $AC^0$ circuits can be
 simulated by a DLM with revision in $O(n/\log n)$ rounds.
 
@@ -420,7 +426,7 @@ rounds is $O(n/\log n)$.
 
 ### Dyadic product distributions with a parity check
 
-**Proposition 3 (dyadic product distributions with one parity check).** Fix a
+**Proposition 5 (dyadic product distributions with one parity check).** Fix a
 constant $\kappa$, and consider distributions of the form
 
 $$
@@ -533,7 +539,15 @@ $$
   \mathrm{Unif}\{(x,f_L(x)):x\in\{0,1\}^{n-1}\}.
 $$
 
-**Theorem 4 (no-revision graph distributions for regular languages).** In the
+**Observation 6 (autoregressive recognition of regular-language graphs).**
+For a string $x_0\cdots x_{n-2}x_{n-1}$ sampled from $\mathcal{G}_{L,n}$, the
+last coordinate must be sampled after the prefix $x_0\cdots x_{n-2}$ is known.
+Thus, in an $AC^0$ autoregressive regime, the final predictor can realize this
+graph distribution exactly only by recognizing whether
+$x_0\cdots x_{n-2}\in L$. This is recognizable exactly when
+$L\in AC^0$.
+
+**Theorem 7 (no-revision graph distributions for regular languages).** In the
 no-revision $AC^0$ DLM model, exact sampling from $\mathcal{G}_{L,n}$ has the
 same round scale as the circuit depth needed to recognize $L$:
 
@@ -757,7 +771,7 @@ $Y=f_L(X)$.
 
 ### Parity as a corollary
 
-**Corollary 5 (parity separates revision from no revision).** Let
+**Corollary 8 (parity separates revision from no revision).** Let
 
 $$
 D_n^\oplus
@@ -766,7 +780,7 @@ D_n^\oplus
 $$
 
 be the uniform even-parity distribution. With revision, $D_n^\oplus$ is sampled
-in constant rounds by Proposition 3, using the special case
+in constant rounds by Proposition 5, using the special case
 $p_i(0)=p_i(1)=1/2$. Without revision, take
 
 $$
@@ -775,7 +789,7 @@ $$
 
 This is a regular language outside $AC^0$. The graph distribution
 $\mathcal{G}_{L,n}$ is exactly $D_n^\oplus$: the graph bit is $1$ precisely
-when the prefix parity is odd. Therefore Theorem 4 gives
+when the prefix parity is odd. Therefore Theorem 7 gives
 $$
 \Theta\left(\frac{\log n}{\log\log n}\right)
 $$
@@ -798,5 +812,9 @@ Provably Optimal Parallel Samplers*. ICLR 2026. https://openreview.net/forum?id=
 Variables with General Distributions*. ACM Transactions on Mathematical
 Software, 1977.
 
-[3] Jiarui Zhang. [*Near-perfect average-case MOD_q requires log n / log log n
+[3] Zhiyuan Li, Hong Liu, Denny Zhou, and Tengyu Ma. *Chain of Thought Empowers
+Transformers to Solve Inherently Serial Problems*. The Twelfth International
+Conference on Learning Representations, 2024. https://openreview.net/forum?id=3EWTEy9MTM
+
+[4] Jiarui Zhang. [*Near-perfect average-case MOD_q requires log n / log log n
 AC^0 circuit depth*]({{ '/blog/near-perfect-mod-q-ac-depth/' | relative_url }}). July 1, 2026.
