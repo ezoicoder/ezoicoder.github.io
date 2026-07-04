@@ -1,7 +1,7 @@
 ---
 title: "Exact sampling round complexity for diffusion language models"
 date: 2026-06-26
-updated: 2026-07-02
+updated: 2026-07-04
 slug: exact-sampling-round-complexity-dlms
 permalink: /blog/exact-sampling-round-complexity-dlms/
 tags: [diffusion language models, parallel sampling, circuit complexity]
@@ -77,8 +77,7 @@ constant-depth circuits.
 ## General predictors
 
 In this section, the predictor has unrestricted computational power. The point
-is only to understand the information flow caused by masking, unmasking, and
-revision.
+is only to understand the information flow caused by revision.
 
 ### The one-hot distribution without revision
 
@@ -96,28 +95,29 @@ $0$ everywhere else.
 
 **Observation 1 (one-hot sampling without revision needs $n$ rounds).**
 The obstruction is independence inside one DLM round. Consider a history in
-which all positions written so far are $0$, and suppose that two still-masked
+which all positions written so far are $0$, hence two still-masked
 positions both have positive conditional probability of eventually being the
 unique $1$. If the DLM writes both positions in the same round, then the two
 written values are sampled independently. Therefore there is positive
 probability that both positions become $1$, which is outside the support of
 $U_n$.
 
-Thus a no-revision sampler can resolve at most one remaining candidate for the
-unique $1$ in each round. Starting from $n$ possible locations, exact sampling
-from $U_n$ therefore needs $n$ rounds.
+Thus, along the branch where each tested candidate is written as $0$, a
+no-revision sampler can eliminate at most one remaining location per round. In
+the worst case it reaches the unique $1$ only in the last round, so sampling
+from $U_n$ without revision needs $n$ rounds.
 
 ### Three-round tightness with revision
 
 **Theorem 2 (three-round tightness with revision).** In the unrestricted
 predictor regime, any target distribution over $\{0,1\}^n$ can be sampled in at
 most three rounds when revision is allowed. For all sufficiently large $n$, this
-is tight: some target distributions cannot be sampled exactly in two rounds.
+is tight: some target distributions cannot be sampled in two rounds.
 
-The key is the classical alias-method view of discrete sampling [2]. For any
-distribution $\alpha=(\alpha_0,\ldots,\alpha_{L-1})$ over
-$[L]=\{0,1,\ldots,L-1\}$, there is an alias table with keep probabilities
-$\tau_0,\ldots,\tau_{L-1}\in[0,1]$ and aliases
+A classical discrete-sampling fact [2] is enough. For any distribution
+$\alpha=(\alpha_0,\ldots,\alpha_{L-1})$ over
+$[L]=\{0,1,\ldots,L-1\}$, there are two sequences
+$\tau_0,\ldots,\tau_{L-1}\in[0,1]$ and
 $q_0,\ldots,q_{L-1}\in[L]$ such that the following experiment outputs
 $Y\sim\alpha$:
 
@@ -132,8 +132,7 @@ $$
   (1-\tau_i)\mathbf{1}[y=q_i].
 $$
 
-Equivalently, one first chooses a uniform bucket and then uses one biased coin
-to decide whether to keep the bucket index or jump to its alias.
+With these two sequences, the output has distribution $$\alpha$$.
 
 Now let $\mathcal{T}$ be an arbitrary target distribution over $\{0,1\}^n$.
 For a prefix $a\in\{0,1\}^{n-1}$, define its target marginal
@@ -142,8 +141,8 @@ $$
 \mu(a)=\sum_{z\in\{0,1\}}\mathcal{T}(a,z).
 $$
 
-Apply the alias method to $\mu$, with $L=2^{n-1}$. This gives a keep probability
-$\tau_a$ and an alias prefix $q_a$ for every prefix $a$.
+Apply this fact to $\mu$, with $L=2^{n-1}$. This gives a probability
+$\tau_a$ and a second prefix $q_a$ for every prefix $a$.
 
 The three-round sampler is:
 
@@ -162,9 +161,9 @@ $$
 Z \sim \mathcal{T}(x_{n-1}=\cdot \mid x_{<n-1}=B).
 $$
 
-By the alias table, the prefix $B$ has marginal distribution $\mu$. The final
-token $Z$ is then sampled from the correct conditional distribution under
-$\mathcal{T}$. Therefore the final output $(B,Z)$ is exactly distributed as
+By the two-sequence construction, the prefix $B$ has marginal distribution
+$\mu$. The final token $Z$ is then sampled from the correct conditional
+distribution under $\mathcal{T}$. Therefore the final output $(B,Z)$ has law
 $\mathcal{T}$.
 
 It remains to show that two rounds do not always suffice. We prove this by a
@@ -188,20 +187,26 @@ $$
 Thus $\mathcal{P}_\mu$ is supported on the graph of the parity function, and
 the free parameter is the distribution $\mu$ over the $2^{n-1}$ graph states.
 
-Now consider any two-round sampler with revision. To make the lower bound only
-stronger, allow the first round to sample each position independently from
-$\{0,1,M\}$. Hence the first-round state $S$ lies in $\{0,1,M\}^n$, and its
-product distribution is described by $3n$ probability parameters, with one
-normalization constraint per position.
+Now consider any two-round sampler with revision. Let
+$\theta_i=(\theta_{i,0},\theta_{i,1},\theta_{i,M})$ be the first-round
+distribution at position $i$, and let
+$\theta=(\theta_i)_{i=0}^{n-1}$. The first round is described by at most $3n$
+probability parameters, one triple for each position's probabilities on
+$0,1,M$, and induces the product distribution
+
+$$
+\Pr_\theta[S=s]
+  =
+  \prod_{i=0}^{n-1}\theta_{i,s_i}.
+$$
 
 Conditioned on a first-round state $S=s$, the second round again samples the
-final positions independently. If the output distribution is exactly
-$\mathcal{P}_\mu$, then every such conditional product distribution must be
-supported on the parity graph. But a product distribution supported on a parity
-graph is a point mass: if any coordinate has both values with positive
-probability, flipping that coordinate leaves the parity graph. Therefore the
-second round is deterministic on every first-round state with positive
-probability.
+final positions independently. If the final law is $\mathcal{P}_\mu$, every
+conditional product law that occurs with positive probability must be supported
+on the parity graph. But a product distribution supported on a parity graph is a
+point mass: if any coordinate has both values with positive probability,
+flipping that coordinate leaves the graph. Therefore the second round is
+deterministic on every first-round state with positive probability.
 
 So a two-round sampler induces a deterministic map
 
@@ -218,20 +223,9 @@ $$
 
 possible maps $g$.
 
-Fix such a map $g$. Let $\theta_i=(\theta_{i,0},\theta_{i,1},\theta_{i,M})$ be
-the first-round distribution at position $i$, and let
-$\theta=(\theta_i)_{i=0}^{n-1}$. This gives a product distribution over
-$S\in\{0,1,M\}^n$:
-
-$$
-\Pr_\theta[S=s]
-  =
-  \prod_{i=0}^{n-1}\theta_{i,s_i}.
-$$
-
-To view the output distribution as a point in Euclidean space, choose one
-reference state $y_\star\in\mathcal{Y}$ and keep only the other
-$2^{n-1}-1$ state coordinates:
+Fix such a map $g$, and choose one reference state
+$y_\star\in\mathcal{Y}$ so that the output distribution can be viewed through
+the other $2^{n-1}-1$ state coordinates:
 
 $$
 A=\mathcal{Y}\setminus\{y_\star\}.
@@ -279,12 +273,17 @@ $$
 =0.
 $$
 
-Therefore, for almost every coordinate vector $$(\mu(y))_{y\in A}\in\Delta_A$$,
-the corresponding full distribution $$\mu$$ over $$\mathcal{Y}$$ gives a
-distribution $$\mathcal{P}_\mu$$ that cannot be sampled exactly in two rounds. The
-alias-method construction above [2] samples every $$\mathcal{P}_\mu$$ in three
-rounds, so some distributions have exact round complexity equal to $3$ in this
-general unrestricted-predictor regime.
+On the other hand,
+
+$$
+\operatorname{Vol}(\Delta_A)>0.
+$$
+
+Choose $$(\mu(y))_{y\in A}$$ outside the union
+$$\bigcup_g\Phi_g(\Theta)$$. The corresponding $$\mathcal{P}_\mu$$ cannot be
+sampled in two rounds. The construction above samples every $$\mathcal{P}_\mu$$
+in three rounds, so the tight round complexity is $3$ in this general
+unrestricted-predictor regime.
 
 ## $AC^0$ regime
 
@@ -300,6 +299,12 @@ constant-depth circuits. This is the regime in which we model DLM updates as
 $AC^0$ circuits: constant-precision constant-depth Transformers with
 polynomial-size embedding dimension can be simulated by $AC^0$ circuits
 [3].
+
+This implication is one-way in the form used here. Showing that an update rule
+is computable in $AC^0$ does not by itself give a concrete Transformer
+implementation of that rule. Unless a specific Transformer simulation is given,
+the upper bounds below should be read as circuit-level DLM constructions, not
+as realized constant-depth Transformer architectures.
 
 ### A one-hot example
 
@@ -342,6 +347,8 @@ The comparison $j=I$ is an AND of $t=\log n$ literals for each fixed $j$, so all
 $n$ comparisons are computable by polynomial-size constant-depth circuits. Thus
 with workspace-style revision, exact sampling from $U_n$ takes two rounds in
 this $AC^0$ setting.
+
+>TODO: A specific transformer construction is required
 
 ### Accelerating autoregressive sampling
 
@@ -430,6 +437,8 @@ rounds, and the remaining $\sqrt n$ coordinates can be sampled one by one,
 which adds only $O(\sqrt n)=o(n/\log n)$ rounds. Hence the total number of
 rounds is $O(n/\log n)$.
 
+>TODO: A specific transformer construction is required
+
 ### Dyadic product distributions with a parity check
 
 **Proposition 5 (dyadic product distributions with one parity check).** Fix a
@@ -495,13 +504,13 @@ $$
 $$
 
 Together with $\mathrm{NOT}$, these operations generate any dyadic Bernoulli
-distribution with denominator $2^\kappa$ in $O(\kappa)$ phases, which is $O(1)$
-here. The schedule for each coordinate is fixed in advance from the binary
-expansion of $a_i$. We also refine the schedule so that a single phase never mixes
-$\mathrm{NOT}$ and $\mathrm{IF}$ operations: in each phase, every coordinate is
-either idle, or the active coordinates all perform $\mathrm{NOT}$, or the active
-coordinates all perform $\mathrm{IF}$. This only changes the number of phases by
-a constant factor.
+distribution with denominator $2^\kappa$ in $O(\kappa)$ phases; here
+$\kappa=O(1)$. The schedule for each coordinate is fixed in advance from the
+binary expansion of $a_i$. We also refine the schedule so that a single phase
+never mixes $\mathrm{NOT}$ and $\mathrm{IF}$ operations: in each phase, every
+coordinate is either idle, or the active coordinates all perform
+$\mathrm{NOT}$, or the active coordinates all perform $\mathrm{IF}$. This only
+changes the number of phases by a constant factor.
 
 The last coordinate $x_{n-1}$ is used as the parity coordinate. The phase
 separation lets us update it by cases.
@@ -532,6 +541,7 @@ desired independent dyadic marginals, and the last coordinate is their xor.
 Thus the whole sampler uses $O(\kappa)$ rounds, and in particular $O(1)$ rounds
 when $\kappa=O(1)$.
 
+>TODO: A specific transformer construction is required
 
 ### Regular-language graph distributions
 
@@ -552,6 +562,8 @@ Thus, in an $$AC^0$$ autoregressive regime, the final predictor can realize this
 graph distribution exactly only by recognizing whether
 $$x_0\cdots x_{n-2}\in L$$. This is recognizable exactly when
 $$L\in AC^0$$.
+
+>TODO: A specific transformer construction is required, what if this $AC^0$ circuit can't be simulated by a transformer
 
 **Theorem 7 (no-revision graph distributions for regular languages).** In the
 no-revision $AC^0$ DLM model, exact sampling from $\mathcal{G}_{L,n}$ has the
@@ -575,6 +587,8 @@ First consider the easy case. If $f_L$ is computable by constant-depth $AC^0$
 circuits, the sampler first samples the first $n-1$ coordinates as independent
 fair bits. In the next round, the predictor computes $f_L(x)$ and unmasks the
 last coordinate. This gives an $O(1)$-round no-revision sampler.
+
+>TODO: A specific transformer construction is required, what if this $AC^0$ circuit can't be simulated by a transformer
 
 For the lower bound, suppose there is a $D$-round no-revision sampler for
 $\mathcal{G}_{L,n}$. The target distribution has exact graph support:
@@ -631,9 +645,12 @@ $$
 
 whenever $L$ is not in $AC^0$.
 
-For the matching upper bound, use the standard finite-monoid product tree for
-regular languages. Fix a finite monoid $M_L$, a morphism
+![Marker profiles for the regular-language upper-bound construction]({{ '/assets/blog/regular-language-segments.png' | relative_url }})
 
+For the matching upper bound, use the standard finite-monoid product tree for
+regular languages. Lay the tree out in depth-first index order, so that each
+subtree occupies a contiguous coordinate interval, including the internal
+positions assigned to its root. Fix a finite monoid $M_L$, a morphism
 $$
 \rho:\{0,1\}^*\to M_L,
 $$
@@ -654,8 +671,9 @@ $$
 and take a branching factor $B=\Theta(\log n)$. The sampler uses a
 $B$-ary product tree over the first $n-1$ output coordinates. A marker slot is
 not an extra alphabet symbol: it is a constant-size block of ordinary output
-coordinates whose mask pattern carries a monoid value while the still-masked
-coordinate remains an unsampled fair bit.
+coordinates whose mask pattern carries a monoid value. In the convention used
+below, exactly one coordinate in the slot is masked, and the index of that
+masked coordinate encodes the value.
 
 At an ordinary node $P$, write its direct-child subtrees in string order as
 
@@ -685,15 +703,15 @@ $$
 q^{(i)}_j=\mathtt M,\qquad q^{(i)}_{\ell\ne j}\ne\mathtt M.
 $$
 
-All unmasked positions in the slot are sampled as independent fair bits, so the
-mask profile carries the state and the visible bits remain uniformly random.
-After the coordinate $C_i$ is sampled, the predictor can compute
+When this child slot is consumed, the slot's still-masked coordinate is also
+unmasked and sampled as a fair bit. After the coordinate $C_i$ is sampled, the
+predictor can compute
 
 $$
 \rho(S_i)=\rho(C_i)\rho(R_i).
 $$
 
-The value passed from $P$ to its parent is then
+The value passed from $P$ to $\mathrm{parent}(P)$ is then
 
 $$
 A_P=\prod_{i=1}^{B}\rho(S_i).
@@ -704,11 +722,15 @@ the slot of $\mathrm{parent}(P)$ reserved for child $P$ the next round creates
 the mask pattern
 
 $$
-q^P_j=\mathtt M,\qquad q^P_{\ell\ne j}\ne\mathtt M,
+q^{\mathrm{parent}(P)}_j=\mathtt M,\qquad
+q^{\mathrm{parent}(P)}_{\ell\ne j}\ne\mathtt M,
 $$
 
-again sampling every newly unmasked $q^P_{\ell\ne j}$ as a fair bit. Since
-$K$ is constant and $B=\Theta(\log n)$, the map
+sampling every newly unmasked
+$q^{\mathrm{parent}(P)}_{\ell\ne j}$ as a fair bit. At the same time, the
+consumed marker positions inside $P$ are also unmasked, including the unique
+previously masked coordinate in each consumed child slot. Since $K$ is constant
+and $B=\Theta(\log n)$, the map
 
 $$
 \bigl(\rho(S_1),\ldots,\rho(S_B)\bigr)\mapsto A_P
@@ -721,11 +743,8 @@ $$
 O(\log_B n)=O\left(\frac{\log n}{\log\log n}\right).
 $$
 
-![Marker profiles for the regular-language upper-bound construction]({{ '/assets/blog/regular-language-segments.png' | relative_url }})
-
 At the top, add the special node $\mathrm{root}^{\prime}$. Unlike an ordinary
-node, $\mathrm{root}^{\prime}$ has
-only one marker slot
+node, $\mathrm{root}^{\prime}$ has only one marker slot
 
 $$
 q^{\prime}_1,\ldots,q^{\prime}_K.
@@ -775,6 +794,8 @@ after observing $Y=b$. Thus every prefix coordinate, including the marker
 coordinate resolved at the end, is uniform, and the final coordinate is exactly
 $Y=f_L(X)$.
 
+>TODO: A specific transformer construction is required
+
 ### Parity as a corollary
 
 **Corollary 8 (parity separates autoregressive, no-revision, and revision).** Let
@@ -812,11 +833,15 @@ not exactly sampleable by $AC^0$ autoregressive predictors, needs
 $\Theta(\log n/\log\log n)$ rounds without revision, and needs only $O(1)$
 rounds with revision.
 
+>TODO: A specific transformer construction is required
+
 ## Outlook
 
 The constructions above keep the sequence length fixed and do not add extra
 CoT-style scratch positions. Understanding how additional intermediate states
-affect the right round-complexity model is a separate question.
+affect the right round-complexity model is a separate question. Turning the
+circuit-level $AC^0$ upper bounds into architecture-specific Transformer
+constructions is another separate question.
 
 ## References
 
