@@ -660,7 +660,7 @@ $$
 
 whenever $L$ is not in $AC^0$.
 
-![Marker profiles for the regular-language upper-bound construction]({{ '/assets/blog/regular-language-segments.png' | relative_url }})
+![Marker profiles for the regular-language upper-bound construction](../assets/blog/regular-language-segments.png)
 
 For the matching upper bound, use the standard finite-monoid product tree for
 regular languages. Lay the tree out in depth-first index order, so that each
