@@ -300,6 +300,10 @@ $AC^0$ circuits: constant-precision constant-depth Transformers with
 polynomial-size embedding dimension can be simulated by $AC^0$ circuits
 [3].
 
+For sampling statements in this regime, a randomized predictor circuit
+uses at most polynomially many independent fair random bits. Consequently,
+every local output probability is dyadic.
+
 This implication is one-way in the form used here. Showing that an update rule
 is computable in $AC^0$ does not by itself give a concrete Transformer
 implementation of that rule. Unless a specific Transformer simulation is given,
@@ -543,55 +547,50 @@ when $\kappa=O(1)$.
 
 >TODO: A specific transformer construction is required
 
-### Regular-language graph distributions
+### Regular-language input-output pair distributions
 
 Let $L\subseteq\{0,1\}^*$ be a regular language, and let
-$f_L(x)=\mathbf{1}[x\in L]$. For inputs $x\in\{0,1\}^{n-1}$, consider the graph
-distribution
+$f_L(x)=\mathbf{1}[x\in L]$. For inputs $x\in\{0,1\}^{n-1}$, consider the
+uniform input-output pair distribution
 
 $$
-\mathcal{G}_{L,n}
+\mathcal{D}^{\mathrm{pair}}_{L,n}
   =
   \mathrm{Unif}\{(x,f_L(x)):x\in\{0,1\}^{n-1}\}.
 $$
 
-**Observation 6 (autoregressive recognition of regular-language graphs).**
-For a string $x_0\cdots x_{n-2}x_{n-1}$ sampled from $\mathcal{G}_{L,n}$, the
-last coordinate must be sampled after the prefix $x_0\cdots x_{n-2}$ is known.
-Thus, in an $AC^0$ autoregressive regime, the final predictor can realize this
-graph distribution exactly only by recognizing whether
+**Observation 6 (autoregressive sampling of regular-language input-output
+pairs).** For a string $x_0\cdots x_{n-2}x_{n-1}$ sampled from
+$\mathcal{D}^{\mathrm{pair}}_{L,n}$, the last coordinate must be sampled after
+the prefix $x_0\cdots x_{n-2}$ is known. Thus, in an $AC^0$ autoregressive
+regime, the final predictor can realize this input-output pair distribution
+exactly only by recognizing whether
 $x_0\cdots x_{n-2}\in L$. This is recognizable exactly when
 $L\in AC^0$.
 
 >TODO: A specific transformer construction is required, what if this $AC^0$ circuit can't be simulated by a transformer
 
-**Theorem 7 (no-revision graph distributions for regular languages).** In the
-no-revision $AC^0$ DLM model, exact sampling from $\mathcal{G}_{L,n}$ has the
-same round scale as the circuit depth needed to recognize $L$:
+**Theorem 7 (no-revision input-output pairs for regular languages).** For
+regular languages outside $AC^0$, exact sampling from
+$\mathcal{D}^{\mathrm{pair}}_{L,n}$ in the no-revision $AC^0$ DLM model
+matches the circuit-depth scale needed to recognize $L$:
 
-1. if $f_L$ is computable by constant-depth circuits, then
-   $\mathcal{G}_{L,n}$ has an $O(1)$-round no-revision sampler;
-2. if $L$ is a regular language outside $AC^0$, then every exact no-revision
+1. if $L$ is a regular language outside $AC^0$, then every exact no-revision
    sampler needs $\Omega(\log n/\log\log n)$ rounds;
-3. every regular language has an
+2. every regular language has an
    $O(\log n/\log\log n)$-round no-revision sampler.
 
-Consequently, for regular languages outside $AC^0$, the exact no-revision round
-complexity of $\mathcal{G}_{L,n}$ is
+Consequently, for regular languages outside $AC^0$ (e.g., parity), the exact
+no-revision round complexity of
+$\mathcal{D}^{\mathrm{pair}}_{L,n}$ is
 
 $$
 \Theta\left(\frac{\log n}{\log\log n}\right).
 $$
 
-First consider the easy case. If $f_L$ is computable by constant-depth $AC^0$
-circuits, the sampler first samples the first $n-1$ coordinates as independent
-fair bits. In the next round, the predictor computes $f_L(x)$ and unmasks the
-last coordinate. This gives an $O(1)$-round no-revision sampler.
-
->TODO: A specific transformer construction is required, what if this $AC^0$ circuit can't be simulated by a transformer
-
 For the lower bound, suppose there is a $D$-round no-revision sampler for
-$\mathcal{G}_{L,n}$. The target distribution has exact graph support:
+$\mathcal{D}^{\mathrm{pair}}_{L,n}$. Its support contains exactly one output
+pair for each input:
 
 $$
 \Pr[(X,Y)=(x,b)]
@@ -601,6 +600,22 @@ $$
   0, & b\ne f_L(x).
   \end{cases}
 $$
+
+The dyadic-probability convention above now gives a useful rigidity property.
+Because the unmasking policy is deterministic and revision is forbidden, a
+complete output determines a unique sequence of visible states. The probability
+of every positive complete trace is therefore exactly $2^{-(n-1)}$ and is the
+product of its positive local branch probabilities. Each factor is dyadic.
+Writing all factors in lowest terms, the fact that their product has numerator
+one implies that every factor must itself have the form $2^{-a}$ for some
+integer $a\ge 0$.
+
+Now consider a reachable binary local choice. If both outcomes have positive
+probability, completing each branch to a positive output shows that
+$p=2^{-a}$ and $1-p=2^{-b}$ for integers $a,b\ge 1$. The identity
+$2^{-a}+2^{-b}=1$ forces $a=b=1$. Thus every reachable local binary
+distribution is $(1,0)$, $(0,1)$, or $(1/2,1/2)$. In particular, every
+positive local branch has probability at least $1/2$.
 
 Therefore the candidate output $(x,1)$ has positive probability exactly when
 $x\in L$. We can test this support event by tracing the sampler along the
@@ -624,8 +639,8 @@ for t = 1,...,D:
 accept
 ```
 
-The exact graph distribution forces every positive local branch on such a trace
-to carry probability bounded below by a constant. Thus, if the trace makes
+The rigidity argument above shows that every positive local branch on such a
+trace has probability at least $1/2$. Thus, if the trace makes
 $N=\mathrm{poly}(n)$ local queries, taking
 
 $$
@@ -637,7 +652,7 @@ zero-probability decisions are never accepted. Unrolling the $D$ rounds and the
 parallel repetitions gives, for every constant $\eta>0$, a randomized
 polynomial-size AND/OR/NOT recognizer for $L$ of depth $O(D)$ with one-sided
 pointwise error. The regular-language lower bound is recorded separately in
-[3], so it implies
+[4], so it implies
 
 $$
 D=\Omega\left(\frac{\log n}{\log\log n}\right)
@@ -818,9 +833,9 @@ $$
 L=\{x\in\{0,1\}^*: \bigoplus_i x_i=1\}.
 $$
 
-This is a regular language outside $AC^0$. The graph distribution
-$\mathcal{G}_{L,n}$ is exactly $D_n^\oplus$: the graph bit is $1$ precisely
-when the prefix parity is odd. Therefore Theorem 7 gives
+This is a regular language outside $AC^0$. The input-output pair distribution
+$\mathcal{D}^{\mathrm{pair}}_{L,n}$ is exactly $D_n^\oplus$: the output bit
+is $1$ precisely when the prefix parity is odd. Therefore Theorem 7 gives
 
 $$
 \Theta\left(\frac{\log n}{\log\log n}\right)

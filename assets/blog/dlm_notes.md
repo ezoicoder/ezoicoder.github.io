@@ -11,3 +11,34 @@
 5. AC0 是否符合真实 DLM: 用 AC0 或 constant-depth circuit 来抽象每一轮 DLM predictor，是为了把“每一轮内部计算”和“跨轮 sequential computation”分开，从而研究 round complexity。但真实 Transformer 层数、attention 精度、位置编码、softmax 和数值计算都不完全等同于 AC0。这里的 AC0 更像一个保守的理论代理模型：它帮助证明在很弱的每轮计算能力下，DLM 仍有并行采样优势，但不能直接当作真实 DLM 架构的完整刻画。
 
 6. Optimal 的含义: “Optimal” 应该限定在论文的理论模型里，即给定目标分布可由深度为 d、宽度为 w 的 parallel circuit 采样，DLM 可以用 d 个 decoding rounds 达到相同分布；加入 remasking 或 revision 后，还可以匹配相应的 space/width 需求。它不是无条件地说 DLM 在所有实际指标上最优，也不是说 token throughput、FLOPs、显存占用或工程延迟都最优。
+
+
+## Related Work
+
+1. Jiang, Haghtalab, Chen, “Diffusion Language Models are Provably Optimal Parallel Samplers,” 2025 / ICLR 2026
+
+2. Svete, Sabharwal, “On the Reasoning Abilities of Masked Diffusion Language Models,” 2025
+
+3. Feng et al., “Theoretical Benefit and Limitation of Diffusion Language Model,” 2025
+
+4. Kang et al., “ParallelBench: Understanding the Trade-offs of Parallel Decoding in Diffusion LLMs,” 2025, revised 2026 / ICLR 2026
+
+5. London, Kanade, “Pause Tokens Strictly Increase the Expressivity of Constant-Depth Transformers,” 2025 / NeurIPS 2025
+
+6. The Exact Expressive Power of Fixed-Precision Looped Padded Transformers Anej Svete
+
+7. Li, Liu, Zhou, Ma, “Chain of Thought Empowers Transformers to Solve Inherently Serial Problems,” ICLR 2024
+
+8. Merrill, Sabharwal, “A Logic for Expressing Log-Precision Transformers,” NeurIPS 2023
+
+9. Constrained Decoding for Diffusion Language Models via Efficient Inference over Finite Automata
+
+10. Zoabi et al., “Mean-Field Parallel Decoding for Discrete Diffusion Language Models,” 2026-06-14
+
+11. Svete et al., “Revisiting Padded Transformer Expressivity,” 2026-05-28
+
+12. Kraus et al., “Barriers to Universal Reasoning With Transformers,” 2026-04-28
+
+13. Kim et al., “Dependency-Aware Parallel Decoding via Attention for Diffusion LLMs,” 2026-03-13
+
+padding/cot 提供 workspace ?
