@@ -1,4 +1,4 @@
-# Progress Report: Exact Sampling of Regular Languages with DLMs
+# Progress Report: Sampling Regular Languages with DLMs
 
 ## Background and Motivation
 
@@ -10,8 +10,9 @@ learning systems. My webpage is https://ezoicoder.github.io/.
 Jiang, Haghtalab, and Chen [1] study DLM generation through circuit complexity:
 a DLM with sufficient chain-of-thought space can simulate a depth-$d$ sampling
 circuit in $d$ rounds, while revision allows workspace to be reused. I focus on
-a more restrictive question: **exact sampling with no revision and no extra
-padding/workspace positions**.
+a more restrictive question: **sampling with no revision and no extra
+padding/workspace positions**, where the output distribution must equal the
+target distribution.
 
 ## Related Work
 
@@ -98,7 +99,8 @@ $$
 $$
 
 These are recognition results: the model only has to return one membership
-bit, rather than generate an exact joint distribution.
+bit, rather than generate the full joint distribution with the required
+probabilities.
 
 ### DLMs with and without revision
 
@@ -179,19 +181,19 @@ $$
 
 The $O(N)$ extra positions form a revisable discrete workspace.
 
-## Our Exact-Sampling Problem
+## Our Sampling Problem
 
 For a regular language $L\subseteq\{0,1\}^*$, let
 $f_L(x)=\mathbf{1}[x\in L]$ and define
 
 $$
-\mathcal{G}_{L,N}
+\mathcal{D}^{\mathrm{pair}}_{L,N}
 =
 \operatorname{Unif}
 \{(x,f_L(x)):x\in\{0,1\}^{N-1}\}.
 $$
 
-The task is to sample exactly from $\mathcal{G}_{L,N}$ using
+The task is to sample from $\mathcal{D}^{\mathrm{pair}}_{L,N}$ using
 $\text{L-uniform }\operatorname{DLM}[p,d,0,T]$: there is no revision and no
 separate padding or CoT workspace. The partially generated ordered output and
 its mask pattern are the only persistent state.
@@ -208,17 +210,17 @@ Suppose that, for a regular language $L\notin AC^0$, a no-revision sampler
 satisfies
 
 $$
-\mathcal{G}_{L,N}
+\mathcal{D}^{\mathrm{pair}}_{L,N}
 \in
 \operatorname{DLM}
 [\Theta(1),\operatorname{poly}(N),0,T].
 $$
 
-Exact graph support lets us recognize whether $x\in L$ by testing whether
-$(x,1)$ has positive output probability. Composing the randomized-$AC^0$
-updates across $T$ rounds gives a depth-$O(T)$ recognizer for $L$. The known
-depth lower bound for suitable regular languages outside $AC^0$, such as
-parity, therefore requires
+The zero-probability support condition of this input-output-pair distribution
+lets us recognize whether $x\in L$ by testing whether $(x,1)$ has positive
+output probability. Composing the randomized-$AC^0$ updates across $T$ rounds
+gives a depth-$O(T)$ recognizer for $L$. The known depth lower bound for
+suitable regular languages outside $AC^0$, such as parity, therefore requires
 
 $$
 T=\Omega\!\left(\frac{\log N}{\log\log N}\right).
@@ -229,7 +231,7 @@ The available constructions differ by width:
 1. **Logarithmic width.** A binary finite-monoid product tree gives
 
    $$
-   \mathcal{G}_{L,N}
+   \mathcal{D}^{\mathrm{pair}}_{L,N}
    \in
    \text{L-uniform }\operatorname{DLM}
    [\Theta(1),O(\log N),0,O(\log N)].
@@ -240,7 +242,7 @@ The available constructions differ by width:
    giving
 
    $$
-   \mathcal{G}_{L,N}
+   \mathcal{D}^{\mathrm{pair}}_{L,N}
    \in
    \text{L-uniform }\operatorname{DLM}
    \left[
@@ -269,8 +271,8 @@ workspace, whereas DLMs pass a discrete token sequence.
 | Regular-language recognition [2] | $\text{L-uniform }\operatorname{LPT}[\Theta(1),O(\log N),0,O(\log N)]$ | Yes | $O(N\log N)$ | $O(N\log N)$ unordered | $O(\log N)$ |
 | Regular-language recognition [2] | $\text{fully uniform }\operatorname{LPT}[O(\log N),\Theta(1),0,O(\log N)]$ | Yes | $O(N\log N)$ | $O(N\log N)$ unordered | $O(\log N)$ |
 | Regular-language recognition [3] | $\text{L-uniform }\operatorname{DLM}_{R}^{\mathrm{det}}[\Theta(1),O(\log N),O(N),O(\log N)]$ | Yes | $O(N\log N)$ | $O(N)$ ordered | $O(\log N)$ |
-| Exact sampling of $\mathcal{G}_{L,N}$ | $\text{L-uniform }\operatorname{DLM}[\Theta(1),O(\log N),0,O(\log N)]$ | No | $O(N\log N)$ | $O(N)$ ordered | $O(\log N)$ |
-| Exact sampling of $\mathcal{G}_{L,N}$ | $\text{L-uniform }\operatorname{DLM}[\Theta(1),\operatorname{poly}(N),0,O(\log N/\log\log N)]$ | No | $poly(N)$  | $O(N)$ ordered | $\Theta(\log N/\log\log N)$ |
+| Sampling $\mathcal{D}^{\mathrm{pair}}_{L,N}$ | $\text{L-uniform }\operatorname{DLM}[\Theta(1),O(\log N),0,O(\log N)]$ | No | $O(N\log N)$ | $O(N)$ ordered | $O(\log N)$ |
+| Sampling $\mathcal{D}^{\mathrm{pair}}_{L,N}$ | $\text{L-uniform }\operatorname{DLM}[\Theta(1),\operatorname{poly}(N),0,O(\log N/\log\log N)]$ | No | $poly(N)$  | $O(N)$ ordered | $\Theta(\log N/\log\log N)$ |
 
 The central distinction is the state interface: LPTs overwrite dense residual
 states, $\operatorname{DLM}_{R}$ overwrites discrete workspace tokens, and

@@ -1,18 +1,20 @@
 ---
-title: "Exact sampling round complexity for diffusion language models"
+title: "Sampling round complexity for diffusion language models"
 date: 2026-06-26
 updated: 2026-07-24
-slug: exact-sampling-round-complexity-dlms
-permalink: /blog/exact-sampling-round-complexity-dlms/
+slug: sampling-round-complexity-dlms
+permalink: /blog/sampling-round-complexity-dlms/
 tags: [diffusion language models, parallel sampling, circuit complexity]
-summary: "Exact-sampling round complexity for DLMs: three-round tightness with revision and a tight log n / log log n bound in the AC^0 no-revision regime."
+summary: "Sampling round complexity for DLMs under distributional equality: three-round tightness with revision and a tight log n / log log n bound in the AC^0 no-revision regime."
 ---
 
-This note records a few exact-sampling examples for diffusion language models
-and tracks how the required number of rounds changes when revision is allowed.
-Here, remasking is included as a form of revision, since we view updates such as
-$0\to M$ as revisions. I first define the two update models, and then separate
-the computational regimes used in the examples.
+This note studies sampling round complexity for diffusion language models and
+tracks how the required number of rounds changes when revision is allowed.
+Unless an approximation guarantee is stated explicitly, sampling requires the
+output distribution to equal the target distribution. Here, remasking is
+included as a form of revision, since we view updates such as $0\to M$ as
+revisions. I first define the two update models, and then separate the
+computational regimes used in the examples.
 
 Throughout the note, a **round** means one parallel DLM update. The predictor is
 denoted by $p(\cdot \mid x)$. Target distributions are denoted by
@@ -62,11 +64,11 @@ Initialize x <- M^L
 for t = 1,...,D:
     for each i in [L] independently:
         x_i ~ p_i(. | x) over {0,1,M}
-Output x                              // for exact sampling over {0,1}^L, x has no M
+Output x                              // for sampling over {0,1}^L, x has no M
 ```
 
-For a target distribution over $\{0,1\}^L$, a valid exact sampler must output a
-fully unmasked string with probability $1$.
+For a target distribution over $\{0,1\}^L$, a valid sampler must output a fully
+unmasked string with probability $1$.
 
 The update model is independent of the computational regime. In the general
 regime, the update rules may use arbitrary computation and arbitrary real
@@ -184,8 +186,9 @@ $$
   \right].
 $$
 
-Thus $\mathcal{P}_\mu$ is supported on the graph of the parity function, and
-the free parameter is the distribution $\mu$ over the $2^{n-1}$ graph states.
+Thus $\mathcal{P}_\mu$ is supported on the input-output pairs that satisfy the
+parity relation, and the free parameter is the distribution $\mu$ over the
+$2^{n-1}$ possible prefixes.
 
 Now consider any two-round sampler with revision. Let
 $\theta_i=(\theta_{i,0},\theta_{i,1},\theta_{i,M})$ be the first-round
@@ -202,11 +205,12 @@ $$
 
 Conditioned on a first-round state $S=s$, the second round again samples the
 final positions independently. If the final law is $\mathcal{P}_\mu$, every
-conditional product law that occurs with positive probability must be supported
-on the parity graph. But a product distribution supported on a parity graph is a
-point mass: if any coordinate has both values with positive probability,
-flipping that coordinate leaves the graph. Therefore the second round is
-deterministic on every first-round state with positive probability.
+conditional product law that occurs with positive probability must be
+supported on parity-consistent input-output pairs. But any product distribution
+with this support is a point mass: if any coordinate has both values with
+positive probability, flipping that coordinate violates the parity relation.
+Therefore the second round is deterministic on every first-round state with
+positive probability.
 
 So a two-round sampler induces a deterministic map
 
@@ -214,7 +218,7 @@ $$
 g:\{0,1,M\}^n \to \{0,1\}^{n-1},
 $$
 
-where $g(s)$ is the state index $y\in\mathcal{Y}$ of the final parity-graph
+where $g(s)$ is the prefix $y\in\mathcal{Y}$ of the final parity-consistent
 output. There are at most
 
 $$
@@ -318,21 +322,23 @@ Assume $n=2^t$.
 **Observation 3 (one-hot sampling separates revision from no revision in
 $AC^0$).**
 Without revision, the same no-revision argument still gives the $n$-round
-obstruction. There is also a separate exact-representation issue: the natural
-one-position-at-a-time sampler would need transition probabilities such as
+obstruction. There is also a separate probability-representation issue: the
+natural one-position-at-a-time sampler would need transition probabilities such
+as
 
 $$
 \frac{1}{n-1}.
 $$
 
 If the $AC^0$ implementation is restricted to a finite number of fair random
-bits, then every exactly representable probability is dyadic, i.e., it has a
-finite binary expansion. But $1/(n-1)$ is not dyadic for $n=2^t$. Under this
-implementation model, the no-revision sequential construction cannot be realized
-exactly. This is a probability-representation obstruction, separate from the
-round-complexity obstruction.
+bits, then every probability representable without approximation is dyadic,
+i.e., it has a finite binary expansion. But $1/(n-1)$ is not dyadic for
+$n=2^t$. Under this implementation model, the no-revision sequential
+construction cannot realize the target distribution. This is a
+probability-representation obstruction, separate from the round-complexity
+obstruction.
 
-With revision, however, $U_n$ has a very short exact sampler.
+With revision, however, $U_n$ has a very short sampler.
 Use the first $t$ positions as temporary workspace. In the first round, sample a
 uniform index
 
@@ -349,7 +355,7 @@ $$
 
 The comparison $j=I$ is an AND of $t=\log n$ literals for each fixed $j$, so all
 $n$ comparisons are computable by polynomial-size constant-depth circuits. Thus
-with workspace-style revision, exact sampling from $U_n$ takes two rounds in
+with workspace-style revision, sampling from $U_n$ takes two rounds in
 this $AC^0$ setting.
 
 >TODO: A specific transformer construction is required
@@ -360,7 +366,7 @@ this $AC^0$ setting.
 autoregressive sampler whose predictor is implemented by $AC^0$ circuits can be
 simulated by a DLM with revision in $O(n/\log n)$ rounds.
 
-The core idea is an exact speculative-decoding simulation.
+The core idea is a distribution-preserving speculative-decoding simulation.
 
 Let the autoregressive sampler use predictor $p$, so the target distribution is
 specified by the conditionals
@@ -427,7 +433,7 @@ depth, so it is again in $AC^0$. In this commit round, $p'$ deterministically
 revises the output block to $a$ and then reuses the scratch coordinates for the
 next block.
 
-The resulting block has exactly the same distribution as the autoregressive
+The resulting block has the same distribution as the autoregressive
 chain rule: along the selected path, the bit at depth $j$ is sampled from the
 conditional distribution given the previously selected bits. The off-path
 scratch samples are irrelevant. Therefore each block costs only $O(1)$ DLM
@@ -564,24 +570,23 @@ pairs).** For a string $x_0\cdots x_{n-2}x_{n-1}$ sampled from
 $\mathcal{D}^{\mathrm{pair}}_{L,n}$, the last coordinate must be sampled after
 the prefix $x_0\cdots x_{n-2}$ is known. Thus, in an $AC^0$ autoregressive
 regime, the final predictor can realize this input-output pair distribution
-exactly only by recognizing whether
-$x_0\cdots x_{n-2}\in L$. This is recognizable exactly when
-$L\in AC^0$.
+only by recognizing whether $x_0\cdots x_{n-2}\in L$. This is possible if and
+only if $L\in AC^0$.
 
 >TODO: A specific transformer construction is required, what if this $AC^0$ circuit can't be simulated by a transformer
 
 **Theorem 7 (no-revision input-output pairs for regular languages).** For
-regular languages outside $AC^0$, exact sampling from
+regular languages outside $AC^0$, sampling from
 $\mathcal{D}^{\mathrm{pair}}_{L,n}$ in the no-revision $AC^0$ DLM model
 matches the circuit-depth scale needed to recognize $L$:
 
-1. if $L$ is a regular language outside $AC^0$, then every exact no-revision
+1. if $L$ is a regular language outside $AC^0$, then every no-revision
    sampler needs $\Omega(\log n/\log\log n)$ rounds;
 2. every regular language has an
    $O(\log n/\log\log n)$-round no-revision sampler.
 
-Consequently, for regular languages outside $AC^0$ (e.g., parity), the exact
-no-revision round complexity of
+Consequently, for regular languages outside $AC^0$ (e.g., parity), the
+no-revision sampling round complexity of
 $\mathcal{D}^{\mathrm{pair}}_{L,n}$ is
 
 $$
@@ -589,7 +594,7 @@ $$
 $$
 
 For the lower bound, suppose there is a $D$-round no-revision sampler for
-$\mathcal{D}^{\mathrm{pair}}_{L,n}$. Its support contains exactly one output
+$\mathcal{D}^{\mathrm{pair}}_{L,n}$. Its support contains one output
 pair for each input:
 
 $$
@@ -604,7 +609,7 @@ $$
 The dyadic-probability convention above now gives a useful rigidity property.
 Because the unmasking policy is deterministic and revision is forbidden, a
 complete output determines a unique sequence of visible states. The probability
-of every positive complete trace is therefore exactly $2^{-(n-1)}$ and is the
+of every positive complete trace is therefore $2^{-(n-1)}$ and is the
 product of its positive local branch probabilities. Each factor is dyadic.
 Writing all factors in lowest terms, the fact that their product has numerator
 one implies that every factor must itself have the form $2^{-a}$ for some
@@ -617,7 +622,7 @@ $2^{-a}+2^{-b}=1$ forces $a=b=1$. Thus every reachable local binary
 distribution is $(1,0)$, $(0,1)$, or $(1/2,1/2)$. In particular, every
 positive local branch has probability at least $1/2$.
 
-Therefore the candidate output $(x,1)$ has positive probability exactly when
+Therefore the candidate output $(x,1)$ has positive probability if and only if
 $x\in L$. We can test this support event by tracing the sampler along the
 candidate output. At each no-revision step, use the sampler's unmasking policy
 $F$ and predictor $p$; if a required local value has probability $0$, reject,
@@ -688,7 +693,7 @@ and take a branching factor $B=\Theta(\log n)$. The sampler uses a
 $B$-ary product tree over the first $n-1$ output coordinates. A marker slot is
 not an extra alphabet symbol: it is a constant-size block of ordinary output
 coordinates whose mask pattern carries a monoid value. In the convention used
-below, exactly one coordinate in the slot is masked, and the index of that
+below, one coordinate in the slot is masked, and the index of that
 masked coordinate encodes the value.
 
 At an ordinary node $P$, write its direct-child subtrees in string order as
@@ -775,10 +780,10 @@ A_{\mathrm{root}}=a_j
 q^{\prime}_j=\mathtt M,\qquad q^{\prime}_{\ell\ne j}\ne\mathtt M.
 $$
 
-At this point the only masks are $q^{\prime}_j$ and the final graph coordinate
+At this point the only masks are $q^{\prime}_j$ and the final output coordinate
 $Y$. The hidden bit $q^{\prime}_j$ is still an ordinary prefix coordinate and
 should be fair in the final output. The last two rounds sample $Y$ first and
-then sample this hidden bit from the exact posterior.
+then sample this hidden bit from the correct posterior.
 
 $$
 \Pr[Y=1\mid q^{\prime}_j=\mathtt M]
@@ -807,7 +812,7 @@ $$
 The factor $1/2$ in the first formula is the prior probability of the hidden
 fair bit $q^{\prime}_j=u$. The second formula is the corresponding posterior
 after observing $Y=b$. Thus every prefix coordinate, including the marker
-coordinate resolved at the end, is uniform, and the final coordinate is exactly
+coordinate resolved at the end, is uniform, and the final coordinate equals
 $Y=f_L(X)$.
 
 >TODO: A specific transformer construction is required
@@ -824,7 +829,7 @@ $$
 
 be the uniform even-parity distribution.
 
-By Observation 6, $D_n^\oplus$ is not exactly sampleable in the $AC^0$
+By Observation 6, $D_n^\oplus$ is not sampleable in the $AC^0$
 autoregressive regime.
 
 In the no-revision $AC^0$ DLM model, take
@@ -834,18 +839,18 @@ L=\{x\in\{0,1\}^*: \bigoplus_i x_i=1\}.
 $$
 
 This is a regular language outside $AC^0$. The input-output pair distribution
-$\mathcal{D}^{\mathrm{pair}}_{L,n}$ is exactly $D_n^\oplus$: the output bit
+$\mathcal{D}^{\mathrm{pair}}_{L,n}$ coincides with $D_n^\oplus$: the output bit
 is $1$ precisely when the prefix parity is odd. Therefore Theorem 7 gives
 
 $$
 \Theta\left(\frac{\log n}{\log\log n}\right)
 $$
 
-rounds for exact no-revision sampling of parity.
+rounds for no-revision sampling of parity.
 
 With revision, the same distribution is sampled in constant rounds by
 Proposition 5, using the special case $p_i(0)=p_i(1)=1/2$. Thus uniform parity is
-not exactly sampleable by $AC^0$ autoregressive predictors, needs
+not sampleable by $AC^0$ autoregressive predictors, needs
 $\Theta(\log n/\log\log n)$ rounds without revision, and needs only $O(1)$
 rounds with revision.
 
