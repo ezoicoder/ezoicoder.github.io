@@ -1,7 +1,7 @@
 ---
 title: "Exact sampling round complexity for diffusion language models"
 date: 2026-06-26
-updated: 2026-07-04
+updated: 2026-07-24
 slug: exact-sampling-round-complexity-dlms
 permalink: /blog/exact-sampling-round-complexity-dlms/
 tags: [diffusion language models, parallel sampling, circuit complexity]
@@ -132,7 +132,7 @@ $$
   (1-\tau_i)\mathbf{1}[y=q_i].
 $$
 
-With these two sequences, the output has distribution $$\alpha$$.
+With these two sequences, the output has distribution $\alpha$.
 
 Now let $\mathcal{T}$ be an arbitrary target distribution over $\{0,1\}^n$.
 For a prefix $a\in\{0,1\}^{n-1}$, define its target marginal
@@ -279,9 +279,9 @@ $$
 \operatorname{Vol}(\Delta_A)>0.
 $$
 
-Choose $$(\mu(y))_{y\in A}$$ outside the union
-$$\bigcup_g\Phi_g(\Theta)$$. The corresponding $$\mathcal{P}_\mu$$ cannot be
-sampled in two rounds. The construction above samples every $$\mathcal{P}_\mu$$
+Choose $(\mu(y))_{y\in A}$ outside the union
+$\bigcup_g\Phi_g(\Theta)$. The corresponding $\mathcal{P}_\mu$ cannot be
+sampled in two rounds. The construction above samples every $\mathcal{P}_\mu$
 in three rounds, so the tight round complexity is $3$ in this general
 unrestricted-predictor regime.
 
@@ -556,12 +556,12 @@ $$
 $$
 
 **Observation 6 (autoregressive recognition of regular-language graphs).**
-For a string $$x_0\cdots x_{n-2}x_{n-1}$$ sampled from $$\mathcal{G}_{L,n}$$, the
-last coordinate must be sampled after the prefix $$x_0\cdots x_{n-2}$$ is known.
-Thus, in an $$AC^0$$ autoregressive regime, the final predictor can realize this
+For a string $x_0\cdots x_{n-2}x_{n-1}$ sampled from $\mathcal{G}_{L,n}$, the
+last coordinate must be sampled after the prefix $x_0\cdots x_{n-2}$ is known.
+Thus, in an $AC^0$ autoregressive regime, the final predictor can realize this
 graph distribution exactly only by recognizing whether
-$$x_0\cdots x_{n-2}\in L$$. This is recognizable exactly when
-$$L\in AC^0$$.
+$x_0\cdots x_{n-2}\in L$. This is recognizable exactly when
+$L\in AC^0$.
 
 >TODO: A specific transformer construction is required, what if this $AC^0$ circuit can't be simulated by a transformer
 
@@ -651,6 +651,7 @@ For the matching upper bound, use the standard finite-monoid product tree for
 regular languages. Lay the tree out in depth-first index order, so that each
 subtree occupies a contiguous coordinate interval, including the internal
 positions assigned to its root. Fix a finite monoid $M_L$, a morphism
+
 $$
 \rho:\{0,1\}^*\to M_L,
 $$

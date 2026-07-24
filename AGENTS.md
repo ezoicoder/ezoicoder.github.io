@@ -41,11 +41,9 @@
 - The title does not control the URL when `permalink` is present.
 - Do not put a duplicate top-level `# Title` at the start of a post body; the
   post layout renders the page title.
-- For inline math in blog Markdown, prefer Kramdown math spans
-  `$$...$$` instead of single-dollar `$...$`. Single-dollar spans are left as
-  ordinary text until browser-side MathJax runs, so Kramdown can first parse
-  TeX underscores such as `\mathcal{G}_{L,n}` and later `x_{n-2}` as Markdown
-  emphasis, producing broken HTML like `<em>...</em>` inside formulas.
+- Blog Markdown uses conventional TeX delimiters through the repository's
+  custom Kramdown parser: `$...$` is inline math and a standalone `$$...$$`
+  block is display math. Do not use `$$...$$` inside prose.
 - Enable the Markdown math pre-commit hook with `tools/install_hooks.sh`.
 
 ## Links, Redirects, And References

@@ -5,7 +5,7 @@ baseurl: ""
 
 markdown: kramdown
 kramdown:
-  input: GFM
+  input: ConventionalMathGFM
   math_engine: mathjax
 
 defaults:
@@ -15,3 +15,13 @@ defaults:
     values:
       layout: post
       mathjax: true
+
+exclude:
+  - .bundle
+  - .jekyll-cache
+  - .sass-cache
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - test
+  - vendor

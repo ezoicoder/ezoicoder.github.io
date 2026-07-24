@@ -1,7 +1,9 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require "bundler/setup"
 require "kramdown"
+require_relative "../_plugins/conventional_math_gfm"
 
 staged = false
 if ARGV.first == "--staged"
@@ -35,9 +37,20 @@ paths.each do |path|
 
   next if source.empty?
 
-  html = Kramdown::Document.new(source, math_engine: :mathjax).to_html
+  html = Kramdown::Document.new(
+    source,
+    input: "ConventionalMathGFM",
+    math_engine: :mathjax
+  ).to_html
 
   html.lines.each_with_index do |line, index|
+    if path.start_with?("_posts/") &&
+       line.include?("$$") &&
+       !line.include?("<code>")
+      bad << [path, index + 1, line.strip]
+      next
+    end
+
     next unless line.include?("<em>")
 
     math_like =
@@ -59,7 +72,7 @@ if bad.empty?
   exit 0
 end
 
-warn "Possible Kramdown math/emphasis collisions:"
+warn "Possible Kramdown math problems:"
 bad.each do |path, line, text|
   warn "#{path}:#{line}: #{text}"
 end
