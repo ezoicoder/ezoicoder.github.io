@@ -22,8 +22,11 @@ distribution to at most two rounds in the fair-bit $AC^0$ model. This includes
 the earlier $\mathrm{MOD}_3$ and fixed-$\mathrm{MOD}_q$ constructions as
 special cases. The proof first samples the full trajectory of the finite Markov
 chain induced by uniform input characters, then samples each character
-independently conditioned on that trajectory. The remaining architecture-level
-step is to compile these $AC^0$ updates into a concrete Transformer.
+independently conditioned on that trajectory. The complete proof sequence---from
+the explicit modular constructions through the path-dyadic Markov theorem and
+the regular-language corollary---is developed in
+[*Exact AC^0 sampling for Markov chains and regular languages*]({{ '/blog/exact-ac0-sampling-markov-chains/' | relative_url }}).
+This note instead emphasizes the resulting round-complexity comparisons.
 
 Throughout the note, a **round** means one parallel DLM update. The predictor is
 denoted by $p(\cdot \mid x)$. Target distributions are denoted by
@@ -306,22 +309,29 @@ NOT gates. It captures computations with a fixed number of highly parallel
 layers, but without a growing chain of sequential dependence. A standard
 consequence is that global functions such as parity are not in $AC^0$.
 
-From this point on, assume the relevant predictors, and in the no-revision
-model the unmasking policy $F$, are implemented by polynomial-size
-constant-depth circuits. This is the regime in which we model DLM updates as
-$AC^0$ circuits: constant-precision constant-depth Transformers with
-polynomial-size embedding dimension can be simulated by $AC^0$ circuits
-[3].
+From this point on, the primary model is circuit-level: the relevant
+predictors, and in the no-revision model the unmasking policy $F$, are
+implemented directly by polynomial-size constant-depth circuits. The results
+in this section should therefore be read first as theorems about $AC^0$ DLM
+updates, rather than as claims about a particular neural architecture.
+
+This model is motivated by formal Transformer results. In the non-uniform
+model of Li, Liu, Zhou, and Ma [3], a constant-depth decoder-only Transformer
+with constant-bit fixed-point precision and polynomial embedding dimension has
+the same Boolean-function expressivity as $AC^0$ (their Theorem 3.8); related
+constant-precision models give a Transformer-to-$AC^0$ containment (their
+Theorem 3.1). These function-level results do not by themselves settle every
+exact stochastic update interface used here.
+The possible compilation routes and the remaining assumptions are collected in
+the final Transformer section.
 
 For sampling statements in this regime, a randomized predictor circuit
 uses at most polynomially many independent fair random bits. Consequently,
 every local output probability is dyadic.
 
-This implication is one-way in the form used here. Showing that an update rule
-is computable in $AC^0$ does not by itself give a concrete Transformer
-implementation of that rule. Unless a specific Transformer simulation is given,
-the upper bounds below should be read as circuit-level DLM constructions, not
-as realized constant-depth Transformer architectures.
+Throughout this section, labels such as "two rounds" or "constant-round upper
+bound" therefore refer to the circuit-level DLM model unless explicitly stated
+otherwise.
 
 ### A one-hot example
 
@@ -366,8 +376,6 @@ The comparison $j=I$ is an AND of $t=\log n$ literals for each fixed $j$, so all
 $n$ comparisons are computable by polynomial-size constant-depth circuits. Thus
 with workspace-style revision, sampling from $U_n$ takes two rounds in
 this $AC^0$ setting.
-
->TODO: A specific transformer construction is required
 
 ### Accelerating autoregressive sampling
 
@@ -455,8 +463,6 @@ $$
 rounds, and the remaining $\sqrt n$ coordinates can be sampled one by one,
 which adds only $O(\sqrt n)=o(n/\log n)$ rounds. Hence the total number of
 rounds is $O(n/\log n)$.
-
->TODO: A specific transformer construction is required
 
 ### Dyadic product distributions with a parity check
 
@@ -560,8 +566,6 @@ desired independent dyadic marginals, and the last coordinate is their xor.
 Thus the whole sampler uses $O(\kappa)$ rounds, and in particular $O(1)$ rounds
 when $\kappa=O(1)$.
 
->TODO: A specific transformer construction is required
-
 ### Regular-language input-output pair distributions
 
 Let $L\subseteq\{0,1\}^*$ be a regular language, and let
@@ -574,19 +578,20 @@ $$
   \mathrm{Unif}\{(x,f_L(x)):x\in\{0,1\}^{n-1}\}.
 $$
 
-The exact with-revision status is now known for all fixed binary regular
-languages. The following table separates the three milestones.
+The exact circuit-level with-revision status is now known for all fixed binary
+regular languages.
 
-| Language family | Status in the fair-bit $AC^0$ revision-DLM model | Transformer realization | Boundary |
-| --- | --- | --- | --- |
-| $\mathrm{MOD}_3$ | **PROVED: exactly two rounds** whenever the length slice is nonconstant | **TODO: $AC^0$ to Transformer** | A direct six-bit interval-comparator construction is available. |
-| fixed $\mathrm{MOD}_q$, $q\ge 2$ | **PROVED: exactly two rounds** whenever the length slice is nonconstant | **TODO: $AC^0$ to Transformer** | The block size and circuit constants may depend on fixed $q$; this does not cover $q=q(n)$. |
-| arbitrary fixed binary regular language | **PROVED: at most two rounds**, and exactly two whenever the length slice is nonconstant | **TODO: $AC^0$ to Transformer** | The Markov-path sampler and circuit constants may depend on the fixed DFA; this does not cover automata whose size grows with $n$. |
+| Language family | Fair-bit $AC^0$ revision-DLM status | Boundary |
+| --- | --- | --- |
+| $\mathrm{MOD}_3$ | **PROVED: exactly two rounds** | Every positive input length |
+| fixed $\mathrm{MOD}_q$, $q\ge 2$ | **PROVED: exactly two rounds** | Circuit constants may depend on fixed $q$; not $q=q(n)$ |
+| arbitrary fixed binary regular language | **PROVED: at most two rounds**, and exactly two on nonconstant slices | Constants may depend on the fixed DFA; not growing automata |
 
-The first two rows are developed separately in
-[*Exact two-round sampling for MOD_3 and every fixed MOD_q*]({{ '/blog/two-round-exact-sampling-mod-q/' | relative_url }}),
-including the interval construction for $q=3$ and the common-quantile
-construction for arbitrary fixed $q$.
+The complete proof progression is given in
+[*Exact AC^0 sampling for Markov chains and regular languages*]({{ '/blog/exact-ac0-sampling-markov-chains/' | relative_url }}).
+It begins with the explicit interval and common-quantile constructions, proves
+the path-dyadic Markov trajectory characterization, and only then derives the
+binary regular-language corollary.
 
 **Observation 6 (autoregressive sampling of regular-language input-output
 pairs).** For a string $x_0\cdots x_{n-2}x_{n-1}$ sampled from
@@ -596,11 +601,6 @@ regime, the final predictor can realize this input-output pair distribution
 only by recognizing whether $x_0\cdots x_{n-2}\in L$. This is possible if and
 only if $L\in AC^0$.
 
-> **TODO (AC0 to Transformer):** The statements below are proved at the
-> circuit level. A specific Transformer construction, or a theorem compiling
-> these $AC^0$ update circuits into the intended finite-precision Transformer
-> model, is still required.
-
 **Theorem 7 (two-round revision sampling for every fixed regular language).**
 For every fixed binary regular language $L$, there are constants $d_L$ and
 $K_L$ such that, for every length $n$, an exact width-$n$ revision-DLM samples
@@ -609,64 +609,29 @@ fresh fair random bits, and every update is implemented by a depth-$d_L$,
 size-$n^{K_L}$ circuit. If $f_L$ is nonconstant on $\{0,1\}^{n-1}$, then two
 rounds are necessary and hence optimal.
 
-The proof is clearest from a Markov-chain viewpoint. Fix a DFA
+For the application, fix a DFA
 
 $$
 \mathcal A=(Q,\{0,1\},\delta,q_0,F)
 $$
 
-for $L$, and write $m=n-1$ for the input length. A uniform binary character
-induces the finite-state Markov kernel
+and write $m=n-1$. A uniform input character induces a state transition with
+probability in $\{0,1/2,1\}$, so every full trajectory atom is dyadic. The
+technical companion proves the stronger characterization: a fixed finite
+Markov chain has an exact finite-fair-bit randomized-$AC^0$ full-trajectory
+sampler if and only if it is path-dyadic from the specified initial
+distribution. Its proof uses a dyadic potential, a uniform-fiber weak lift, a
+finite random-map representation, and a universal aperiodic block lift for
+binary transition systems.
+
+For the DFA-induced chain the initial state is fixed and one fair driver bit per
+input position suffices. Hence there is a uniform-$AC^0$ map
 
 $$
-P(q,r)
-=
-\frac{
-\left|
-\left\{
-a\in\{0,1\}:\delta(q,a)=r
-\right\}
-\right|
-}{2}.
+G_m:\{0,1\}^{m}\longrightarrow Q^{m+1}
 $$
 
-Every entry of $P$ lies in $\{0,1/2,1\}$. Starting from $Q_0=q_0$, a state
-trajectory $\gamma=(q_0,q_1,\ldots,q_m)$ therefore has probability
-
-$$
-\Pr[\Gamma=\gamma]
-=
-\prod_{i=1}^{m}P(q_{i-1},q_i),
-$$
-
-which is dyadic. More generally, call a fixed finite Markov chain
-**path-dyadic** when every finite trajectory atom has dyadic probability. The
-Markov-chain sampling theorem behind this construction says that every fixed
-path-dyadic chain has an exact fair-bit randomized-$AC^0$ sampler for its full
-state trajectory. Its number of random bits per transition, circuit depth, and
-polynomial-size exponent may depend on the fixed chain. Conversely, any exact
-sampler using finitely many fair bits forces every trajectory atom to be
-dyadic, so this is a characterization rather than only a sufficient condition.
-
-For the DFA-induced chain no probability-state splitting is needed: the
-initial state is fixed and one fair driver bit per input position suffices.
-Thus there is a uniform $AC^0$ map
-
-$$
-G_m:\{0,1\}^{m}\to Q^{m+1}
-$$
-
-such that, for $Z\sim\mathrm{Unif}(\{0,1\}^{m})$,
-
-$$
-G_m(Z)=(Q_0,Q_1,\ldots,Q_m)
-$$
-
-has exactly the Markov trajectory law above. Internally, the general Markov
-sampler first uses a dyadic diagonal scaling to split each visible state into
-finitely many uniform hidden copies. The resulting dyadic hidden kernel becomes
-a finite random-map system; an aperiodic block reparameterization then makes
-all prefix states computable in uniform $AC^0$.
+whose output on a uniform seed has exactly the DFA-state trajectory law.
 
 It remains to recover a uniformly random input word from the sampled state
 path. For a positive-probability trajectory $\gamma$, define the compatible
@@ -748,11 +713,6 @@ The shallow object is the reparameterized sampler $G_m$ from a fair seed to a
 Markov trajectory, followed by a coordinatewise product kernel. The
 original-coordinate recognition function $x\mapsto f_L(x)$ may remain outside
 $AC^0$.
-
-> **TODO (AC0 to Transformer):** The Markov-trajectory theorem proves that
-> $G_m$ and the coordinate kernels are circuit-level $AC^0$ constructions, but
-> a concrete implementation by the intended Transformer architecture remains
-> to be supplied.
 
 **Theorem 8 (no-revision input-output pairs for regular languages).** For
 regular languages outside $AC^0$, sampling from
@@ -994,8 +954,6 @@ after observing $Y=b$. Thus every prefix coordinate, including the marker
 coordinate resolved at the end, is uniform, and the final coordinate equals
 $Y=f_L(X)$.
 
->TODO: A specific transformer construction is required
-
 ### Parity as a corollary
 
 **Corollary 9 (parity separates autoregressive, no-revision, and revision).** Let
@@ -1034,15 +992,70 @@ not sampleable by $AC^0$ autoregressive predictors, needs
 $\Theta(\log n/\log\log n)$ rounds without revision, and needs exactly two
 rounds with revision.
 
->TODO: A specific transformer construction is required
+## From circuit-level updates to Transformer predictors
+
+The $AC^0$ results above and their Transformer interpretations should be kept
+separate. There are already useful function-level correspondences, but the
+exact stochastic DLM interface adds further requirements.
+
+Li, Liu, Zhou, and Ma [3] study non-uniform constant-depth decoder-only
+Transformers with finite-precision arithmetic. In their constant-bit
+fixed-point, polynomial-embedding regime, Boolean-function expressivity equals
+$AC^0$; their upper-bound argument also places related constant-precision
+models inside $AC^0$. This is stronger than merely observing that Transformers
+motivate the circuit model, but it is still a theorem about their particular
+formal architecture and Boolean outputs.
+
+Padding gives another possible route. London and Kanade [5] show that, with
+constant precision, logarithmic embedding width, and polynomially many pause
+tokens, constant-depth Transformers capture $AC^0$ in both uniform and
+non-uniform settings. Svete, Merrill, Cotterell, and Sabharwal [6] give a
+broader L-uniform padded characterization that is robust across several
+attention and width choices. These results suggest compiler templates, but
+polynomial padding changes the present model: all constructions above keep the
+sequence at its target width and add no scratch positions.
+
+The status of the conclusions in this note is therefore:
+
+| Result type | Circuit-level status | Transformer consequence |
+| --- | --- | --- |
+| One-round product-law lower bounds | **PROVED in the update model** | Applies to any architecture whose one-round outputs factor coordinatewise |
+| Autoregressive and no-revision $AC^0$ lower bounds | **PROVED for circuit predictors and policies** | Transfers to Transformer families contained in $AC^0$ only when the predictor, policy, precision, and revision semantics match |
+| One-hot, autoregressive-acceleration, and dyadic-parity upper bounds | **PROVED in circuit-level $AC^0$** | Architecture-level compilation not yet written here |
+| Markov and regular-language revision upper bounds | **PROVED in circuit-level $AC^0$** | Needs a shared multi-output exact predictor implementing the trajectory map and local kernels |
+| Regular-language no-revision upper bound | **PROVED in circuit-level $AC^0$** | Additionally needs exact mask-pattern control and tree-profile routing |
+
+**Current TODO.** Establish an explicit compilation theorem for the intended
+Transformer predictor model. A complete argument should specify:
+
+1. uniform or non-uniform parameter families and the allowed positional
+   encodings;
+2. constant fixed-point or floating-point precision, including when rounding
+   occurs;
+3. whether attention is softmax, hard attention, or another exact-gather
+   primitive;
+4. how the shared network produces every coordinate kernel rather than a
+   single Boolean decision;
+5. how it realizes the exact probabilities $0$, $1/2$, and $1$, including
+   exact zero probabilities and point masses;
+6. whether polynomial padding is permitted, since existing reverse simulations
+   often use padding or polynomial embedding dimension as circuit workspace.
+
+A plausible proof route is to use positional metadata for routing, attention
+only to gather the required finite-alphabet states, and pointwise feed-forward
+layers for fixed lookups. For the unpadded construction, the difficult part is
+to justify exact gathering and exact output probabilities under the chosen
+finite-precision softmax semantics. Until that interface is proved, the upper
+bounds in this note remain circuit-level results, while the containment-based
+lower-bound transfers are conditional on the stated Transformer model.
 
 ## Outlook
 
 The constructions above keep the sequence length fixed and do not add extra
 CoT-style scratch positions. Understanding how additional intermediate states
-affect the right round-complexity model is a separate question. Turning the
-circuit-level $AC^0$ upper bounds into architecture-specific Transformer
-constructions is another separate question.
+affect the right round-complexity model is a separate question. Other natural
+extensions include growing automata, growing moduli, and approximate rather
+than exact sampling.
 
 ## References
 
@@ -1059,3 +1072,11 @@ Conference on Learning Representations, 2024. https://openreview.net/forum?id=3E
 
 [4] Jiarui Zhang. [*Near-perfect average-case MOD_q requires log n / log log n
 AC^0 circuit depth*]({{ '/blog/near-perfect-mod-q-ac-depth/' | relative_url }}). July 1, 2026.
+
+[5] Charles London and Varun Kanade. *Pause Tokens Strictly Increase the
+Expressivity of Constant-Depth Transformers*. NeurIPS 2025.
+https://proceedings.neurips.cc/paper_files/paper/2025/file/817c0ed5303e396e803d6a972f83c475-Paper-Conference.pdf
+
+[6] Anej Svete, William Merrill, Ryan Cotterell, and Ashish Sabharwal.
+*Revisiting Padded Transformer Expressivity: Which Architectural Choices Matter
+and Which Don't*. 2026. https://arxiv.org/abs/2605.30523
