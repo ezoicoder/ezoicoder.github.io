@@ -1,11 +1,11 @@
 ---
 title: "Sampling round complexity for diffusion language models"
 date: 2026-06-26
-updated: 2026-07-24
+updated: 2026-08-09
 slug: sampling-round-complexity-dlms
 permalink: /blog/sampling-round-complexity-dlms/
 tags: [diffusion language models, parallel sampling, circuit complexity]
-summary: "Sampling round complexity for DLMs under distributional equality: three-round tightness with revision and a tight log n / log log n bound in the AC^0 no-revision regime."
+summary: "Exact sampling round complexity for DLMs: via the DFA-induced Markov chain, every fixed regular-language input-output pair distribution has a two-round AC^0 sampler with revision, while languages outside AC^0 need Theta(log n / log log n) rounds without revision."
 ---
 
 This note studies sampling round complexity for diffusion language models and
@@ -15,6 +15,15 @@ output distribution to equal the target distribution. Here, remasking is
 included as a form of revision, since we view updates such as $0\to M$ as
 revisions. I first define the two update models, and then separate the
 computational regimes used in the examples.
+
+The main new conclusion is that revision collapses the exact sampling
+complexity of every fixed binary regular-language input-output pair
+distribution to at most two rounds in the fair-bit $AC^0$ model. This includes
+the earlier $\mathrm{MOD}_3$ and fixed-$\mathrm{MOD}_q$ constructions as
+special cases. The proof first samples the full trajectory of the finite Markov
+chain induced by uniform input characters, then samples each character
+independently conditioned on that trajectory. The remaining architecture-level
+step is to compile these $AC^0$ updates into a concrete Transformer.
 
 Throughout the note, a **round** means one parallel DLM update. The predictor is
 denoted by $p(\cdot \mid x)$. Target distributions are denoted by
@@ -565,6 +574,20 @@ $$
   \mathrm{Unif}\{(x,f_L(x)):x\in\{0,1\}^{n-1}\}.
 $$
 
+The exact with-revision status is now known for all fixed binary regular
+languages. The following table separates the three milestones.
+
+| Language family | Status in the fair-bit $AC^0$ revision-DLM model | Transformer realization | Boundary |
+| --- | --- | --- | --- |
+| $\mathrm{MOD}_3$ | **PROVED: exactly two rounds** whenever the length slice is nonconstant | **TODO: $AC^0$ to Transformer** | A direct six-bit interval-comparator construction is available. |
+| fixed $\mathrm{MOD}_q$, $q\ge 2$ | **PROVED: exactly two rounds** whenever the length slice is nonconstant | **TODO: $AC^0$ to Transformer** | The block size and circuit constants may depend on fixed $q$; this does not cover $q=q(n)$. |
+| arbitrary fixed binary regular language | **PROVED: at most two rounds**, and exactly two whenever the length slice is nonconstant | **TODO: $AC^0$ to Transformer** | The Markov-path sampler and circuit constants may depend on the fixed DFA; this does not cover automata whose size grows with $n$. |
+
+The first two rows are developed separately in
+[*Exact two-round sampling for MOD_3 and every fixed MOD_q*]({{ '/blog/two-round-exact-sampling-mod-q/' | relative_url }}),
+including the interval construction for $q=3$ and the common-quantile
+construction for arbitrary fixed $q$.
+
 **Observation 6 (autoregressive sampling of regular-language input-output
 pairs).** For a string $x_0\cdots x_{n-2}x_{n-1}$ sampled from
 $\mathcal{D}^{\mathrm{pair}}_{L,n}$, the last coordinate must be sampled after
@@ -573,9 +596,165 @@ regime, the final predictor can realize this input-output pair distribution
 only by recognizing whether $x_0\cdots x_{n-2}\in L$. This is possible if and
 only if $L\in AC^0$.
 
->TODO: A specific transformer construction is required, what if this $AC^0$ circuit can't be simulated by a transformer
+> **TODO (AC0 to Transformer):** The statements below are proved at the
+> circuit level. A specific Transformer construction, or a theorem compiling
+> these $AC^0$ update circuits into the intended finite-precision Transformer
+> model, is still required.
 
-**Theorem 7 (no-revision input-output pairs for regular languages).** For
+**Theorem 7 (two-round revision sampling for every fixed regular language).**
+For every fixed binary regular language $L$, there are constants $d_L$ and
+$K_L$ such that, for every length $n$, an exact width-$n$ revision-DLM samples
+$\mathcal{D}^{\mathrm{pair}}_{L,n}$ in at most two rounds. Each coordinate uses
+fresh fair random bits, and every update is implemented by a depth-$d_L$,
+size-$n^{K_L}$ circuit. If $f_L$ is nonconstant on $\{0,1\}^{n-1}$, then two
+rounds are necessary and hence optimal.
+
+The proof is clearest from a Markov-chain viewpoint. Fix a DFA
+
+$$
+\mathcal A=(Q,\{0,1\},\delta,q_0,F)
+$$
+
+for $L$, and write $m=n-1$ for the input length. A uniform binary character
+induces the finite-state Markov kernel
+
+$$
+P(q,r)
+=
+\frac{
+\left|
+\left\{
+a\in\{0,1\}:\delta(q,a)=r
+\right\}
+\right|
+}{2}.
+$$
+
+Every entry of $P$ lies in $\{0,1/2,1\}$. Starting from $Q_0=q_0$, a state
+trajectory $\gamma=(q_0,q_1,\ldots,q_m)$ therefore has probability
+
+$$
+\Pr[\Gamma=\gamma]
+=
+\prod_{i=1}^{m}P(q_{i-1},q_i),
+$$
+
+which is dyadic. More generally, call a fixed finite Markov chain
+**path-dyadic** when every finite trajectory atom has dyadic probability. The
+Markov-chain sampling theorem behind this construction says that every fixed
+path-dyadic chain has an exact fair-bit randomized-$AC^0$ sampler for its full
+state trajectory. Its number of random bits per transition, circuit depth, and
+polynomial-size exponent may depend on the fixed chain. Conversely, any exact
+sampler using finitely many fair bits forces every trajectory atom to be
+dyadic, so this is a characterization rather than only a sufficient condition.
+
+For the DFA-induced chain no probability-state splitting is needed: the
+initial state is fixed and one fair driver bit per input position suffices.
+Thus there is a uniform $AC^0$ map
+
+$$
+G_m:\{0,1\}^{m}\to Q^{m+1}
+$$
+
+such that, for $Z\sim\mathrm{Unif}(\{0,1\}^{m})$,
+
+$$
+G_m(Z)=(Q_0,Q_1,\ldots,Q_m)
+$$
+
+has exactly the Markov trajectory law above. Internally, the general Markov
+sampler first uses a dyadic diagonal scaling to split each visible state into
+finitely many uniform hidden copies. The resulting dyadic hidden kernel becomes
+a finite random-map system; an aperiodic block reparameterization then makes
+all prefix states computable in uniform $AC^0$.
+
+It remains to recover a uniformly random input word from the sampled state
+path. For a positive-probability trajectory $\gamma$, define the compatible
+characters on its $i$th edge by
+
+$$
+A_i(\gamma)
+=
+\left\{
+a\in\{0,1\}:\delta(q_{i-1},a)=q_i
+\right\},
+\qquad
+c_i(\gamma)=|A_i(\gamma)|\in\{1,2\}.
+$$
+
+Conditioned on $\Gamma=\gamma$, the second round samples the character
+coordinates independently according to
+
+$$
+\widehat X_i\mid\Gamma=\gamma
+\sim
+\mathrm{Unif}(A_i(\gamma)).
+$$
+
+If there is one compatible character, the coordinate outputs it
+deterministically; if both characters are compatible, that coordinate uses its
+own fresh fair bit. Hence the second round is a valid stochastic product
+kernel, rather than a hidden sequential simulation.
+
+To check exact uniformity, fix any $x\in\{0,1\}^{m}$ and let $\gamma(x)$ be
+the unique DFA state path generated by reading $x$. The induced Markov kernel
+and the conditional character sampler give
+
+$$
+\Pr[\Gamma=\gamma(x)]
+=
+\prod_{i=1}^{m}\frac{c_i(\gamma(x))}{2},
+$$
+
+and
+
+$$
+\Pr[\widehat X=x\mid\Gamma=\gamma(x)]
+=
+\prod_{i=1}^{m}\frac{1}{c_i(\gamma(x))}.
+$$
+
+Multiplying the two displays cancels every $c_i(\gamma(x))$ and yields
+
+$$
+\Pr[\widehat X=x]=2^{-m}.
+$$
+
+Thus $\widehat X$ is exactly uniform. The final coordinate is the deterministic
+lookup
+
+$$
+Y=\mathbf{1}[Q_m\in F]=f_L(\widehat X).
+$$
+
+The two DLM rounds are therefore:
+
+1. write the $m$ independent fair seed bits $Z$ into the first $m$
+   coordinates and put any fixed placeholder in the label coordinate;
+2. each character coordinate recomputes the two required states
+   $(Q_{i-1},Q_i)$ from $Z$ using $G_m$, then applies its local compatible-set
+   kernel; the label coordinate recomputes $Q_m$ and performs the accepting-set
+   lookup.
+
+The path is latent and requires no extra sequence positions. Replicating the
+relevant prefix-state subcircuits across the output coordinates changes only
+the polynomial-size exponent, not the constant depth. Conversely, a one-round
+update from the all-mask state is a product distribution. It cannot equal this
+input-output pair distribution when the label is nonconstant, proving the
+matching lower bound.
+
+This is not a claim that every regular language is recognizable in $AC^0$.
+The shallow object is the reparameterized sampler $G_m$ from a fair seed to a
+Markov trajectory, followed by a coordinatewise product kernel. The
+original-coordinate recognition function $x\mapsto f_L(x)$ may remain outside
+$AC^0$.
+
+> **TODO (AC0 to Transformer):** The Markov-trajectory theorem proves that
+> $G_m$ and the coordinate kernels are circuit-level $AC^0$ constructions, but
+> a concrete implementation by the intended Transformer architecture remains
+> to be supplied.
+
+**Theorem 8 (no-revision input-output pairs for regular languages).** For
 regular languages outside $AC^0$, sampling from
 $\mathcal{D}^{\mathrm{pair}}_{L,n}$ in the no-revision $AC^0$ DLM model
 matches the circuit-depth scale needed to recognize $L$:
@@ -819,7 +998,7 @@ $Y=f_L(X)$.
 
 ### Parity as a corollary
 
-**Corollary 8 (parity separates autoregressive, no-revision, and revision).** Let
+**Corollary 9 (parity separates autoregressive, no-revision, and revision).** Let
 
 $$
 D_n^\oplus
@@ -840,7 +1019,7 @@ $$
 
 This is a regular language outside $AC^0$. The input-output pair distribution
 $\mathcal{D}^{\mathrm{pair}}_{L,n}$ coincides with $D_n^\oplus$: the output bit
-is $1$ precisely when the prefix parity is odd. Therefore Theorem 7 gives
+is $1$ precisely when the prefix parity is odd. Therefore Theorem 8 gives
 
 $$
 \Theta\left(\frac{\log n}{\log\log n}\right)
@@ -848,10 +1027,11 @@ $$
 
 rounds for no-revision sampling of parity.
 
-With revision, the same distribution is sampled in constant rounds by
-Proposition 5, using the special case $p_i(0)=p_i(1)=1/2$. Thus uniform parity is
+With revision, Theorem 7 samples the same distribution in exactly two rounds
+for every nontrivial length. Proposition 5 gives an independent constant-round
+construction in the special case $p_i(0)=p_i(1)=1/2$. Thus uniform parity is
 not sampleable by $AC^0$ autoregressive predictors, needs
-$\Theta(\log n/\log\log n)$ rounds without revision, and needs only $O(1)$
+$\Theta(\log n/\log\log n)$ rounds without revision, and needs exactly two
 rounds with revision.
 
 >TODO: A specific transformer construction is required
