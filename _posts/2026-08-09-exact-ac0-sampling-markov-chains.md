@@ -1,136 +1,194 @@
 ---
-title: "Exact AC^0 sampling for Markov chains and regular languages"
+title: "Exact Sampling of Path-Dyadic Markov Chains in Randomized AC^0"
 date: 2026-08-09
-updated: 2026-08-09
+updated: 2026-08-10
 slug: exact-ac0-sampling-markov-chains
 permalink: /blog/exact-ac0-sampling-markov-chains/
-tags: [diffusion language models, exact sampling, circuit complexity, Markov chains, regular languages]
-summary: "A proof sequence from explicit two-round MOD_3 and fixed-MOD_q samplers to exact AC^0 trajectory sampling for path-dyadic finite Markov chains and every fixed binary regular language."
+tags: [exact sampling, circuit complexity, Markov chains, regular languages]
+summary: "A characterization of finite Markov chains whose full trajectories can be sampled exactly in randomized AC^0, with applications to fixed modular predicates and binary regular languages."
 ---
 
-This note develops one proof sequence for exact sampling in shallow circuits:
+## Introduction
 
-1. the special $\mathrm{MOD}_3$ interval-comparator construction;
-2. the common-quantile construction for every fixed $\mathrm{MOD}_q$;
-3. exact full-trajectory sampling for every fixed path-dyadic finite Markov
-   chain;
-4. exact two-round sampling for the input-output pair distribution of every
-   fixed binary regular language.
+I study two related sampling problems.
 
-The first two constructions expose concrete deterministic cube permutations.
-The Markov-chain theorem needs a different abstraction: dyadic state splitting
-followed by a universal aperiodic lift of a finite binary transition system.
-The regular-language result is then a corollary obtained by sampling the DFA
-state trajectory and applying a coordinatewise compatible-character kernel.
-
-All results here are circuit-level results. The companion note
-[*Sampling round complexity for diffusion language models*]({{ '/blog/sampling-round-complexity-dlms/' | relative_url }})
-separates their circuit status from the remaining Transformer compilation
-questions.
-
-## Result map and circuit model
-
-An exact fair-bit randomized-$AC^0$ sampler is a polynomial-size,
-constant-depth Boolean circuit whose random inputs are finitely many independent
-fair bits. The output distribution must equal the target distribution atom by
-atom. For length-indexed families below, the circuit depth is bounded by a
-constant independent of the length. Constants may depend on the fixed modulus,
-Markov chain, or automaton named in the theorem.
-
-In the revision-DLM interpretation, the first round writes independent fair
-seed bits. A later update is a product kernel conditioned on the old state:
-each coordinate may use the entire old state, but different coordinates use
-independent fresh randomness. A deterministic update is a special case in
-which every coordinate kernel is a point mass.
-
-The four conclusions proved below are:
-
-| Target | Circuit-level status | Exact boundary |
-| --- | --- | --- |
-| $\mathrm{MOD}_3$ input-output pairs | **PROVED: exactly two rounds** | Every positive input length |
-| fixed $\mathrm{MOD}_q$, $q\ge2$ | **PROVED: exactly two rounds** | Constants may depend on fixed $q$; not $q=q(n)$ |
-| fixed path-dyadic finite Markov chain | **PROVED: exact full-trajectory randomized-$AC^0$ sampler** | $c+sn$ fair bits; constants depend on the chain |
-| fixed binary regular language | **PROVED: at most two revision rounds** | Exactly two on every nonconstant length slice |
-
-The Markov theorem does **not** say that every finite Markov chain can be
-sampled exactly from finitely many fair bits. Path-dyadicity is both sufficient
-and necessary.
-
-## Modular input-output pair distributions
-
-Fix an integer $q\ge2$. For $x\in\{0,1\}^n$, define
+The first problem starts with a fixed binary regular language
+$L\subseteq\Sigma^*$, where $\Sigma=\{0,1\}$. Its indicator is
+$f_L(x)=\mathbf{1}[x\in L]$. Let $U_n$ be the uniform distribution on
+$\{0,1\}^n$, and define
 
 $$
-f_{q,n}(x)
-=
-\mathbf{1}\left[|x|\equiv0\pmod q\right]
-$$
-
-and the input-output pair distribution
-
-$$
-\mathcal D_{q,n}^{\mathrm{pair}}
-=
-(X,f_{q,n}(X)),
+\mathrm{Pair}_{L,n}=(X,f_L(X)),
 \qquad
-X\sim\mathrm{Unif}(\{0,1\}^n).
+X\sim U_n.
 $$
 
-The sampler has width $n+1$. The exact modular quantifiers are
+This sampling problem has $n+1$ output bits. The goal is to sample
+$\mathrm{Pair}_{L,n}$. I will prove that every fixed binary regular language
+has such a randomized-$AC^0$ sampler.
+
+Throughout this note, sampling means exact equality in distribution: every
+output has exactly its target probability. Approximate sampling is not
+considered unless stated otherwise.
+
+The second problem starts with a fixed finite Markov chain, given by an initial
+distribution and a transition matrix. The goal is to sample its complete
+trajectory with a randomized-$AC^0$ circuit. The necessary and sufficient
+condition is path-dyadicity: every finite trajectory must have dyadic
+probability. A dyadic probability has the form $m/2^k$ for some nonnegative
+integers $m$ and $k$.
+
+The two problems are closely linked. Let
+$\mathcal A=(Q,\{0,1\},\delta,q_0,F)$ be a DFA. A uniform input bit induces the
+Markov transition
 
 $$
-\boxed{
-\forall q\in\mathbb Z_{\ge2}\;
-\exists d_q,K_q<\infty\;
-\forall n\ge1:
-\qquad
-D_{\min,q}^{d_q,K_q}(n)=2.
-}
+P(q,r)
+=
+\frac{\left|\left\{a\in\{0,1\}:\delta(q,a)=r\right\}\right|}{2}.
 $$
 
-The round bound $2$ is uniform in $q$, but the block length, circuit depth, and
-polynomial-size exponent may depend on the fixed modulus. The quantifiers do
-not cover $q=q(n)$.
+If $\delta(q,0)$ and $\delta(q,1)$ are distinct, each next state has
+probability $1/2$. If they are equal, that next state has probability $1$.
+Thus a uniform random word can be viewed as a random walk in its DFA.
 
-## The deterministic two-round interface for modular predicates
+A randomized-$AC^0$ sampler is a polynomial-size, constant-depth Boolean
+circuit whose random inputs are finitely many independent fair bits. If it uses
+$r$ random bits, the probability of each output is an integer divided by
+$2^r$, so it is dyadic.
 
-Both constructions use the same interface. Suppose there are $AC^0$ circuits
-computing a cube permutation
+The proof has four parts. I first give a direct construction for
+$\mathrm{MOD}_3$ by aperiodicity, and then extend to every fixed
+$\mathrm{MOD}_q$. Next, I use state splitting to handle
+path-dyadic Markov chains, even when some individual transition probabilities
+are not dyadic. The result for regular languages then follows from the Markov
+chain theorem.
+
+Sampling is different from recognition. In recognition, the input $x$ is
+fixed and the circuit must compute $f_L(x)$. In sampling, the circuit may instead use a cube permutation, which can require less depth. For example, sampling parity needs $O(1)$ depth, while recognizing parity with polynomial-size $AC$ circuits needs $\Theta(\log n/\log\log n)$ depth that is not in $AC^0$.
+
+## Three lemmas about regular-language recognition
+
+These lemmas will be used several times below.
+
+Let $\mathcal A=(Q,\Sigma,\delta,q_0,F)$ be any DFA. Every word
+$u\in\Sigma^*$ induces a map on its states,
 
 $$
-P_{q,n}:\{0,1\}^n\to\{0,1\}^n
+T_u(q)=\delta^*(q,u).
 $$
 
-and a Boolean readout $C_{q,n}$ such that, pointwise,
+The set
 
 $$
-f_{q,n}(P_{q,n}(z))=C_{q,n}(z).
+M_{\mathcal A}=\{T_u:u\in\Sigma^*\}
 $$
 
-Then the revision-DLM sampler is:
+is the transition monoid of $\mathcal A$. Its transition morphism is
+$\eta_{\mathcal A}(u)=T_u$. A stability index is a positive integer $d$ such
+that
 
-1. in the first round, sample $Z\sim\mathrm{Unif}(\{0,1\}^n)$ using one
-   independent fair bit per input coordinate and put a fixed placeholder in
-   the label coordinate;
-2. in the second round, deterministically output
-   $(P_{q,n}(Z),C_{q,n}(Z))$.
+$$
+\eta_{\mathcal A}(\Sigma^d)=\eta_{\mathcal A}(\Sigma^{2d}).
+$$
 
-Conditioned on $Z$, all second-round coordinate laws are point masses, hence a
-valid product kernel. Since $P_{q,n}$ is a permutation,
-$P_{q,n}(Z)$ is exactly uniform. The pointwise identity gives the correct
-label, with no approximation and no non-dyadic random coin.
+Such a $d$ always exists because $M_{\mathcal A}$ is finite. Fix any stability
+index $d$. The stable monoid is
 
-One round cannot suffice. From the all-mask state, a one-round output law is a
-product distribution. Its first $n$ coordinates must be independent fair bits,
-so the last coordinate would be independent of them. But the target requires
-the last coordinate to equal the nonconstant deterministic function
-$f_{q,n}$; indeed $f_{q,n}(0^n)=1$ and $f_{q,n}(e_1)=0$. Thus the two-round
-upper bounds below are optimal for every $q\ge2$ and $n\ge1$.
+$$
+\operatorname{Stab}(\eta_{\mathcal A})
+=
+\eta_{\mathcal A}((\Sigma^d)^*)
+=
+\{1\}\cup\eta_{\mathcal A}(\Sigma^d).
+$$
 
-## The special $\mathrm{MOD}_3$ interval construction
+It does not depend on the chosen stability index. A finite monoid is
+aperiodic if every element $a$ satisfies $a^{k+1}=a^k$ for some $k\ge1$.
 
-The $q=3$ construction is unusually explicit: it transforms a lexicographic
-interval into a Hamming-weight residue slice.
+**Lemma 1 ($AC^0$ recognition characterization).** Let $\mathcal A$ be the
+minimal DFA of a regular language $L$, and let $\eta_{\mathcal A}$ be its
+transition morphism. Then $L$ is in $AC^0$ if and only if
+$\operatorname{Stab}(\eta_{\mathcal A})$ is aperiodic.
+
+For a minimal DFA, its transition monoid is exactly the syntactic monoid. This
+lemma is the
+[Barrington, Compton, Straubing, and Thérien characterization](https://doi.org/10.1016/0022-0000(92)90014-A).
+The main idea is that non-aperiodic stable behavior can encode nontrivial
+modular counting, which $AC^0$ cannot do. If the stable monoid is aperiodic,
+its stable pieces are star-free and can be recognized in $AC^0$.
+
+**Lemma 2 (a sufficient test for any DFA).** If the full transition monoid
+
+$$
+M_{\mathcal A}=\eta_{\mathcal A}(\Sigma^*)
+$$
+
+is aperiodic, then the language recognized by $\mathcal A$ is in $AC^0$.
+
+To see this, minimize $\mathcal A$. The transition monoid of the minimal DFA is
+a quotient of $M_{\mathcal A}$. A quotient of an aperiodic monoid is
+aperiodic, and every submonoid is also aperiodic. Thus the stable monoid of the
+minimal DFA is aperiodic, so Lemma 1 applies.
+
+**Lemma 3 (monotone DFA test).** Suppose the states of a fixed DFA have a total
+order $\le$. If every character preserves this order, meaning that
+
+$$
+x\le y
+\quad\Longrightarrow\quad
+\delta(x,c)\le\delta(y,c)
+$$
+
+for all states $x,y$ and characters $c\in\Sigma$, then the language of the DFA
+is in $AC^0$.
+
+Each character induces an order-preserving map, and a composition of such maps
+is still order-preserving. Therefore every word $w\in\Sigma^*$ induces an
+order-preserving map $T_w$.
+
+Fix a state $x$ and define $x_i=T_w^i(x)$. Because the order is total, either
+$x_1\le x_0$ or $x_1\ge x_0$. In the first case, order preservation gives
+
+$$
+x_{i+1}=T_w(x_i)\le T_w(x_{i-1})=x_i,
+$$
+
+so the sequence keeps decreasing. In the second case, the same argument shows
+that it keeps increasing. Since $Q$ is finite, the sequence must become
+constant. Thus, for every $x\in Q$, there is an integer $\ell_x$ such that
+
+$$
+T_w^{\ell_x}(x)=T_w^{\ell_x+1}(x).
+$$
+
+Let $N_w=\max_{x\in Q}\ell_x$. Then
+
+$$
+\eta_{\mathcal A}(w^{N_w})=\eta_{\mathcal A}(w^{N_w+1}).
+$$
+
+$M_{\mathcal A}$ is aperiodic since $w$ was arbitrary, and Lemma 2 applies.
+
+## $\mathrm{MOD}_3$ interval construction
+
+The $q=3$ construction maps three consecutive integer intervals to the three
+Hamming-weight residue slices modulo $3$.
+
+For a binary word $x$, define
+
+$$
+f_3(x)=\mathbf{1}[|x|\equiv0\pmod3].
+$$
+
+For $X\sim U_n$, the target distribution is
+
+$$
+\mathrm{Pair}_{3,n}=(X,f_3(X)).
+$$
+
+**Theorem 4 ($\mathrm{Pair}_{3,n}$ sampling).** For every $n\ge1$, there is
+a randomized-$AC^0$ sampler for $\mathrm{Pair}_{3,n}$.
 
 For $r\in\mathbb Z_3$ and $k\ge0$, define the residue-slice counts
 
@@ -170,87 +228,17 @@ e_{r,k}
 \mathbf{1}[N_{r,k-1}<N_{r-1,k-1}].
 $$
 
-We recursively construct a permutation
+To understand this flip bit, split the target residue slice according to its
+least significant bit $y_0$. The branch $y_0=0$ has size $N_{r,k-1}$, while
+the branch $y_0=1$ has size $N_{r-1,k-1}$. On the input side, the even and odd
+integers in $[0,N_{r,k})$ have sizes
+$\lceil N_{r,k}/2\rceil$ and $\lfloor N_{r,k}/2\rfloor$. If
+$N_{r,k-1}<N_{r-1,k-1}$, the larger target branch is $y_0=1$, so we must swap
+the two input branches by setting $y_0=u_0\mathbin{\oplus}1$. This is exactly
+the case $e_{r,k}=1$.
 
-$$
-P_{r,k}:\{0,1\}^k\to\{0,1\}^k.
-$$
-
-The base case is $P_{r,0}(0)=0$. For $k\ge1$, interpret the input as the
-integer
-
-$$
-x=z+2u,
-\qquad
-z\in\{0,1\},
-\qquad
-0\le u<2^{k-1},
-$$
-
-where $z$ is the least significant bit. Set
-
-$$
-y=z\mathbin{\oplus}e_{r,k}
-$$
-
-and
-
-$$
-P_{r,k}(z+2u)
-=
-y+2P_{r-y,k-1}(u),
-$$
-
-where $r-y$ is computed in $\mathbb Z_3$. The map $z\mapsto y$ is a one-bit
-permutation, and the two higher-bit fibers are permutations by induction, so
-every $P_{r,k}$ is a cube permutation.
-
-More importantly, the same induction gives the exact interval identity
-
-$$
-\boxed{
-x<N_{r,k}
-\quad\Longleftrightarrow\quad
-|P_{r,k}(x)|\equiv r\pmod3.
-}
-$$
-
-The reason is numerical: the interval $[0,N_{r,k})$ contains
-$\lceil N_{r,k}/2\rceil$ integers of one input parity and
-$\lfloor N_{r,k}/2\rfloor$ of the other. The flip bit $e_{r,k}$ sends the
-larger input fiber to the larger target residue fiber, after which the claim
-reduces to length $k-1$.
-
-Taking
-
-$$
-P_n=P_{0,n},
-\qquad
-B_n(z)=\mathbf{1}[z<N_{0,n}],
-$$
-
-we obtain the pointwise identity
-
-$$
-f_{3,n}(P_n(z))=B_n(z).
-$$
-
-The readout $B_n$ is comparison with a fixed $n$-bit constant, hence has a
-depth-$2$, polynomial-size DNF.
-
-### Why the LSB-first recursion is in $AC^0$
-
-A constant-state recursion is not automatically in $AC^0$. Here the extra
-ingredient is aperiodicity. If $r_j$ is the residue state before processing the
-$j$th least significant bit and $k=n-j$, then
-
-$$
-y_j=z_j\mathbin{\oplus}e_{r_j,k},
-\qquad
-r_{j+1}=r_j-y_j\pmod3.
-$$
-
-The flip table depends only on $k\bmod6$:
+The value of $e_{r,k}$ depends only on $r\bmod3$ and $k\bmod6$. The complete
+table is
 
 | $k\bmod6$ | $(e_{0,k},e_{1,k},e_{2,k})$ |
 | ---: | :---: |
@@ -258,30 +246,120 @@ The flip table depends only on $k\bmod6$:
 | $2,3$ | $(0,0,1)$ |
 | $4,5$ | $(1,0,0)$ |
 
-Group six consecutive input bits into one block. For each of the six possible
-starting phases, the block words generate an eight-element transformation
-monoid on $\mathbb Z_3$. Every element $a$ satisfies
+For $r\in\mathbb Z_3$, let $P_{r,n}(u)$ denote the $n$-bit word produced by
+the loop below when its initial residue state is $r$. The bits of $u$ are read
+from the least significant to the most significant.
+
+The following three intervals partition $[0,2^n)$:
+
+$$
+\begin{aligned}
+I_{0,n}&=[0,N_{0,n}),\\
+I_{1,n}&=[N_{0,n},N_{0,n}+N_{1,n}),\\
+I_{2,n}&=[N_{0,n}+N_{1,n},2^n).
+\end{aligned}
+$$
+
+The complete sampling procedure is:
+
+```text
+sample z uniformly from {0, ..., 2^n - 1}
+if z < N[0,n]:
+    r_0 <- 0
+    u <- z
+else if z < N[0,n] + N[1,n]:
+    r_0 <- 1
+    u <- z - N[0,n]
+else:
+    r_0 <- 2
+    u <- z - N[0,n] - N[1,n]
+r <- r_0
+k <- n mod 6
+for i <- 0, ..., n - 1:
+    y_i <- u_i XOR e[r, k]
+    r   <- r - y_i mod 3
+    k   <- k - 1 mod 6
+return (y, 1[r_0 = 0])
+```
+
+Let
+
+$$
+P_n:\{0,1\}^n\longrightarrow\{0,1\}^n
+$$
+
+be the map that sends $z$ to the word $y$ produced by the procedure above,
+and let $B_n(z)=\mathbf{1}[r_0=0]$ be its label. Then
+
+$$
+\boxed{
+z\in I_{r,n}
+\quad\Longleftrightarrow\quad
+|P_n(z)|\equiv r\pmod3.
+}
+$$
+
+By induction, $P_n$ is bijective, i.e., a cube permutation.
+
+> Why $P_n$ is in $AC^0$
+
+First consider the loop.
+
+First handle at most five bits with a fixed lookup so that the next step starts
+at phase $k\equiv0\pmod6$.
+
+Now group the remaining bits into blocks of six. Each block word maps the old
+residue state $r\in\mathbb Z_3$ to a new residue state.
+
+1. Directly enumerate the $64$ cases and their corresponding maps.
+2. Add the identity map and compose these maps until no new map appears.
+
+The resulting maps, written as the images of $0,1,2$, are
+
+$$
+\begin{aligned}
+&(0,1,2),\ (0,0,0),\ (1,1,1),\ (2,2,2),\\
+&(0,2,2),\ (1,1,2),\ (1,2,2),\ (2,1,1).
+\end{aligned}
+$$
+
+Every element $a$ satisfies
 
 $$
 a^3=a^2.
 $$
 
-The monoid is therefore aperiodic. By the classical equivalence between
-aperiodic finite monoids, star-free languages, and $FO[<]$, every prefix-state
-predicate is computable in uniform $AC^0$. Each output bit then applies only a
-fixed lookup to its prefix state, phase, and current bit. Hence both $P_n$ and
-$B_n$ satisfy the deterministic two-round interface.
+The block transition monoid is therefore aperiodic. By Lemma 2, $AC^0$ can
+decide the residue state $r$ after any number of complete blocks.
 
-This is a special feature of $q=3$. The three residue counts remain within
-$1$, making the binary interval split possible at every recursion level. For
-$q\ge4$, this fixed-block interval-comparator normal form does not extend: the
-adjacent residue-count gaps become unbounded. That obstruction concerns this
-specific comparator construction, not two-round sampling itself.
+Finally, a suffix of fewer than six bits is handled by a fixed lookup. The
+comparisons and subtractions involving the fixed thresholds $N_{0,n}$ and
+$N_{0,n}+N_{1,n}$ are in $AC^0$. Hence $P_n$ is in $AC^0$.
 
-## Every fixed $\mathrm{MOD}_q$ by common quantiles
+This is a special feature of $q=3$. The three residue counts differ by at most
+$1$, making the binary interval split possible at every recursion level. This
+interval construction does not extend to $q\ge4$.
+
+## $\mathrm{MOD}_q$ via common quantiles
 
 The general construction abandons the interval comparator. It uses $2q$-bit
 blocks and couples all residue-state transition rows by a common rank.
+
+Fix $q\ge2$. For a binary word $x$, define
+
+$$
+f_q(x)=\mathbf{1}[|x|\equiv0\pmod q].
+$$
+
+For $X\sim U_n$, let
+
+$$
+\mathrm{Pair}_{q,n}=(X,f_q(X)).
+$$
+
+**Theorem 5 ($\mathrm{Pair}_{q,n}$ sampling).** For every fixed $q\ge2$ and
+every $n\ge1$, there is a randomized-$AC^0$ sampler for
+$\mathrm{Pair}_{q,n}$.
 
 ### Residue census
 
@@ -289,8 +367,6 @@ Fix the block length
 
 $$
 b=2q,
-\qquad
-N=2^{2q},
 $$
 
 and define, for $d\in\mathbb Z_q$,
@@ -328,17 +404,63 @@ w_0\ge w_1\ge\cdots\ge w_m.
 }
 $$
 
-For example, if
+First,
+
+$$
+\begin{aligned}
+w_0-w_1
+&=
+\binom{2q}{q}-\binom{2q}{q-1}+2-2q\\
+&=
+\frac{1}{q+1}\binom{2q}{q}+2-2q.
+\end{aligned}
+$$
+
+The first term is the Catalan number $\operatorname{Cat}_q$. Since
+
+$$
+\frac{\operatorname{Cat}_q}{\operatorname{Cat}_{q-1}}
+=
+\frac{2(2q-1)}{q+1}
+\ge2,
+$$
+
+we have $\operatorname{Cat}_q\ge2^{q-1}\ge2q-2$ for $q\ge2$. Hence
+$w_0\ge w_1$.
+
+For the remaining comparisons, define
 
 $$
 \Delta_k=\binom{2q}{k}-\binom{2q}{k-1},
 $$
 
-then for $1\le r<m$,
+so for $1\le r<m$,
 
 $$
-w_r-w_{r+1}=\Delta_{q-r}-\Delta_{r+1}>0.
+w_r-w_{r+1}=\Delta_{q-r}-\Delta_{r+1}.
 $$
+
+Let $L=q-2r-1\ge1$. A direct ratio calculation gives
+
+$$
+\frac{\Delta_{q-r}}{\Delta_{r+1}}
+=
+\frac{(2r+1)(2q-r)}{(q+r+1)(2q-2r-1)}
+\prod_{j=1}^{L}
+\frac{q+r+j}{r+1+j}.
+$$
+
+Keeping only the $j=1$ factor from the product and using that all remaining
+factors are at least $1$, we get
+
+$$
+\frac{\Delta_{q-r}}{\Delta_{r+1}}
+\ge
+\frac{(2r+1)(2q-r)}{(r+2)(2q-2r-1)}
+>1.
+$$
+
+Thus $w_r>w_{r+1}$ for $1\le r<m$.
 
 Hence the block residue census is symmetric and nonincreasing with circular
 distance from $0$.
@@ -351,9 +473,27 @@ $$
 0<1<-1<2<-2<\cdots.
 $$
 
+If $q=2m$, the last state is $m=-m$ in $\mathbb Z_q$.
+
 Write this chain as $\xi_0<\xi_1<\cdots<\xi_{q-1}$, and let
-$I_k=\{\xi_0,\ldots,\xi_k\}$ be a chain prefix. From an old residue state
-$s$, the desired integer mass at target $t$ is
+
+$$
+\mathrm{Pfx}_k=\{\xi_0,\ldots,\xi_k\}
+$$
+
+be its $k$-th prefix. These prefixes have two forms:
+
+$$
+\mathrm{Pfx}_{2j}=\{-j,-j+1,\ldots,j\},
+$$
+
+and
+
+$$
+\mathrm{Pfx}_{2j+1}=\{-j,-j+1,\ldots,j+1\}.
+$$
+
+From an old residue state $s$, the desired integer mass at target $t$ is
 
 $$
 \mu_s(t)=w_{t-s}.
@@ -362,205 +502,218 @@ $$
 Define its cumulative mass along the chain by
 
 $$
-F_s(k)=\sum_{t\in I_k}w_{t-s}.
+F_{s,\mathrm{Pfx}_k}
+=\sum_{t\in\mathrm{Pfx}_k}\mu_s(t)
+=\sum_{t\in\mathrm{Pfx}_k}w_{t-s}.
 $$
 
-The radial monotonicity of $w$ implies
+### A $\mathrm{MOD}_3$ example
+
+For $q=3$, $b=6$, $(w_0,w_1,w_2)=(22,21,21)$, and
+$(\xi_0,\xi_1,\xi_2)=(0,1,2)$. Each entry is
+$(F_{s,\mathrm{Pfx}_k},M_s(\xi_k))$, where $M_s(\xi_k)=\mu_s(\xi_k)=w_{\xi_k-s}$.
+
+| old state $s$ | $\mathrm{Pfx}_0=\{0\}$, $\xi_0=0$ | $\mathrm{Pfx}_1=\{0,1\}$, $\xi_1=1$ | $\mathrm{Pfx}_2=\mathbb Z_3$, $\xi_2=2$ |
+| --- | ---: | ---: | ---: |
+| $0$ | $(22,22)$ | $(43,21)$ | $(64,21)$ |
+| $1$ | $(21,21)$ | $(43,22)$ | $(64,21)$ |
+| $2=-1$ | $(21,21)$ | $(42,21)$ | $(64,22)$ |
+
+>Prove $F_{\xi_i,\mathrm{Pfx}_k}\ge F_{\xi_{i+1},\mathrm{Pfx}_k}$
+
+for every adjacent pair of old states and every prefix. The adjacent steps in
+the zigzag chain are $r\to-r$ and $-r\to r+1$.
+
+First consider the even prefix $\mathrm{Pfx}_{2j}=\{-j,\ldots,j\}$. Reflection
+around $0$ gives
 
 $$
-F_{\xi_i}(k)\ge F_{\xi_{i+1}}(k)
+F_{-r,\mathrm{Pfx}_{2j}}=F_{r,\mathrm{Pfx}_{2j}}.
 $$
 
-for every adjacent pair of old states and every prefix $I_k$. A direct
-telescoping check makes the direction explicit over the index ranges needed
-for adjacent zigzag comparisons. For an even prefix
-$I_{2j}=\{-j,\ldots,j\}$, let
+Also, cancellation inside the two sums gives
 
 $$
-A_j(r)=\sum_{t=-j}^{j}w_{t-r}.
-$$
-
-Then
-
-$$
-A_j(r)-A_j(r+1)
+F_{r,\mathrm{Pfx}_{2j}}-F_{r+1,\mathrm{Pfx}_{2j}}
 =
-w_{j-r}-w_{-j-r-1}\ge0.
+w_{j-r}-w_{-j-r-1}.
 $$
 
-For an odd prefix $I_{2j-1}=\{-j+1,\ldots,j\}$, define
+For every transition $-r\to r+1$, the valid ranges give
 
 $$
-B_j(r)=\sum_{t=-j+1}^{j}w_{t-r}.
+2\max\{j,r\}\le q-1
+\implies
+|j-r|
+\le
+\min\{j+r+1,q-j-r-1\},
 $$
 
-Similarly,
+so radial monotonicity and reflection give
 
 $$
-B_j(r)-B_j(r+1)
+F_{-r,\mathrm{Pfx}_{2j}}
+=F_{r,\mathrm{Pfx}_{2j}}
+\ge F_{r+1,\mathrm{Pfx}_{2j}}.
+$$
+
+Every transition $r\to-r$ gives equality.
+
+Now consider the odd prefix
+$\mathrm{Pfx}_{2j+1}=\{-j,\ldots,j+1\}$. Reflection around $1/2$ gives
+
+$$
+F_{-r,\mathrm{Pfx}_{2j+1}}=F_{r+1,\mathrm{Pfx}_{2j+1}}.
+$$
+
+The endpoint difference is
+
+$$
+F_{r,\mathrm{Pfx}_{2j+1}}-F_{r+1,\mathrm{Pfx}_{2j+1}}
 =
-w_{j-r}-w_{-j-r}\ge0.
+w_{j+1-r}-w_{-j-r-1}.
 $$
 
-Together with the reflection symmetries of these two kinds of prefixes, these
-inequalities give the claimed stochastic order along the entire zigzag chain.
-
-### Common quantiles and rank matching
-
-For each integer rank $u\in\{0,\ldots,N-1\}$, use the same rank in every old
-state row and define
+To check the inequality, set $J=j+1$. We have $1\le J\le m$. The valid
+ranges imply
 
 $$
-\tau_u(s)
-=
-\xi_{\min\{k:u<F_s(k)\}}.
+2\max\{J,r\}\le q \implies |J-r|\le\min\{J+r,q-J-r\},
 $$
 
-The CDF ordering implies that every transformation
+so radial monotonicity and reflection give
 
 $$
-\tau_u:\mathbb Z_q\to\mathbb Z_q
+F_{r,\mathrm{Pfx}_{2j+1}}
+\ge F_{r+1,\mathrm{Pfx}_{2j+1}}
+=F_{-r,\mathrm{Pfx}_{2j+1}}.
 $$
 
-preserves the zigzag chain. Moreover, the quantile interval assigned to target
-$t$ has exactly the required integer length, so for every $s,d\in\mathbb Z_q$,
+Every transition
+$-r\to r+1$ gives equality.
+
+Thus, for every prefix and every adjacent pair of old states,
 
 $$
 \boxed{
+F_{\xi_i,\mathrm{Pfx}_k}\ge F_{\xi_{i+1},\mathrm{Pfx}_k}.
+}
+$$
+
+By the following proposition 6, theorem5 gets proved.
+
+**Proposition 6 (ordered block-census sampling criterion).** Let
+
+$$
+\mathcal A=(Q,\{0,1\},\delta,q_0,Q_{\mathrm{acc}})
+$$
+
+be a fixed binary DFA, and let $L=L(\mathcal A)$. Fix a block length $b\ge1$
+and a total order
+
+$$
+Q=\{\xi_0<\xi_1<\cdots<\xi_{\ell-1}\}.
+$$
+
+Let $\Gamma=\{0,1\}^b$. For $s,t\in Q$, define the block-transition census
+
+$$
+M_s(t)
+=
 \left|
 \left\{
-u:\tau_u(s)-s\equiv d\pmod q
+y\in\Gamma:\delta^*(s,y)=t
 \right\}
-\right|
-=w_d.
-}
+\right|.
 $$
 
-For each old state $s$ and residue increment $d$, define
+For $\mathrm{Pfx}_k=\{\xi_0,\ldots,\xi_k\}$, set
 
 $$
-D_{s,d}
+F_{s,\mathrm{Pfx}_k}
 =
-\left\{
-u:\tau_u(s)-s\equiv d\pmod q
-\right\}
+\sum_{t\in\mathrm{Pfx}_k}M_s(t).
 $$
 
-and
+Assume that, for all $0\le i<\ell-1$ and $0\le k<\ell$,
 
 $$
-W_d
-=
-\left\{
-y\in\{0,1\}^{2q}:|y|\equiv d\pmod q
-\right\}.
+F_{\xi_i,\mathrm{Pfx}_k}
+\ge
+F_{\xi_{i+1},\mathrm{Pfx}_k}.
 $$
 
-The boxed census gives $|D_{s,d}|=|W_d|$. Match the two sets by rank within
-each residue class. Combining the $q$ matches gives a block cube permutation
+Then, for every $n\ge1$, there is a randomized-$AC^0$ sampler for
+$\mathrm{Pair}_{L,n}$.
+
+**Proof.** Let $N=2^b$ and set $F_{s,\mathrm{Pfx}_{-1}}=0$. Order $\Gamma$
+lexicographically. For $u\in\Gamma$, define $\tau_u(s)=\xi_k$ when
 
 $$
-\pi_s:\{0,1\}^{2q}\to\{0,1\}^{2q}
+F_{s,\mathrm{Pfx}_{k-1}}
+\le \operatorname{rank}(u)<
+F_{s,\mathrm{Pfx}_k}.
 $$
 
-satisfying
+Consider adjacent states $s=\xi_i<s'=\xi_{i+1}$. If
+$\tau_u(s')=\xi_k$, then
 
 $$
-\boxed{
-s+|\pi_s(u)|
-\equiv
-\tau_u(s)
-\pmod q.
-}
+\operatorname{rank}(u)
+<F_{s',\mathrm{Pfx}_k}
+\le F_{s,\mathrm{Pfx}_k}.
 $$
 
-### Global cube permutation
+Therefore $\tau_u(s)\le\xi_k=\tau_u(s')$. Thus every $\tau_u$ preserves the
+state order.
 
-Write
-
-$$
-n=2qM+r,
-\qquad
-0\le r<2q.
-$$
-
-Split the first $2qM$ seed bits into blocks $u_1,\ldots,u_M$, and call the
-remaining $r$ bits $c$. Starting from $s_0=0$, set
+If $t=\xi_k$, then the two lists used in the rank matching below have the
+same length:
 
 $$
-y_i=\pi_{s_{i-1}}(u_i),
-\qquad
-s_i=\tau_{u_i}(s_{i-1}).
+\left|\left\{u\in\Gamma:\tau_u(s)=t\right\}\right|
+=F_{s,\mathrm{Pfx}_k}-F_{s,\mathrm{Pfx}_{k-1}}
+=M_s(t)
+=\left|\left\{y\in\Gamma:\delta^*(s,y)=t\right\}\right|.
 $$
 
-Define
+Since the two sets have equal cardinality, we obtain block cube permutations
+$\pi_s:\Gamma\to\Gamma$ such that
 
 $$
-P_{q,n}(u_1,\ldots,u_M,c)
-=
-(y_1,\ldots,y_M,c)
+\delta^*(s,\pi_s(u))=\tau_u(s).
 $$
 
-and
+Each $\pi_s$ is hard-coded into the circuit as a lookup table.
 
-$$
-C_{q,n}(z)
-=
-\mathbf{1}[s_M+|c|\equiv0\pmod q].
-$$
+The sampler is:
 
-The block identity implies
+```text
+procedure SamplePair(z)
+    input:  z in {0,1}^n
+    write n = b*m + r with 0 <= r < b
+    parse z as (u[1], ..., u[m], c), with u[i] in Gamma and c in {0,1}^r
+    s[0] <- q_0
+    for i <- 1, ..., m do
+        y[i] <- pi_{s[i-1]}(u[i])
+        s[i] <- tau_{u[i]}(s[i-1])
+    end for
+    P_n(z) <- (y[1], ..., y[m], c)
+    C_n(z) <- 1 if delta^*(s[m], c) is in Q_acc; otherwise 0
+    return (P_n(z), C_n(z))
+end procedure
+```
 
-$$
-\sum_{i=1}^{M}|y_i|\equiv s_M\pmod q,
-$$
-
-and hence
-
-$$
-f_{q,n}(P_{q,n}(z))=C_{q,n}(z).
-$$
-
-The global map is a permutation by triangular inversion. Knowing
-$s_{i-1}$ and $y_i$, invert the fixed permutation $\pi_{s_{i-1}}$ to recover
-$u_i$, then compute $s_i$ and continue to the next block. The remainder is
-unchanged.
-
-### Why the construction is in $AC^0$
-
-Every $\tau_u$ preserves the same finite chain, and compositions preserve it as
-well. Any order-preserving self-map $a$ of a $q$-element chain has monotone
-orbits and satisfies
-
-$$
-a^q=a^{q-1}.
-$$
-
-Therefore the transformation monoid generated by the $\tau_u$ is aperiodic.
-The prefix-state languages are consequently star-free, equivalently definable
-in $FO[<]$, and hence computable in uniform $AC^0$. Since $q$ is fixed, the
-block alphabet, $\tau_u$ tables, $\pi_s$ tables, and remainder tests are all
-constant-size lookups. Every output bit and the final readout are therefore
-fixed-depth polynomial-size circuits.
-
-This proves the deterministic two-round interface for every fixed $q\ge2$,
-including composite moduli. No step uses a finite-field structure, a
-multiplicative inverse, or the Chinese remainder theorem; the proof uses only
-the additive cyclic group $\mathbb Z_q$, circular distance, and a fixed finite
-chain.
-
-If $n<2q$, there is no complete block. Then $P_{q,n}$ is the identity and the
-readout is a constant-size lookup because only finitely many lengths are
-involved for fixed $q$. Thus the construction covers every positive length,
-not only sufficiently large $n$.
+By Lemma 3, all $s_i$ and the output of each block can be computed in parallel
+in $AC^0$, so the sampling procedure is in $AC^0$.
 
 ## Why the modular constructions are not yet the general proof
 
 The two modular constructions above use the same strong interface: an explicit
-cube permutation $P_{q,n}$ makes the label shallow, and the second DLM round is
-fully deterministic. This interface is convenient but unnecessarily
-restrictive for a general finite automaton. A general two-round revision update
-may use a stochastic product kernel in its second round.
+cube permutation $P_{q,n}$ keeps the word uniform and makes its label shallow.
+This interface is useful, but it is stronger than what a general finite
+automaton needs. For a general DFA, the sampler may use extra independent fair
+bits after it has sampled a state path.
 
 The general proof therefore separates two tasks:
 
@@ -614,7 +767,7 @@ p_{\mathcal M}(\gamma)\in\mathbb D_{\ge0}.
 \tag{2}
 $$
 
-An exact fair-bit randomized-$AC^0$ trajectory sampler is a family
+A fair-bit randomized-$AC^0$ trajectory sampler is a family
 
 $$
 S_n:\{0,1\}^{r_n}\longrightarrow Q^{n+1}
@@ -624,7 +777,7 @@ such that $S_n(U_{r_n})$ has exactly the trajectory law (1). The finite state
 set $Q$ uses a fixed constant-length encoding, and depth and size refer to the
 whole multi-output circuit.
 
-**Theorem 1 (path-dyadic trajectory characterization).** For every fixed
+**Theorem 7 (path-dyadic trajectory characterization).** For every fixed
 finite Markov chain $\mathcal M=(Q,\mu,P)$, the following statements are
 equivalent.
 
@@ -644,7 +797,7 @@ equivalent.
    state is uniform inside the current visible fiber conditioned on every
    positive-probability visible history.
 4. There are constants $c,s,d,K$, depending only on $\mathcal M$, such that
-   every horizon $n$ has an exact fair-bit randomized-$AC^0$ trajectory
+   every horizon $n$ has a fair-bit randomized-$AC^0$ trajectory
    sampler using exactly $c+sn$ fair bits, depth at most $d$, and size at most
    $O(n^K)$.
 
@@ -937,7 +1090,7 @@ A finite aperiodic $b$-block lift consists of:
    for every $h\in H$ and $t\in Q$;
 4. an aperiodic finite transformation monoid generated by the maps $\tau_u$.
 
-**Proposition 2 (aperiodic lift implies shallow trajectories).** If such a
+**Proposition 8 (aperiodic lift implies shallow trajectories).** If such a
 lift exists, then for every initial base state $q_0$ and every
 $h_0\in\phi^{-1}(q_0)$ there are uniform-$AC^0$ cube permutations
 
@@ -1047,7 +1200,7 @@ nondecreasing, so the generated monoid is aperiodic.
 
 ### The universal binary lift
 
-**Theorem 3 (universal aperiodic lift).** Every fixed deterministic binary
+**Theorem 9 (universal aperiodic lift).** Every fixed deterministic binary
 transition system whose states are reachable admits a finite aperiodic block
 lift. The hidden set may be chosen with
 
@@ -1274,7 +1427,7 @@ $$
 $$
 
 Expand each $s$-bit driver symbol into $s$ binary input steps and add finitely
-many phase and partial-symbol states. Theorem 3 and Proposition 2 then give,
+many phase and partial-symbol states. Theorem 9 and Proposition 8 then give,
 for every fixed initial hidden state $h_0$, a uniform-$AC^0$ permutation
 
 $$
@@ -1344,16 +1497,7 @@ lookup tables, and circuit-depth constants depend only on the fixed chain, so
 the total size is $O(n^K)$ for a chain-dependent constant $K$.
 
 Together with the finite-bit necessity argument, this completes every
-implication in Theorem 1.
-
-In a two-round revision-DLM interpretation, round one writes the raw product
-seed $(V,Z)$ and round two deterministically computes (37)--(38). One may use
-$n+1$ state-valued tokens with a chain-dependent finite working alphabet, or a
-constant-factor number of binary coordinates to encode those tokens and the
-$s$-bit drivers. This gives a universal two-round upper bound for the full
-trajectory, but it does not claim that every nontrivial chain has minimum round
-complexity two: a degenerate trajectory law may itself be a product
-distribution.
+implication in Theorem 7.
 
 ## Binary regular languages
 
@@ -1367,15 +1511,14 @@ and let $L$ be its language. For $X\sim U_n$, the target input-output pair
 distribution is
 
 $$
-\mathcal D_{L,n}^{\mathrm{pair}}
+\mathrm{Pair}_{L,n}
 =
 (X,\mathbf 1[X\in L]).
 \tag{39}
 $$
 
-The required revision-DLM has width $n+1$. The path sampled below is latent:
-the first round stores only fair seed bits, and each second-round output
-coordinate recomputes whichever path states it needs.
+The state path used below is internal to the circuit. It is not part of the
+output. Each output coordinate computes only the path states that it needs.
 
 ### The DFA-induced Markov chain
 
@@ -1395,7 +1538,7 @@ a\in\{0,1\}:\delta(q,a)=r
 $$
 
 Every entry belongs to $\{0,1/2,1\}$. The initial state $q_0$ is fixed, so
-the chain is already dyadic and Theorem 1 applies with
+the chain is already dyadic and Theorem 7 applies with
 
 $$
 w_q=1,
@@ -1415,7 +1558,7 @@ $$
 such that $G_n(Z)$ has exactly the full state-trajectory law of (40) when
 $Z\sim U_n$.
 
-### Recovering characters by a product kernel
+### Recovering characters from the path
 
 Fix a positive-probability state path
 
@@ -1446,8 +1589,8 @@ $$
 $$
 
 If there is one compatible character, the output is deterministic. If both
-characters are compatible, that coordinate uses one fresh fair bit. Thus (43)
-is a genuine coordinatewise product kernel.
+characters are compatible, that coordinate uses one fresh fair bit. The
+characters are independent after the path is fixed.
 
 To verify exactness, fix $x\in\{0,1\}^n$ and let $\gamma(x)$ be its unique
 DFA state path. From (40),
@@ -1495,30 +1638,20 @@ $$
 
 pointwise.
 
-**Theorem 4 (two-round sampling for fixed binary regular languages).** For
-every fixed binary regular language $L$, there are constants $d_L,K_L$ such
-that, for every $n$, an exact width-$(n+1)$ fair-bit revision-DLM samples
-$\mathcal D_{L,n}^{\mathrm{pair}}$ in at most two rounds. Its update circuits
-have depth at most $d_L$ and size at most $n^{K_L}$.
+**Theorem 10 (sampling for fixed binary regular languages).** For every
+fixed binary regular language $L$, there are constants $d_L,K_L$ such that,
+for every $n$, a fair-bit randomized-$AC^0$ circuit samples
+$\mathrm{Pair}_{L,n}$. Its depth is at most $d_L$ and its size is
+$O(n^{K_L})$.
 
-The two rounds are:
+To build the circuit, take independent fair seeds $Z,R\in\{0,1\}^n$. Use
+$G_n(Z)$ from (41) to obtain the internal path. Coordinate $i$ uses
+$(q_{i-1}(Z),q_i(Z))$ and the single bit $R_i$ to implement (43). The label
+coordinate outputs $\mathbf 1[q_n(Z)\in F]$.
 
-1. sample $Z\sim U_n$ in the first $n$ coordinates and put a fixed
-   placeholder in the label coordinate;
-2. each character coordinate recomputes
-   $(q_{i-1}(Z),q_i(Z))$ using (41) and applies (43), while the label coordinate
-   recomputes $q_n(Z)$ and outputs $\mathbf 1[q_n(Z)\in F]$.
-
-The latent path requires no extra sequence positions. Copying the needed
-prefix-state subcircuits across the output coordinates changes polynomial size
-but not constant depth.
-
-If the Boolean function $x\mapsto\mathbf 1[x\in L]$ is nonconstant on
-$\{0,1\}^n$, one round cannot suffice. From the all-mask state, a one-round
-law is a product law. Its first $n$ coordinates must be independent fair bits,
-so the final coordinate would be independent of them, contradicting its being
-a nonconstant deterministic label. Therefore the minimum is exactly two on
-every nonconstant length slice.
+The path uses only internal wires. Copying the required prefix-state circuits
+for all output coordinates increases the size by a polynomial factor but does
+not change the constant-depth bound.
 
 ## Comparing the four proof levels
 
@@ -1532,18 +1665,18 @@ The dependency structure is now explicit:
    dyadic random-map system; the universal binary aperiodic lift then makes all
    prefix states shallow.
 4. A binary regular language uses the Markov trajectory theorem and then a
-   stochastic compatible-character product kernel.
+   conditionally independent compatible-character sampling step.
 
-The modular constructions have deterministic second rounds; the general
-regular-language construction need not. The general theorem subsumes every
-fixed $\mathrm{MOD}_q$ as a language-level upper bound, but the explicit
-modular constructions remain informative because they exhibit much more
-concrete cube permutations.
+The modular constructions use only the $n$ seed bits and an explicit cube
+permutation. The general regular-language construction may also use fresh fair
+bits in the compatible-character step. The general theorem includes every
+fixed $\mathrm{MOD}_q$ as a language-level result, but the direct modular
+constructions are still useful because they give concrete cube permutations.
 
 None of these results says that $\mathrm{MOD}_q$ recognition is in $AC^0$.
 The shallow object is a measure-preserving reparameterization of a fair seed,
-followed by a shallow readout or product kernel. For the contrasting
-recognition lower bound, see
+followed by a shallow readout or independent conditional sampling. For the
+contrasting recognition lower bound, see
 [*Near-perfect average-case MOD_q requires log n / log log n depth for polynomial-size AC circuits*]({{ '/blog/near-perfect-mod-q-ac-depth/' | relative_url }}).
 
 The Markov theorem also retains the following boundaries:
