@@ -12,6 +12,10 @@ summary: "A characterization of finite Markov chains whose full trajectories can
 
 I study two related sampling problems.
 
+Throughout this note, sampling means exact equality in distribution: every
+output has exactly its target probability. Approximate sampling is not
+considered.
+
 The first problem starts with a fixed binary regular language
 $L\subseteq\Sigma^*$, where $\Sigma=\{0,1\}$. Its indicator is
 $f_L(x)=\mathbf{1}[x\in L]$. Let $U_n$ be the uniform distribution on
@@ -26,10 +30,6 @@ $$
 This sampling problem has $n+1$ output bits. The goal is to sample
 $\mathrm{Pair}_{L,n}$. I will prove that every fixed binary regular language
 has such a randomized-$AC^0$ sampler.
-
-Throughout this note, sampling means exact equality in distribution: every
-output has exactly its target probability. Approximate sampling is not
-considered unless stated otherwise.
 
 The second problem starts with a fixed finite Markov chain, given by an initial
 distribution and a transition matrix. The goal is to sample its complete
@@ -65,11 +65,13 @@ are not dyadic. The result for regular languages then follows from the Markov
 chain theorem.
 
 Sampling is different from recognition. In recognition, the input $x$ is
-fixed and the circuit must compute $f_L(x)$. In sampling, the circuit may instead use a cube permutation, which can require less depth. For example, sampling parity needs $O(1)$ depth, while recognizing parity with polynomial-size $AC$ circuits needs $\Theta(\log n/\log\log n)$ depth that is not in $AC^0$.
+fixed and the circuit must compute $f_L(x)$. In sampling, the circuit may
+instead use a cube permutation, which can require less depth. For example,
+sampling parity needs $O(1)$ depth, whereas polynomial-size $AC$ circuits for
+recognizing parity require $\Theta(\log n/\log\log n)$ depth and thus fall
+outside $AC^0$.
 
 ## Three lemmas about regular-language recognition
-
-These lemmas will be used several times below.
 
 Let $\mathcal A=(Q,\Sigma,\delta,q_0,F)$ be any DFA. Every word
 $u\in\Sigma^*$ induces a map on its states,
@@ -106,6 +108,19 @@ $$
 It does not depend on the chosen stability index. A finite monoid is
 aperiodic if every element $a$ satisfies $a^{k+1}=a^k$ for some $k\ge1$.
 
+Here and below, a nontrivial cycle means a directed cycle of length at least
+$2$.
+
+**Cycle criterion.** Let $g:H\to H$ be a self-map of a finite set. Then
+$g^k=g^{k+1}$ for some $k\ge1$ if and only if $g$ has no nontrivial cycle.
+Consequently, a finite transformation monoid is aperiodic if and only if none
+of its elements has a nontrivial cycle.
+
+**Proof.** If $g$ has a nontrivial cycle, then $g^m\ne g^{m+1}$ for every
+$m\ge1$. Conversely, if every cycle of $g$ is a fixed point, then every orbit
+reaches a fixed point within $|H|$ steps, so
+$g^{|H|}=g^{|H|+1}$. $\square$
+
 **Lemma 1 ($AC^0$ recognition characterization).** Let $\mathcal A$ be the
 minimal DFA of a regular language $L$, and let $\eta_{\mathcal A}$ be its
 transition morphism. Then $L$ is in $AC^0$ if and only if
@@ -126,10 +141,10 @@ $$
 
 is aperiodic, then the language recognized by $\mathcal A$ is in $AC^0$.
 
-To see this, minimize $\mathcal A$. The transition monoid of the minimal DFA is
-a quotient of $M_{\mathcal A}$. A quotient of an aperiodic monoid is
-aperiodic, and every submonoid is also aperiodic. Thus the stable monoid of the
-minimal DFA is aperiodic, so Lemma 1 applies.
+**Proof.** To see this, minimize $\mathcal A$. The transition monoid of the
+minimal DFA is a quotient of $M_{\mathcal A}$. A quotient of an aperiodic
+monoid is aperiodic, and every submonoid is also aperiodic. Thus the stable
+monoid of the minimal DFA is aperiodic, so Lemma 1 applies. $\square$
 
 **Lemma 3 (monotone DFA test).** Suppose the states of a fixed DFA have a total
 order $\le$. If every character preserves this order, meaning that
@@ -143,9 +158,9 @@ $$
 for all states $x,y$ and characters $c\in\Sigma$, then the language of the DFA
 is in $AC^0$.
 
-Each character induces an order-preserving map, and a composition of such maps
-is still order-preserving. Therefore every word $w\in\Sigma^*$ induces an
-order-preserving map $T_w$.
+**Proof.** Each character induces an order-preserving map, and a composition
+of such maps is still order-preserving. Therefore every word $w\in\Sigma^*$
+induces an order-preserving map $T_w$.
 
 Fix a state $x$ and define $x_i=T_w^i(x)$. Because the order is total, either
 $x_1\le x_0$ or $x_1\ge x_0$. In the first case, order preservation gives
@@ -165,15 +180,12 @@ $$
 Let $N_w=\max_{x\in Q}\ell_x$. Then
 
 $$
-\eta_{\mathcal A}(w^{N_w})=\eta_{\mathcal A}(w^{N_w+1}).
+T_w^{N_w}=T_w^{N_w+1}.
 $$
 
-$M_{\mathcal A}$ is aperiodic since $w$ was arbitrary, and Lemma 2 applies.
+$M_{\mathcal A}$ is aperiodic since $w$ was arbitrary, and Lemma 2 applies. $\square$
 
 ## $\mathrm{MOD}_3$ interval construction
-
-The $q=3$ construction maps three consecutive integer intervals to the three
-Hamming-weight residue slices modulo $3$.
 
 For a binary word $x$, define
 
@@ -190,7 +202,7 @@ $$
 **Theorem 4 ($\mathrm{Pair}_{3,n}$ sampling).** For every $n\ge1$, there is
 a randomized-$AC^0$ sampler for $\mathrm{Pair}_{3,n}$.
 
-For $r\in\mathbb Z_3$ and $k\ge0$, define the residue-slice counts
+**Proof.** For $r\in\mathbb Z_3$ and $k\ge0$, define the residue-slice counts
 
 $$
 N_{r,k}
@@ -229,9 +241,9 @@ e_{r,k}
 $$
 
 To understand this flip bit, split the target residue slice according to its
-least significant bit $y_0$. The branch $y_0=0$ has size $N_{r,k-1}$, while
-the branch $y_0=1$ has size $N_{r-1,k-1}$. On the input side, the even and odd
-integers in $[0,N_{r,k})$ have sizes
+least significant bit $y_0$. On the output side, the branch $y_0=0$ has size
+$N_{r,k-1}$, while the branch $y_0=1$ has size $N_{r-1,k-1}$. On the input
+side, the even and odd integers in $[0,N_{r,k})$ have sizes
 $\lceil N_{r,k}/2\rceil$ and $\lfloor N_{r,k}/2\rfloor$. If
 $N_{r,k-1}<N_{r-1,k-1}$, the larger target branch is $y_0=1$, so we must swap
 the two input branches by setting $y_0=u_0\mathbin{\oplus}1$. This is exactly
@@ -246,19 +258,9 @@ table is
 | $2,3$ | $(0,0,1)$ |
 | $4,5$ | $(1,0,0)$ |
 
-For $r\in\mathbb Z_3$, let $P_{r,n}(u)$ denote the $n$-bit word produced by
+<!-- For $r\in\mathbb Z_3$, let $P_{r,n}(u)$ denote the $n$-bit word produced by
 the loop below when its initial residue state is $r$. The bits of $u$ are read
-from the least significant to the most significant.
-
-The following three intervals partition $[0,2^n)$:
-
-$$
-\begin{aligned}
-I_{0,n}&=[0,N_{0,n}),\\
-I_{1,n}&=[N_{0,n},N_{0,n}+N_{1,n}),\\
-I_{2,n}&=[N_{0,n}+N_{1,n},2^n).
-\end{aligned}
-$$
+from the least significant to the most significant. -->
 
 The complete sampling procedure is:
 
@@ -295,13 +297,23 @@ $$
 \boxed{
 z\in I_{r,n}
 \quad\Longleftrightarrow\quad
-|P_n(z)|\equiv r\pmod3.
+|P_n(z)|\equiv r\pmod3,
 }
+$$
+
+where
+
+$$
+\begin{aligned}
+I_{0,n}&=[0,N_{0,n}),\\
+I_{1,n}&=[N_{0,n},N_{0,n}+N_{1,n}),\\
+I_{2,n}&=[N_{0,n}+N_{1,n},2^n).
+\end{aligned}
 $$
 
 By induction, $P_n$ is bijective, i.e., a cube permutation.
 
-> Why $P_n$ is in $AC^0$
+> Why $P_n$ is in randomized-$AC^0$
 
 First consider the loop.
 
@@ -334,7 +346,7 @@ decide the residue state $r$ after any number of complete blocks.
 
 Finally, a suffix of fewer than six bits is handled by a fixed lookup. The
 comparisons and subtractions involving the fixed thresholds $N_{0,n}$ and
-$N_{0,n}+N_{1,n}$ are in $AC^0$. Hence $P_n$ is in $AC^0$.
+$N_{0,n}+N_{1,n}$ are in $AC^0$. Hence $P_n$ is in randomized-$AC^0$. $\square$
 
 This is a special feature of $q=3$. The three residue counts differ by at most
 $1$, making the binary interval split possible at every recursion level. This
@@ -342,10 +354,11 @@ interval construction does not extend to $q\ge4$.
 
 ## $\mathrm{MOD}_q$ via common quantiles
 
-The general construction abandons the interval comparator. It uses $2q$-bit
-blocks and couples all residue-state transition rows by a common rank.
+The general construction abandons the interval comparator. Instead, it uses
+$2q$-bit blocks and a shared rank to couple the transition distributions from
+every residue state.
 
-Fix $q\ge2$. For a binary word $x$, define
+Fix $q\ge1$. For a binary word $x$, define
 
 $$
 f_q(x)=\mathbf{1}[|x|\equiv0\pmod q].
@@ -357,9 +370,10 @@ $$
 \mathrm{Pair}_{q,n}=(X,f_q(X)).
 $$
 
-**Theorem 5 ($\mathrm{Pair}_{q,n}$ sampling).** For every fixed $q\ge2$ and
-every $n\ge1$, there is a randomized-$AC^0$ sampler for
-$\mathrm{Pair}_{q,n}$.
+**Theorem 5 ($\mathrm{Pair}_{q,n}$ sampling).** For every fixed $q\ge1$,
+there is a randomized-$AC^0$ sampler for $\mathrm{Pair}_{q,n}$.
+
+**Proof.**
 
 ### Residue census
 
@@ -493,17 +507,18 @@ $$
 \mathrm{Pfx}_{2j+1}=\{-j,-j+1,\ldots,j+1\}.
 $$
 
-From an old residue state $s$, the desired integer mass at target $t$ is
+From an old residue state $s$, define the block-transition census at target
+$t$ by
 
 $$
-\mu_s(t)=w_{t-s}.
+M_s(t)=w_{t-s}.
 $$
 
-Define its cumulative mass along the chain by
+Define its cumulative census along the chain by
 
 $$
 F_{s,\mathrm{Pfx}_k}
-=\sum_{t\in\mathrm{Pfx}_k}\mu_s(t)
+=\sum_{t\in\mathrm{Pfx}_k}M_s(t)
 =\sum_{t\in\mathrm{Pfx}_k}w_{t-s}.
 $$
 
@@ -511,7 +526,8 @@ $$
 
 For $q=3$, $b=6$, $(w_0,w_1,w_2)=(22,21,21)$, and
 $(\xi_0,\xi_1,\xi_2)=(0,1,2)$. Each entry is
-$(F_{s,\mathrm{Pfx}_k},M_s(\xi_k))$, where $M_s(\xi_k)=\mu_s(\xi_k)=w_{\xi_k-s}$.
+$(F_{s,\mathrm{Pfx}_k},M_s(\xi_k))$, where
+$M_s(\xi_k)=w_{\xi_k-s}$.
 
 | old state $s$ | $\mathrm{Pfx}_0=\{0\}$, $\xi_0=0$ | $\mathrm{Pfx}_1=\{0,1\}$, $\xi_1=1$ | $\mathrm{Pfx}_2=\mathbb Z_3$, $\xi_2=2$ |
 | --- | ---: | ---: | ---: |
@@ -519,10 +535,13 @@ $(F_{s,\mathrm{Pfx}_k},M_s(\xi_k))$, where $M_s(\xi_k)=\mu_s(\xi_k)=w_{\xi_k-s}$
 | $1$ | $(21,21)$ | $(43,22)$ | $(64,21)$ |
 | $2=-1$ | $(21,21)$ | $(42,21)$ | $(64,22)$ |
 
->Prove $F_{\xi_i,\mathrm{Pfx}_k}\ge F_{\xi_{i+1},\mathrm{Pfx}_k}$
+We now prove that, for every adjacent pair of old states and every prefix,
 
-for every adjacent pair of old states and every prefix. The adjacent steps in
-the zigzag chain are $r\to-r$ and $-r\to r+1$.
+$$
+F_{\xi_i,\mathrm{Pfx}_k}\ge F_{\xi_{i+1},\mathrm{Pfx}_k}.
+$$
+
+The adjacent steps in the zigzag chain are $r\to-r$ and $-r\to r+1$.
 
 First consider the even prefix $\mathrm{Pfx}_{2j}=\{-j,\ldots,j\}$. Reflection
 around $0$ gives
@@ -600,7 +619,8 @@ F_{\xi_i,\mathrm{Pfx}_k}\ge F_{\xi_{i+1},\mathrm{Pfx}_k}.
 }
 $$
 
-By the following proposition 6, theorem5 gets proved.
+The prefix inequalities above verify the hypotheses of Proposition 6 for the
+residue DFA, so Theorem 5 follows. $\square$
 
 **Proposition 6 (ordered block-census sampling criterion).** Let
 
@@ -643,7 +663,7 @@ F_{\xi_i,\mathrm{Pfx}_k}
 F_{\xi_{i+1},\mathrm{Pfx}_k}.
 $$
 
-Then, for every $n\ge1$, there is a randomized-$AC^0$ sampler for
+Then there is a randomized-$AC^0$ sampler for
 $\mathrm{Pair}_{L,n}$.
 
 **Proof.** Let $N=2^b$ and set $F_{s,\mathrm{Pfx}_{-1}}=0$. Order $\Gamma$
@@ -677,7 +697,7 @@ $$
 =\left|\left\{y\in\Gamma:\delta^*(s,y)=t\right\}\right|.
 $$
 
-Since the two sets have equal cardinality, we obtain block cube permutations
+Since the two sets have equal cardinality, we obtain block-cube permutations
 $\pi_s:\Gamma\to\Gamma$ such that
 
 $$
@@ -706,7 +726,7 @@ end procedure
 
 By Lemma 3, the state reached after any block prefix is computable in $AC^0$.
 Compute all these states in parallel; each output block is then a fixed lookup.
-Thus the sampling procedure is in $AC^0$.
+Thus the sampling procedure is in $AC^0$. $\square$
 
 ## A three-state obstruction to original block aperiodicity
 
@@ -821,9 +841,9 @@ P_{\mathrm{bool}}(q,t)=\mathbf 1[P(q,t)>0],
 $$
 
 with powers taken over the Boolean semiring. Since these powers take only
-finitely many values, there are $N,h\ge1$ such that
-$P_{\mathrm{bool}}^N=P_{\mathrm{bool}}^{N+h}$. Take
-$a=\lceil N/h\rceil h$. Then
+finitely many values, there are $a_0,\ell\ge1$ such that
+$P_{\mathrm{bool}}^{a_0}=P_{\mathrm{bool}}^{a_0+\ell}$. Take
+$a=\lceil a_0/\ell\rceil\ell$. Then
 $P_{\mathrm{bool}}^a=P_{\mathrm{bool}}^{2a}$.
 Set $P_{\mathrm{aperiodic}}:=P_{\mathrm{bool}}^a$; this Boolean matrix is
 idempotent.
@@ -834,20 +854,20 @@ $2^{-s}$, and set
 $$
 P_N=2^sP,
 \qquad
-\Sigma=\{0,1\}^s.
+\Gamma_s=\{0,1\}^s.
 $$
 
 Thus $P_N$ is an integer matrix whose rows sum to $2^s$. For each $q$, assign
-exactly $P_N(q,t)$ characters of $\Sigma$ to the
+exactly $P_N(q,t)$ characters of $\Gamma_s$ to the
 transition $q\to t$. This defines
 
 $$
-\delta:Q\times\Sigma\longrightarrow Q.
+\delta:Q\times\Gamma_s\longrightarrow Q.
 $$
 
 For a positive integer $c$, use blocks in
-$\Sigma^{ac}\cong\{0,1\}^{sac}$. For a block word
-$w=w_1\cdots w_{ac}\in\Sigma^{ac}$, define
+$\Gamma_s^{ac}\cong\{0,1\}^{sac}$. For a block word
+$w=w_1\cdots w_{ac}\in\Gamma_s^{ac}$, define
 
 $$
 \delta(q,w)
@@ -859,7 +879,7 @@ $$
 $$
 \left|
 \left\{
-w\in\Sigma^{ac}:\delta(q,w)=t
+w\in\Gamma_s^{ac}:\delta(q,w)=t
 \right\}
 \right|
 =
@@ -894,7 +914,8 @@ t_1^-<\cdots<t_k^-<t_1^+<\cdots<t_k^+.
 $$
 
 Let $\phi(t_i^-)=\phi(t_i^+)=t_i$ and list the hidden copies as
-$h_1<\cdots<h_{2k}$. A hidden block transfer is a nonnegative integer census
+$h_1<\cdots<h_{2k}$. A block transfer of hidden states is encoded by a
+nonnegative integer census
 
 $$
 N_{\mathrm{hidden},c}:H_R\times H_R\longrightarrow\mathbb Z_{\ge0}.
@@ -910,7 +931,7 @@ P_N^{ac}(\phi(h),t)
 \qquad(h\in H_R,\ t\in R).
 $$
 
-Summing over $t\in R$ gives row sum $2^{sac}$.
+Summing over $t\in R$ gives a row sum of $2^{sac}$.
 
 The key idea is to extend the order-preserving structure of Proposition 6, so
 we also require
@@ -1015,19 +1036,15 @@ N_{\mathrm{hidden},c}(h_j,t_i^+)
 \end{aligned}
 $$
 
-Since $t_r^+$ is defined only for $1\le r\le k$, the only remaining case is
-$r=k$. The cut ending at $t_k^+$ is the whole hidden row, so its difference is
+All prefix-sum differences are positive, and there are only finitely many
+choices of $j$ and $r$. Hence there is $c_R$ such that every ordered-cut
+inequality holds for all $c\ge c_R$. There are only finitely many terminal
+SCCs, so one common $c\ge\max_R c_R$ works for all of them.
 
-$$
-2^{sac}-2^{sac}=0.
-$$
-
-All proper-cut limits are positive, and there are only finitely many choices of
-$j$ and $r$. Hence there is $c_R$ such that every ordered-cut inequality holds
-for all $c\ge c_R$. There are only finitely many terminal SCCs, so one common
-$c\ge\max_R c_R$ works for all of them.
-
-For $u\in\Sigma^{ac}$, let $\tau_u(h)$ be constructed like Proposition 6, so $\tau_u$ is order-preserving on each split terminal SCC. Consequently, every composition of these maps is also order-preserving there and has no cycle.
+For $u\in\Gamma_s^{ac}$, let $\tau_u(h)$ be constructed as in Proposition 6,
+so $\tau_u$ is order-preserving on each split terminal SCC. Consequently,
+every composition of these maps is also order-preserving there and has no
+nontrivial cycle.
 
 For $h$ in a terminal SCC and $t\in Q$, the sets
 
@@ -1035,7 +1052,7 @@ $$
 D_{h,t}
 =
 \left\{
-u\in\Sigma^{ac}:\phi(\tau_u(h))=t
+u\in\Gamma_s^{ac}:\phi(\tau_u(h))=t
 \right\}
 $$
 
@@ -1045,7 +1062,7 @@ $$
 W_{h,t}
 =
 \left\{
-w\in\Sigma^{ac}:\delta(\phi(h),w)=t
+w\in\Gamma_s^{ac}:\delta(\phi(h),w)=t
 \right\}
 $$
 
@@ -1053,7 +1070,7 @@ have the same cardinality. Match them for every $t$. The union of these
 matches is a block-cube permutation
 
 $$
-\pi_h:\Sigma^{ac}\longrightarrow\Sigma^{ac}
+\pi_h:\Gamma_s^{ac}\longrightarrow\Gamma_s^{ac}
 $$
 
 such that
@@ -1063,19 +1080,23 @@ $$
 \tag{5}
 $$
 
-Every hidden transition used above projects to an edge of
-$P_{\mathrm{aperiodic}}$. The condensation graph of $P_{\mathrm{aperiodic}}$ is acyclic, so every map stays in its current SCC or moves downstream. Therefore any cycle created by a composition of seeds must lie entirely in one SCC.
+We now rule out nontrivial cycles using the cycle criterion. Every hidden
+transition used above projects to an edge of $P_{\mathrm{aperiodic}}$. The
+condensation graph of
+$P_{\mathrm{aperiodic}}$ is acyclic, so every map stays in its current SCC or
+moves downstream. Therefore any nontrivial cycle of a composition of seed maps
+must lie entirely in one SCC.
 
-It remains to prevent such cycles inside transient SCCs. Let $C$ be a
-transient SCC and keep only one hidden copy $h_q$ of each $q\in C$,$\phi(h_q)=q$. Since $C$ is
-transient for $P^a$,
+It remains to prevent such nontrivial cycles inside transient SCCs. Let $C$ be
+a transient SCC and keep only one hidden copy $h_q$ of each $q\in C$, with
+$\phi(h_q)=q$. Since $C$ is transient for $P^a$,
 
 $$
 \sum_{q\in C}P^{ac}(q,C)\longrightarrow0.
 $$
 
-Increase the same $c$, if necessary, so that the terminal CDF order still
-holds and
+Increase $c$ further, if necessary, so that the terminal CDF order still holds
+and
 
 $$
 \sum_{q\in C}P^{ac}(q,C)<1
@@ -1087,9 +1108,12 @@ $$
 \sum_{q\in C}\sum_{t\in C}P_N^{ac}(q,t)<2^{sac}.
 $$
 
-so we can assign every internal transition $h_q\to h_t$, with $q,t\in C$, a different seed . Thus each seed keeps at most one transistion inside $C$. Similar block-cube permutations can be done as well.
+This allows us to assign a different seed to every internal transition
+$h_q\to h_t$, with $q,t\in C$. Thus each seed induces at most one transition
+inside $C$. The corresponding block-cube permutations are constructed in the
+same way.
 
-In conclusion, those seeds' monoid is aperiodic.
+By the cycle criterion, the seed-generated monoid is aperiodic.
 
 Choose $v\ge0$ such that every $\mu(q)$ is an integer multiple of
 $2^{-v}$, and fix a lookup $g:\{0,1\}^{v}\to Q$ whose output has law
@@ -1101,7 +1125,7 @@ procedure SamplePath(st, z)
     input:  st in {0,1}^v and z in {0,1}^{sn}
     write n = ac*m + r with 0 <= r < ac
     parse z as (u[1], ..., u[m], e[1], ..., e[r]),
-               with u[i] in Sigma^{ac} and e[j] in Sigma
+               with u[i] in Gamma_s^{ac} and e[j] in Gamma_s
 
     x[0] <- g(st)          // sample the initial visible state from mu
     h[0] <- iota(x[0])     // choose its fixed hidden copy
@@ -1129,8 +1153,33 @@ lookups. Thus the sampler is randomized-$AC^0$. $\square$
 
 ## Path-dyadic Markov chains
 
-Transition-dyadicity is sufficient but stronger than necessary. Call
-$\mathcal M$ **path-dyadic** from $\mu$ when every trajectory atom is dyadic:
+Transition-dyadicity is sufficient but not necessary. For example, on states
+$\{a,b,c\}$, let
+
+$$
+\mu=\left(\frac34,\frac14,0\right),
+\qquad
+P=
+\begin{pmatrix}
+0&\frac13&\frac23\\
+0&1&0\\
+0&0&1
+\end{pmatrix}.
+$$
+
+The transitions $1/3$ and $2/3$ are not dyadic, but for every $n\ge1$ the
+only positive trajectory atoms have probabilities
+
+$$
+\frac34\cdot\frac13=\frac14,
+\qquad
+\frac34\cdot\frac23=\frac12,
+\qquad
+\frac14.
+$$
+
+Thus the chain is path-dyadic. In general, call $\mathcal M$ **path-dyadic**
+from $\mu$ when every trajectory atom is dyadic:
 
 $$
 p_{\mathcal M}(\gamma)\in\mathbb D_{\ge 0}
@@ -1143,14 +1192,14 @@ $$
 coordinatewise projection of a fixed transition-dyadic Markov chain. More
 precisely, there is a finite chain
 $\widetilde{\mathcal M}=(\widetilde Q,\widetilde\mu,\widetilde P)$ and a map
-$\rho:\widetilde Q\to Q$ with the following property. If
+$\phi:\widetilde Q\to Q$ with the following property. If
 $(\widetilde X_i)_{i\ge0}$ is the Markov chain with initial distribution
 $\widetilde\mu$ and transition matrix $\widetilde P$, then, for every $n\ge0$
 and every $(x_0,\ldots,x_n)\in Q^{n+1}$,
 
 $$
 \Pr\!\left[
-\rho(\widetilde X_0)=x_0,\ldots,\rho(\widetilde X_n)=x_n
+\phi(\widetilde X_0)=x_0,\ldots,\phi(\widetilde X_n)=x_n
 \right]
 =
 p_{\mathcal M}(x_0,\ldots,x_n)
@@ -1258,7 +1307,7 @@ F_q=\{(q,1),\ldots,(q,w_q)\},
 \widetilde Q=\bigsqcup_{q\in Q}F_q,
 $$
 
-and let $\rho(q,j)=q$. Choose $s$ so that
+and let $\phi(q,j)=q$. Choose $s$ so that
 
 $$
 m_{q,r}
@@ -1285,7 +1334,7 @@ trajectory $\gamma=(x_0,\ldots,x_n)$ and every $h\in F_{x_n}$,
 
 $$
 \Pr\!\left[
-\rho(\widetilde X_0)=x_0,\ldots,\rho(\widetilde X_n)=x_n,
+\phi(\widetilde X_0)=x_0,\ldots,\phi(\widetilde X_n)=x_n,
 \ \widetilde X_n=h
 \right]
 =
@@ -1325,11 +1374,11 @@ This proves the induction step. Summing (9) over $h\in F_{x_n}$ gives
 $p_{\mathcal M}(\gamma)$, proving the projection claim. $\square$
 
 **Corollary 10 (exact sampling characterization).** A fixed finite Markov chain
-has randomized-$AC^0$ trajectory sampler for all horizons if
-and only if it is path-dyadic.
+has a randomized-$AC^0$ trajectory sampler for all horizons if and only if it
+is path-dyadic.
 
 **Proof.** If a sampler uses $r_n$ fair bits, every trajectory atom has
-probability as a multiple of $\frac{1}{2^{r_n}}$, so it is dyadic.
+probability equal to a multiple of $\frac{1}{2^{r_n}}$, so it is dyadic.
 
 Conversely, Theorem 9 lifts every path-dyadic chain to a
 transition-dyadic chain. Apply Theorem 8 to get the corresponding
@@ -1337,7 +1386,7 @@ randomized-$AC^0$ sampler. $\square$
 
 **Corollary 11 (binary regular-language sampling).** Every fixed binary regular
 language $L\subseteq\{0,1\}^*$ has a randomized-$AC^0$ sampler for
-$\mathrm{Pair}_{L,n}$ for every $n$.
+$\mathrm{Pair}_{L,n}$.
 
 **Proof.** Fix a DFA $\mathcal A=(Q,\{0,1\},\delta,q_0,F)$ for $L$, and set
 
@@ -1356,7 +1405,9 @@ P(q,r)\in\left\{0,\frac12,1\right\}
 \subseteq\mathbb D_{\ge0}.
 $$
 
-By Corollary 10, sample its state trajectory
+Hence the chain is transition-dyadic and therefore path-dyadic.
+
+With $\mu=e_{q_0}$, Corollary 10 samples its state trajectory
 
 $$
 (Y_0,Y_1,\ldots,Y_n),
@@ -1364,66 +1415,135 @@ $$
 Y_0=q_0.
 $$
 
-Using independent fresh fair bits $B_1,\ldots,B_n$, output
+Conditioned on this path, independently sample $X_{i+1}$ by
 
 $$
-X_i
+\Pr[X_{i+1}=a\mid Y_i,Y_{i+1}]
 =
-\begin{cases}
-0,&A(Y_{i-1},Y_i)=\{0\},\\
-1,&A(Y_{i-1},Y_i)=\{1\},\\
-B_i,&A(Y_{i-1},Y_i)=\{0,1\}.
-\end{cases}
+\frac{\mathbf 1[\delta(Y_i,a)=Y_{i+1}]}
+{\sum_{b\in\{0,1\}}\mathbf 1[\delta(Y_i,b)=Y_{i+1}]}
+\in
+\left\{0,\frac12,1\right\},
 $$
 
-For any $x=(x_1,\ldots,x_n)$, let
+for $0\le i<n$ and $a\in\{0,1\}$. Each coordinate uses at most one fresh fair
+bit. Then $X=(X_1,\ldots,X_n)\sim U_n$ and
 
 $$
-q_i=\delta^*(q_0,x_1\cdots x_i).
-$$
-
-Then
-
-$$
-\begin{aligned}
-\Pr[X=x]
-&=
-\Pr[Y_0=q_0,\ldots,Y_n=q_n]
-\prod_{i=1}^n
-\frac{1}{|A(q_{i-1},q_i)|}
-\\
-&=
-\prod_{i=1}^n
-P(q_{i-1},q_i)
-\prod_{i=1}^n
-\frac{1}{|A(q_{i-1},q_i)|}
-\\
-&=
-\prod_{i=1}^n
-\frac{|A(q_{i-1},q_i)|}{2}
-\frac{1}{|A(q_{i-1},q_i)|}
-=
-2^{-n}.
-\end{aligned}
-$$
-
-Finally,
-
-$$
-\delta(Y_{i-1},X_i)=Y_i,
-\quad 1\le i\le n,
-\qquad
 C=\mathbf 1[Y_n\in F]=f_L(X).
 $$
 
-Hence
+Thus $(X,C)$ has distribution $\mathrm{Pair}_{L,n}$, and the postprocessing is
+in randomized-$AC^0$. $\square$
+
+## Appendix A: spectral certificate for the three-state obstruction
+
+Here, spectrum means the ordinary spectrum $\sigma(A)$: all eigenvalues of
+$A$.
+
+Write $\tau_\bullet=(\tau_u)_{u\in\{0,1\}^b}$ for the indexed family of block
+transformations, and let $M_{\tau_u}$ be the $0$-$1$ transition matrix of
+$\tau_u$. The transition-count matrix induced by the family is
 
 $$
-\Pr[X=x,C=b]
-=
-2^{-n}\mathbf 1[b=f_L(x)],
+M_{\tau_\bullet}
+=\sum_{u\in\{0,1\}^b}M_{\tau_u},
+\qquad
+(M_{\tau_\bullet})_{s,t}
+=\left|\{u:\tau_u(s)=t\}\right|.
 $$
 
-which is exactly $\mathrm{Pair}_{L,n}$. Each $X_i$ and $C$ is a fixed lookup
-from the sampled states and one fresh bit, so the sampler remains in
-randomized-$AC^0$. $\square$
+Every row of $M_{\tau_\bullet}$ has sum $r=2^b$, so
+$M_{\tau_\bullet}\mathbf 1=r\mathbf 1$ for $\mathbf 1=(1,1,1)^T$. Choose
+
+$$
+V=
+\begin{pmatrix}
+1&0&0\\
+1&1&0\\
+1&0&1
+\end{pmatrix}.
+$$
+
+The coordinates of $v=(v_0,v_1,v_2)^T$ in this basis are
+$(v_0,x,y)^T$, where $x=v_1-v_0$ and $y=v_2-v_0$. Thus
+
+$$
+V^{-1}M_{\tau_\bullet}V=
+\begin{pmatrix}
+r&*\\
+0&B_{\tau_\bullet}
+\end{pmatrix}.
+$$
+
+The two remaining eigenvalues of $M_{\tau_\bullet}$ are exactly the
+eigenvalues of $B_{\tau_\bullet}$.
+
+For the counterexample matrix
+
+$$
+T=
+\begin{pmatrix}
+1&0&1\\
+2&0&0\\
+0&2&0
+\end{pmatrix},
+$$
+
+one computes
+
+$$
+V^{-1}TV=
+\begin{pmatrix}
+2&0&1\\
+0&0&-1\\
+0&2&-1
+\end{pmatrix},
+\qquad
+B_T=
+\begin{pmatrix}
+0&-1\\
+2&-1
+\end{pmatrix}.
+$$
+
+Thus
+
+$$
+\chi_{B_T}(\lambda)=\lambda^2+\lambda+2,
+$$
+
+and the two remaining eigenvalues are
+
+$$
+\frac{-1\pm i\sqrt7}{2}.
+$$
+
+The verification script
+[tools/verify_three_state_block_aperiodicity.py]({{ '/tools/verify_three_state_block_aperiodicity.py' | relative_url }})
+checks the finite certificate behind the contradiction. There is no infinite
+enumeration: on three states there are only $3^3=27$ transformations, and
+every aperiodic submonoid is contained in a maximal one. The script enumerates
+all $401$ aperiodic submonoids, finds the $9$ maximal ones under inclusion, and
+groups them into three conjugacy classes.
+
+For each individual transformation, write $B_\tau$ for the lower-right block
+of $V^{-1}M_\tau V$. For the three representative classes, the following
+properties of these $B_\tau$ matrices are checked:
+
+1. every $B_\tau$ in class I preserves one common cone in the $(x,y)$-plane;
+2. every $B_\tau$ in class II preserves another common cone in the $(x,y)$-plane;
+3. every $B_\tau$ in class III is triangular in the displayed coordinates.
+
+Because the block census from an original-state block-aperiodic realization is
+a sum over the indexed family $\tau_\bullet$, its lower-right block is
+
+$$
+B_{\tau_\bullet}=\sum_{u\in\{0,1\}^b}B_{\tau_u}.
+$$
+
+Thus the three certificates are inherited by all block lengths and repeated
+transformations. In the cone cases, $B_{\tau_\bullet}$ has nonnegative entries
+in the cone basis and hence real eigenvalues; in the triangular case this is
+immediate. Therefore every such census has real spectrum, contradicting the
+fact that $T^b$ has a non-real eigenvalue.
