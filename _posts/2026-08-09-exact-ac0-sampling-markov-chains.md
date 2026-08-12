@@ -1,7 +1,7 @@
 ---
 title: "Exact Sampling of Path-Dyadic Markov Chains in Randomized AC^0"
 date: 2026-08-09
-updated: 2026-08-11
+updated: 2026-08-12
 slug: exact-ac0-sampling-markov-chains
 permalink: /blog/exact-ac0-sampling-markov-chains/
 tags: [exact sampling, circuit complexity, Markov chains, regular languages]
@@ -98,11 +98,11 @@ $$
 Since $M_{\mathcal A}$ is finite, the sets
 $\eta_{\mathcal A}(\Sigma^j)$ take only finitely many values. Hence there are
 $d_0,\ell\ge1$ such that
-$\eta_{\mathcal A}(\Sigma^{d_0})=
-\eta_{\mathcal A}(\Sigma^{d_0+\ell})$. Multiplying by
+$\eta_{\mathcal A}(\Sigma^{d_0})=\eta_{\mathcal A}(\Sigma^{d_0+\ell})$.
+Multiplying by
 $\eta_{\mathcal A}(\Sigma^k)$ gives
-$\eta_{\mathcal A}(\Sigma^{d_0+k})=
-\eta_{\mathcal A}(\Sigma^{d_0+\ell+k})$ for every $k\ge0$. Take
+$\eta_{\mathcal A}(\Sigma^{d_0+k})=\eta_{\mathcal A}(\Sigma^{d_0+\ell+k})$
+for every $k\ge0$. Take
 $d=\lceil d_0/\ell\rceil\ell$. Since $d\ge d_0$ and $\ell\mid d$,
 
 $$
