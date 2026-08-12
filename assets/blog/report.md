@@ -255,8 +255,8 @@ Hence the polynomial-width bound is tight for regular $L\notin AC^0$, whereas
 the logarithmic-width case currently lies between
 $\Omega(\log N/\log\log N)$ and $O(\log N)$. With revision, parity can instead
 be sampled in constant rounds by
-$\text{L-uniform }\operatorname{DLM}_{R}
-[\Theta(1),\operatorname{poly}(N),0,O(1)]$, matching the qualitative separation
+$\text{L-uniform }\operatorname{DLM}_{R}[\Theta(1),\operatorname{poly}(N),0,O(1)]$,
+matching the qualitative separation
 of [1].
 
 ## Comparison

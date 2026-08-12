@@ -5,6 +5,39 @@ require "bundler/setup"
 require "kramdown"
 require_relative "../_plugins/conventional_math_gfm"
 
+SINGLE_DOLLAR = /(?<!\\)(?<!\$)\$(?!\$)/
+
+def unbalanced_inline_math_lines(source)
+  source = source.gsub(/<!--.*?-->|<pre\b.*?<\/pre>|<code\b.*?<\/code>/mi) do |hidden|
+    "\n" * hidden.count("\n")
+  end
+
+  fence = nil
+  bad = []
+
+  source.each_line.with_index(1) do |line, line_number|
+    if fence
+      marker = Regexp.escape(fence[0])
+      fence = nil if line.match?(/^\s{0,3}#{marker}{#{fence.length},}\s*$/)
+      next
+    end
+
+    if (match = line.match(/^\s{0,3}(`{3,}|~{3,})/))
+      fence = match[1]
+      next
+    end
+
+    next if line.match?(/^(?: {4}|\t)/)
+
+    prose = line.gsub(/(`+).*?\1/, "")
+    next unless prose.scan(SINGLE_DOLLAR).length.odd?
+
+    bad << [line_number, line.strip]
+  end
+
+  bad
+end
+
 staged = false
 if ARGV.first == "--staged"
   staged = true
@@ -36,6 +69,10 @@ paths.each do |path|
     end
 
   next if source.empty?
+
+  unbalanced_inline_math_lines(source).each do |line_number, line|
+    bad << [path, line_number, "unbalanced inline-math delimiter: #{line}"]
+  end
 
   html = Kramdown::Document.new(
     source,

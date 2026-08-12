@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require "kramdown"
+require "open3"
+require "tempfile"
 require_relative "../_plugins/conventional_math_gfm"
 
 OPTIONS = {
@@ -50,5 +52,38 @@ assert(
   escaped.include?("The price is $5."),
   "escaped dollar did not remain literal"
 )
+
+checker = File.expand_path("../tools/check_kramdown_math.rb", __dir__)
+
+Tempfile.create(["wrapped-inline-math", ".md"]) do |file|
+  file.write("Before $x=\ny$ after.\n")
+  file.flush
+  _stdout, stderr, status = Open3.capture3("ruby", checker, file.path)
+  assert(
+    !status.success? && stderr.include?("unbalanced inline-math delimiter"),
+    "wrapped inline math was not rejected by the checker"
+  )
+end
+
+Tempfile.create(["ignored-dollar-contexts", ".md"]) do |file|
+  file.write(<<~MARKDOWN)
+    Before $x=y$ after and the price is \\$5.
+
+    Write `$x=` as literal code.
+
+    <!--
+    $commented=
+    math$
+    -->
+
+    ```text
+    $code=
+    block$
+    ```
+  MARKDOWN
+  file.flush
+  _stdout, stderr, status = Open3.capture3("ruby", checker, file.path)
+  assert(status.success?, "checker rejected ignored dollar context: #{stderr}")
+end
 
 puts "Math Markdown parser tests passed."
