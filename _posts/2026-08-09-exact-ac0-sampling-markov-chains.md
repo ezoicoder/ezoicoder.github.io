@@ -276,30 +276,48 @@ table is
 | $2,3$ | $(0,0,1)$ |
 | $4,5$ | $(1,0,0)$ |
 
-<!-- For $r\in\mathbb Z_3$, let $P_{r,n}(u)$ denote the $n$-bit word produced by
-the loop below when its initial residue state is $r$. The bits of $u$ are read
-from the least significant to the most significant. -->
+At phase $k$, the update for an input bit $u_i$ is
+
+$$
+y_i=u_i\mathbin{\oplus}e_{r,k},
+\qquad
+r\leftarrow r-y_i\pmod3,
+\qquad
+k\leftarrow k-1\pmod6.
+$$
+
+All words below are read from the least significant bit to the most significant
+bit.
 
 The complete sampling procedure is:
 
 ```text
-sample z uniformly from {0, ..., 2^n - 1}
-if z < N[0,n]:
-    r_0 <- 0
-    u <- z
-else if z < N[0,n] + N[1,n]:
-    r_0 <- 1
-    u <- z - N[0,n]
-else:
-    r_0 <- 2
-    u <- z - N[0,n] - N[1,n]
-r <- r_0
-k <- n mod 6
-for i <- 0, ..., n - 1:
-    y_i <- u_i XOR e[r, k]
-    r   <- r - y_i mod 3
-    k   <- k - 1 mod 6
-return (y, 1[r_0 = 0])
+// Prefix_h(r,c): handle an h-bit remainder prefix at phases h, h-1, ..., 1.
+// Block(r,v): handle a complete six-bit block at phases 0, 5, 4, 3, 2, 1.
+// Both are fixed lookups returning the output word and the new residue state.
+
+procedure SamplePair(z)
+    input:  z uniform in {0, ..., 2^n - 1}
+    if z < N[0,n] then
+        r_0 <- 0
+        u <- z
+    else if z < N[0,n] + N[1,n] then
+        r_0 <- 1
+        u <- z - N[0,n]
+    else
+        r_0 <- 2
+        u <- z - N[0,n] - N[1,n]
+    end if
+    write n = 6*m + h with 0 <= h < 6
+    parse the n-bit expansion of u as (c, v[1], ..., v[m]),
+        with c in {0,1}^h and v[j] in {0,1}^6
+    (d, r) <- Prefix_h(r_0, c)
+    for j <- 1, ..., m do
+        (w[j], r) <- Block(r, v[j])
+    end for
+    y <- (d, w[1], ..., w[m])
+    return (y, 1[r_0 = 0])
+end procedure
 ```
 
 Let
@@ -333,13 +351,9 @@ By induction, $P_n$ is bijective, i.e., a cube permutation.
 
 > Why $P_n$ is in randomized-$AC^0$
 
-First consider the loop.
-
-First handle at most five bits with a fixed lookup so that the next step starts
-at phase $k\equiv0\pmod6$.
-
-Now group the remaining bits into blocks of six. Each block word maps the old
-residue state $r\in\mathbb Z_3$ to a new residue state.
+$\operatorname{Prefix}_h$ handles the remainder prefix of length $h=n\bmod6$;
+the remaining $n-h=6m$ bits form $m$ complete six-bit blocks. Each block
+induces a map on the residue states $\mathbb Z_3$.
 
 1. Directly enumerate the $64$ cases and their corresponding maps.
 2. Add the identity map and compose these maps until no new map appears.
@@ -361,9 +375,10 @@ $$
 
 The block transition monoid is therefore aperiodic. By Lemma 2, $AC^0$ can
 decide the residue state $r$ after any number of complete blocks.
+Compute all block-prefix residue states in parallel; each output block is then
+a fixed lookup.
 
-Finally, a suffix of fewer than six bits is handled by a fixed lookup. The
-comparisons and subtractions involving the fixed thresholds $N_{0,n}$ and
+The comparisons and subtractions involving the fixed thresholds $N_{0,n}$ and
 $N_{0,n}+N_{1,n}$ are in $AC^0$. Hence $P_n$ is in randomized-$AC^0$. $\square$
 
 This is a special feature of $q=3$. The three residue counts differ by at most
@@ -694,25 +709,25 @@ F_{s,\mathrm{Pfx}_k}.
 $$
 
 Consider adjacent states $s=\xi_i<s'=\xi_{i+1}$. If
-$\tau_u(s')=\xi_k$, then
+$\tau_u(s')=\xi_t$, then
 
 $$
 \operatorname{rank}(u)
-<F_{s',\mathrm{Pfx}_k}
-\le F_{s,\mathrm{Pfx}_k}.
+<F_{s',\mathrm{Pfx}_t}
+\le F_{s,\mathrm{Pfx}_t}.
 $$
 
-Therefore $\tau_u(s)\le\xi_k=\tau_u(s')$. Thus every $\tau_u$ preserves the
+Therefore $\tau_u(s)\le\xi_t=\tau_u(s')$. Thus every $\tau_u$ preserves the
 state order.
 
-If $t=\xi_k$, then the two lists used in the rank matching below have the
+If $v=\xi_k$, then the two lists used in the rank matching below have the
 same length:
 
 $$
-\left|\left\{u\in\Gamma:\tau_u(s)=t\right\}\right|
+\left|\left\{u\in\Gamma:\tau_u(s)=v\right\}\right|
 =F_{s,\mathrm{Pfx}_k}-F_{s,\mathrm{Pfx}_{k-1}}
-=M_s(t)
-=\left|\left\{y\in\Gamma:\delta^*(s,y)=t\right\}\right|.
+=M_s(v)
+=\left|\left\{y\in\Gamma:\delta^*(s,y)=v\right\}\right|.
 $$
 
 Since the two sets have equal cardinality, we obtain block-cube permutations
