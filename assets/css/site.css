@@ -49,6 +49,16 @@ h1 {
   line-height: 1.08;
 }
 
+.portrait {
+  display: block;
+  float: right;
+  width: min(220px, 34vw);
+  height: auto;
+  margin: 4px 0 20px 28px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(23, 32, 38, 0.14);
+}
+
 .name-cn {
   margin-left: 0.18em;
   font-family: "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif;
@@ -324,6 +334,12 @@ pre {
 @media (max-width: 720px) {
   .home-main {
     padding-top: 36px;
+  }
+
+  .portrait {
+    float: none;
+    width: min(200px, 64vw);
+    margin: 0 auto 20px;
   }
 
   .blog-main {
