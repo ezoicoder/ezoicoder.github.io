@@ -23,7 +23,7 @@ jiarui-z23@mails.tsinghua.edu.cn
 
 ## About Me
 
-I am a third-year undergraduate researcher interested in AI infrastructure and ML systems.
+I am a fourth-year undergraduate researcher interested in AI infrastructure and ML systems.
 I am currently conducting research under the supervision of
 [Binhang Yuan](https://binhangyuan.github.io/site/) on efficient systems for
 large language model training and inference, with recent work on Tree Attention and

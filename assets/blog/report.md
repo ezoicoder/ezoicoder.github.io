@@ -2,7 +2,7 @@
 
 ## Background and Motivation
 
-I am a third-year undergraduate researcher interested in AI infrastructure and
+I am a fourth-year undergraduate researcher interested in AI infrastructure and
 ML systems. I currently work with Binhang Yuan on efficient systems for LLM
 training and inference, following earlier work with Yi Wu on reinforcement
 learning systems. My webpage is https://ezoicoder.github.io/.
