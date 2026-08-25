@@ -3,7 +3,7 @@ layout: home
 title: "Jiarui Zhang 张家瑞"
 ---
 
-![Jiarui Zhang]({{ '/assets/portrait.jpg' | relative_url }}){: .portrait }
+![Jiarui Zhang]({{ '/assets/portrait.png' | relative_url }}){: .portrait }
 
 # Jiarui Zhang <span class="name-cn">张家瑞</span>
 {: .home-title }
