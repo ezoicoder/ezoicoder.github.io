@@ -1184,22 +1184,6 @@ Revision destroys the irreversible trace structure used in lower bounds.  In
 the no-revision model, however, every completed output fixes the symbols that
 must have appeared whenever a position was first exposed.
 
-For comparison, the fully sequential autoregressive regime inside
-randomized-$\AC^0$ already has a clean characterization.
-
-\begin{observation}[Autoregressive sampling]
-In the randomized-$\AC^0$ autoregressive regime, the family
-$\{\Pair_{L,n}\}_{n\ge1}$ is sampleable if and only if $L\in\AC^0$.
-\end{observation}
-
-\begin{proof}
-If $L\in\AC^0$, sample the input bits independently and uniformly, then
-output $f_L(x)$.  Conversely, an exact autoregressive sampler must output
-$f_L(x)$ after the full input $x$ is visible.  The final predictor is therefore
-supported on a single bit for every $x$; fixing its random input gives an
-$\AC^0$ circuit that computes $f_L$.
-\end{proof}
-
 The mask profile itself can carry a constant-size monoid summary while the
 ordinary output coordinates remain the only available workspace:
 
@@ -1549,8 +1533,26 @@ is exactly representable when $s\ge2$, so the fair case is exactly $1/2$.
 Independent decoding therefore realizes every predictor used in the
 two-round revision construction and the no-revision product-tree construction.
 
-Hence the upper bounds in \cref{thm:two-round,thm:no-revision} transfer to the
-specified Transformer model.
+The two transfers give the following formal statement.
+
+\begin{theorem}[Transformer round bounds]
+\label{thm:transformer-bounds}
+Under the Transformer model specified in this section, every fixed binary
+regular language has a revision sampler using at most two rounds and a
+no-revision sampler using $O(\log n/\log\log n)$ rounds.  If
+$L\notin\AC^0$, every no-revision sampler requires
+$\Omega(\log n/\log\log n)$ rounds.  In particular, parity has revision
+complexity exactly two and no-revision complexity
+$\Theta(\log n/\log\log n)$.
+\end{theorem}
+
+\begin{proof}
+The upper bounds follow from the logit realization above and
+\cref{thm:two-round,thm:no-revision}.  The no-revision lower bound follows
+from the lower-bound transfer.  For parity, one revision round still produces
+a product distribution from the fully masked initial state, so two rounds are
+necessary.
+\end{proof}
 
 \section{Discussion, Limitations, and Future Work}
 \label{sec:discussion}

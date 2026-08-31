@@ -69,9 +69,6 @@ Output x                              // for sampling over {0,1}^N, x has no M
 For a target distribution over $\{0,1\}^N$, a valid sampler must output a fully
 unmasked string with probability $1$.
 
-An autoregressive sampler decodes coordinates in a fixed left-to-right order,
-with the label coordinate last.
-
 ### Regular-language input-output pair distributions
 
 Let $L\subseteq\{0,1\}^*$ be a fixed regular language, and let
@@ -106,17 +103,7 @@ $AC^0$ updates are implemented in this Transformer model.
 
 ### Round complexity for regular languages
 
-**Observation 1 (autoregressive sampling).** In the $AC^0$ autoregressive
-regime, the family
-$\{\mathcal{D}^{\mathrm{pair}}_{L,n}\}_{n\ge1}$ is sampleable if and only if
-$L\in AC^0$.
-
-**Proof.** If $L\in AC^0$, sample the input bits independently and uniformly,
-then output $f_L(x)$. Conversely, an exact autoregressive sampler must output
-$f_L(x)$ after the full input $x$ is visible. Its final $AC^0$ predictor
-therefore computes $f_L$. $\square$
-
-**Theorem 2 (two-round revision sampling).** For every fixed binary regular
+**Theorem 1 (two-round revision sampling).** For every fixed binary regular
 language $L$ and every $n\ge1$, a randomized-$AC^0$ DLM with revision samples
 $\mathcal{D}^{\mathrm{pair}}_{L,n}$ in at most two rounds.
 
@@ -140,7 +127,7 @@ trajectory is fixed. Set the label to
 $\mathbf 1[Y_n\in F_{\mathcal A}]$. The output law is
 $\mathcal{D}^{\mathrm{pair}}_{L,n}$. $\square$
 
-**Theorem 3 (no-revision sampling).** In the randomized-$AC^0$ no-revision
+**Theorem 2 (no-revision sampling).** In the randomized-$AC^0$ no-revision
 model, every fixed binary regular language $L$ satisfies:
 
 1. if $L\notin AC^0$, then $\mathcal{D}^{\mathrm{pair}}_{L,n}$ needs
@@ -395,15 +382,13 @@ $$
 Then $\mathcal{D}^{\mathrm{pair}}_{L,n}$ is the uniform even-parity
 distribution on $n+1$ bits.
 
-**Corollary 4 (parity separation).** The family
-$\{\mathcal{D}^{\mathrm{pair}}_{L,n}\}_{n\ge1}$ is not sampleable in the
-$AC^0$ autoregressive regime. Its no-revision round complexity is
+**Corollary 3 (parity separation).** The no-revision round complexity of
+$\{\mathcal{D}^{\mathrm{pair}}_{L,n}\}_{n\ge1}$ is
 $\Theta(\log n/\log\log n)$, while its revision round complexity is exactly
 $2$ for every $n\ge1$.
 
-**Proof.** Since $L\notin AC^0$, Observation 1 rules out autoregressive
-sampling, and Theorem 3 gives the no-revision claim. Theorem 2 gives a
-two-round revision sampler. A one-round update from
+**Proof.** Since $L\notin AC^0$, Theorem 2 gives the no-revision claim.
+Theorem 1 gives a two-round revision sampler. A one-round update from
 $M^{n+1}$ is a product distribution, whereas
 $\mathcal{D}^{\mathrm{pair}}_{L,n}$ is not. Thus one round is impossible.
 $\square$
@@ -467,7 +452,7 @@ both transfers below.
 The Transformer computes $AC^0$ logits, after which the predictor applies
 randomized-$AC^0$ decoding and the policy applies $AC^0$ argmax. Thus the
 resulting DLM satisfies the randomized-$AC^0$ regime above, so the no-revision
-lower bound in Theorem 3 transfers unchanged.
+lower bound in Theorem 2 transfers unchanged.
 
 ### Upper-bound realization
 
@@ -500,8 +485,8 @@ $1+1=2$ is exactly representable when $s\ge2$, so the fair case is exactly
 $1/2$. Independent decoding therefore realizes every predictor used in the
 two-round revision construction and the no-revision product-tree construction.
 
-**Corollary 5 (Transformer round complexity).** Under the bidirectional
-Transformer model above, Theorems 2 and 3 hold with the same round complexity:
+**Corollary 4 (Transformer round complexity).** Under the bidirectional
+Transformer model above, Theorems 1 and 2 hold with the same round complexity:
 two rounds with revision, and $\Theta(\log n/\log\log n)$ rounds without
 revision for regular languages outside $AC^0$.
 
