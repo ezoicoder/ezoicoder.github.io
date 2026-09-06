@@ -17,7 +17,7 @@ Beijing, China
 jiarui-z23@mails.tsinghua.edu.cn
 {: .contact-line }
 
-[Download Resume]({{ '/assets/resume.pdf' | relative_url }}){: .button download="download" }
+[Download Resume]({{ '/assets/resume.pdf' | relative_url }}){: .button download="Jiarui_Zhang_Resume.pdf" }
 [Blog]({{ '/blog/' | relative_url }}){: .text-link }
 {: .actions }
 
