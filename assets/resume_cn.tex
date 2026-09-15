@@ -1,0 +1,100 @@
+% Jiarui Zhang - Chinese Resume (LaTeX)
+\documentclass[11pt,a4paper]{article}
+
+% Basic layout
+\usepackage[margin=1in]{geometry}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage{CJKutf8}
+\usepackage{fontawesome5}
+
+% Color theme consistent with the English resume
+\definecolor{accent}{HTML}{0A7C86}
+\definecolor{textgray}{HTML}{333333}
+\definecolor{gold}{HTML}{FFD700}
+
+% Section formatting
+\titleformat{\section}{\large\bfseries\color{accent}}{}{0pt}{}
+\titlespacing*{\section}{0pt}{8pt}{4pt}
+\setlist[itemize]{leftmargin=*, itemsep=2pt, topsep=2pt}
+\setlength{\emergencystretch}{1em}
+\newcommand{\reslink}[2]{\href{#1}{\textcolor{blue}{#2}}}
+
+\begin{document}
+\begin{CJK*}{UTF8}{gbsn}
+
+% ===== Header =====
+\begin{center}
+    {\LARGE\bfseries \textcolor{textgray}{张家瑞}}\\[4pt]
+    {\color{accent}\rule{\textwidth}{1.2pt}}
+\end{center}
+
+% Top two-column: contact on left, profile on right
+\vspace{2pt}
+\noindent\begin{tabularx}{\textwidth}{@{}p{0.36\textwidth}@{\hspace{2ex}}X@{}}
+\small
+\raggedright
+\textbf{电话：}\ +86 189 2512 1908\\
+\textbf{邮箱：} jiarui-z23@mails.tsinghua.edu.cn\\
+\textbf{个人主页：} \reslink{https://ezoicoder.github.io}{ezoicoder.github.io}
+&
+\raggedright
+\textbf{个人概述}\\
+我是清华大学\textbf{姚班}四年级本科生，主要关注\ \textbf{AI infrastructure}\ 与\ \textbf{ML systems}，致力于为大模型训练与推理构建高性能、可扩展的系统。同时，我也关注\textbf{理论计算机科学}，尤其希望探索如何利用\ AI\ 工具推动该领域的发展。
+\end{tabularx}
+
+\vspace{6pt}
+
+% ===== Education =====
+\section*{教育背景}
+\noindent\textbf{清华大学，北京} \hfill {\small 2023\ 年\ 9\ 月\ \textendash{}\ 2027\ 年\ 6\ 月（预计）}\\
+人工智能工学学士，交叉信息研究院 \\
+GPA: 3.78/4.0 (36/91) \\
+TOEFL iBT: 5.5/6.0
+
+% ===== Experience =====
+\section*{实习经历}
+
+\noindent \textbf{研究实习生，袁彬航课题组，香港} \hfill {\small 2026\ 年\ 1\ 月\ \textendash{}\ 至今}
+\begin{itemize}
+    \item 开发面向\ \textbf{Tree Attention}\ 的分布式训练系统，降低显存占用，提升多轮\ LLM\ 训练的吞吐量。
+\end{itemize}
+
+\noindent\textbf{研究实习生，吴翼课题组，北京} \hfill {\small 2025\ 年\ 10\ 月\ \textendash{}\ 2025\ 年\ 12\ 月}
+\begin{itemize}
+    \item 参与开发支持可扩展训练的\ \textbf{serverless}\ 强化学习平台。
+\end{itemize}
+
+\vspace{6pt}
+
+\noindent\textbf{应用研究实习生，腾讯\ CDG，深圳} \hfill {\small 2025\ 年\ 7\ 月\ \textendash{}\ 2025\ 年\ 9\ 月}
+\begin{itemize}
+    \item 基于\ \textbf{verl}\ 强化学习框架，提升金融大语言模型的\ \textbf{instruction-following}\ 能力；实现\ \textbf{model-based}\ 方法，并构建基于\ \textbf{prompt-engineering-driven}\ 的奖励评分机制，显著改善业务指标。
+    \item 成果：引用格式准确率由\ 40\%\ 提升至\ 98\%；内容准确率及时效性准确率由\ 78\%\ 提升至\ 97\%；通用\ instruction-\allowbreak following\ 基准\ IFEval\ 准确率由\ 38\%\ 提升至\ 80\%。
+\end{itemize}
+
+\section*{论文发表}
+\begin{itemize}
+    \item \textbf{Jiarui Zhang}\textsuperscript{*}, Yuchen Yang\textsuperscript{*}, Ran Yan\textsuperscript{*}, Zhiyu Mei, Liyuan Zhang, Daifeng Li, Wei Fu, Jiaxuan Gao, Shusheng Xu, Yi Wu, Binhang Yuan. \emph{AREAL-DTA: Dynamic Tree Attention for Efficient Reinforcement Learning of Large Language Models}. \textbf{ICML 2026 Accepted}
+    \item Liyuan Zhang, \textbf{Jiarui Zhang}, Jinwei Yao, Ran Yan, Yuchen Yang, Jiahao Zhang, Tongkai Yang, Yi Wu, Binhang Yuan. \emph{$D^2$SD: Accelerating Speculative Decoding with Dual Diffusion Draft Models}. \textbf{arXiv preprint}
+\end{itemize}
+
+% ===== Awards =====
+\section*{荣誉奖项}
+\begin{itemize}
+    \item 2021\ 年全国青少年信息学奥林匹克竞赛（NOI 2021）--- \textbf{金牌}
+\end{itemize}
+
+% ===== Interests =====
+\section*{兴趣爱好}
+毽球（清华大学毽球队队员）\\
+徒步（初学者，喜欢单日爬升约\ $1000\,\mathrm{m}$\ 的路线）
+
+\end{CJK*}
+\end{document}

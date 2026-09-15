@@ -17,17 +17,19 @@ Beijing, China
 jiarui-z23@mails.tsinghua.edu.cn
 {: .contact-line }
 
-[Download Resume]({{ '/assets/resume.pdf' | relative_url }}){: .button download="Jiarui_Zhang_Resume.pdf" }
+[Resume (EN)]({{ '/assets/resume.pdf' | relative_url }}){: .button download="Jiarui_Zhang_Resume.pdf" }
+[简历（中文）]({{ '/assets/resume_cn.pdf' | relative_url }}){: .button download="Jiarui_Zhang_Resume_CN.pdf" }
 [Blog]({{ '/blog/' | relative_url }}){: .text-link }
 {: .actions }
 
 ## About Me
 
-I am a fourth-year undergraduate researcher interested in AI infrastructure and ML systems.
+I am a fourth-year undergraduate in Yao Class, passionate about AI infrastructure and ML systems.
+I am dedicated to building high-performance, scalable systems for large-scale model training and inference.
+I also have a broad interest in theoretical computer science, especially in using AI tools to advance it.
 I am currently conducting research under the supervision of
 [Binhang Yuan](https://binhangyuan.github.io/site/) on efficient systems for
-large language model training and inference, with recent work on Tree Attention and
-distributed training for multi-turn reinforcement learning. Before that, I conducted research
+large language model training and inference. Before that, I conducted research
 under the supervision of [Yi Wu](https://jxwuyi.weebly.com/) on reinforcement
 learning systems.
 {: .about }
