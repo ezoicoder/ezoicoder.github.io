@@ -1,5 +1,5 @@
 % !TEX program = xelatex
-% Jiarui Zhang - English Resume (LaTeX)
+% Jiarui Zhang - Resume for applying to quantitative research jobs (English)
 \documentclass[11pt,a4paper]{article}
 
 \usepackage[left=0.68in,right=0.68in,top=0.55in,bottom=0.55in]{geometry}
@@ -38,7 +38,6 @@
 
 \begin{document}
 
-% ===== Header =====
 \begin{center}
   {\LARGE\bfseries\color{textgray} \latinGaramond Jiarui Zhang \;\textnormal{\large {\CJKfamily{kai}张家瑞}}}\\[3pt]
   \href{mailto:jiarui-z23@mails.tsinghua.edu.cn}{jiarui-z23@mails.tsinghua.edu.cn}
@@ -47,38 +46,37 @@
 \end{center}
 
 \vspace{-3pt}
-\textbf{Profile.} I am a fourth-year undergraduate in the \textbf{Yao Class}, passionate about \textbf{AI infrastructure} and \textbf{ML systems}. I am dedicated to building high-performance, scalable systems for large-scale model training and inference, and I have a broad interest in \textbf{theoretical computer science}, especially in using AI tools to advance it.
+\textbf{Profile.} I am a fourth-year undergraduate in the Yao Class at Tsinghua University, with a background in theoretical computer science and machine learning. My research spans randomized sampling, circuit complexity, and efficient machine learning systems.
 
-% ===== Education =====
 \section*{EDUCATION}
 \textbf{Tsinghua University}, Beijing, China \hfill {\small Sep 2023 -- Jun 2027 (expected)}\\[-1pt]
 B.Eng. in Computer Science and Technology, Institute for Interdisciplinary Information Sciences\\[-1pt]
-GPA: 3.78/4.0 \quad $\vert$ \quad TOEFL iBT: 5.5/6.0
+GPA: 3.78/4.0 \quad $\vert$ \quad TOEFL iBT: 5.5/6.0\\[-1pt]
+\textbf{Relevant Coursework:} Algorithm Design (A-), Theory of Computation (A), Abstract Algebra (A), Natural Language Processing (A+)
 
-% ===== Research Experience =====
+\section*{AWARDS}
+\begin{itemize}
+  \item \textbf{National Olympiad in Informatics (NOI) 2021} -- Gold Medal
+  \item \textbf{NOI 2022 Guangdong Provincial Team Selection} -- 1st Place
+\end{itemize}
+
 \section*{EXPERIENCE}
-
 \entry{Student Researcher}{Aug 2026 -- Present}{Advised by Prof. Jingzhao Zhang (Tsinghua University)}{\weblink{https://ezoicoder.github.io/blog/sampling-round-complexity-dlms-regular-language/}{Blog post}}
 \begin{itemize}
   \item Proved tight sampling-round bounds for diffusion language models on regular-language input–output pair distributions: two rounds suffice to sample with revision, whereas languages outside $AC^0$ require $\Theta(\log n/\log\log n)$ rounds without revision.
   \item Constructed a randomized-$AC^0$ sampler for Markov trajectories.
 \end{itemize}
 
-\entry{Research Intern}{Jan 2026 -- Aug 2026}{Binhang Yuan Research Group, HKUST}{}
-\begin{itemize}
-  \item Developed distributed training methods for \textbf{Tree Attention}, reducing memory usage and improving throughput for multi-turn LLM training.
-  \item Contributed to dual diffusion draft models for \textbf{$D^2$SD}, a speculative-decoding method for accelerating LLM inference.
-\end{itemize}
-
-\entry{Research Intern}{Oct 2025 -- Dec 2025}{Yi Wu Research Group, Tsinghua University}{}
-\begin{itemize}
-  \item Participated in the development of a \textbf{serverless} reinforcement learning platform for scalable training.
-\end{itemize}
-
-\entry{Applied Research Intern}{Jul 2025 -- Sep 2025}{Tencent CDG}{}
+\entry{Applied Research Intern}{Jul 2025 -- Sep 2025}{Tencent CDG}{Financial Language Models}
 \begin{itemize}
   \item Designed model-based and prompt-driven reward scoring for a financial LLM, with evaluation focused on citation validity, factual accuracy, timeliness, and instruction following.
   \item Improved citation-format accuracy from 40\% to 98\%, content and timeliness accuracy from 78\% to 97\%, and IFEval accuracy from 38\% to 80\%.
+\end{itemize}
+
+\entry{Research Intern}{Jan 2026 -- Aug 2026}{Binhang Yuan Research Group, HKUST}{Efficient Machine Learning Systems}
+\begin{itemize}
+  \item Developed distributed training methods for Tree Attention, reducing memory usage and improving throughput for multi-turn LLM training.
+  \item Contributed to dual diffusion draft models for $D^2$SD, a speculative-decoding method for accelerating LLM inference.
 \end{itemize}
 
 \section*{PUBLICATIONS}
@@ -88,14 +86,6 @@ GPA: 3.78/4.0 \quad $\vert$ \quad TOEFL iBT: 5.5/6.0
 \end{itemize}
 {\footnotesize * Equal contribution.}
 
-% ===== Awards =====
-\section*{AWARDS}
-\begin{itemize}
-  \item \textbf{National Olympiad in Informatics (NOI) 2021} -- Gold Medal
-  \item \textbf{NOI 2022 Guangdong Provincial Team Selection} -- 1st Place
-\end{itemize}
-
-% ===== Interests =====
 \section*{INTERESTS}
 \begin{itemize}
   \item Competitive Shuttlecock (毽球), member of the Tsinghua University Shuttlecock Team

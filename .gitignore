@@ -6,7 +6,10 @@
 *.log
 *.out
 *.synctex.gz
+/tmp/
 assets/summer/tmp/
+assets/resume_qr/xuanyiming.pdf
+assets/resume_qr/AGENTS.md
 __pycache__/
 _site/
 .jekyll-cache/

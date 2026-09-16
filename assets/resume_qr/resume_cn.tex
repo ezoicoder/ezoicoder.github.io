@@ -1,5 +1,5 @@
 % !TEX program = xelatex
-% Jiarui Zhang - Chinese Resume (LaTeX)
+% Jiarui Zhang - Resume for applying to quantitative research jobs (Chinese)
 \documentclass[11pt,a4paper]{article}
 
 \usepackage[left=0.68in,right=0.68in,top=0.55in,bottom=0.55in]{geometry}
@@ -39,7 +39,6 @@
 
 \begin{document}
 
-% ===== Header =====
 \begin{center}
   {\LARGE\bfseries\color{textgray} {\CJKfamily{kai}张家瑞}}\\[3pt]
   \href{mailto:jiarui-z23@mails.tsinghua.edu.cn}{jiarui-z23@mails.tsinghua.edu.cn}
@@ -48,38 +47,37 @@
 \end{center}
 
 \vspace{-3pt}
-\textbf{个人概述：}我是清华大学\textbf{姚班}四年级本科生，主要关注 \textbf{AI infrastructure} 与 \textbf{ML systems}，致力于为大模型训练与推理构建高性能、可扩展的系统。同时，我也关注\textbf{理论计算机科学}，尤其希望探索如何利用 AI 工具推动该领域的发展。
+\textbf{个人概述：}我是清华大学姚班四年级本科生，主要关注理论计算机科学与机器学习，研究经历涵盖随机采样、电路复杂度与高效机器学习系统。
 
-% ===== Education =====
 \section*{教育背景}
 \textbf{清华大学}，北京 \hfill {\small 2023 年 9 月—2027 年 6 月（预计）}\\[-1pt]
 计算机科学与技术工学学士，交叉信息研究院\\[-1pt]
-GPA: 3.78/4.0 \quad $\vert$ \quad TOEFL iBT: 5.5/6.0
+GPA: 3.78/4.0 \quad $\vert$ \quad TOEFL iBT: 5.5/6.0\\[-1pt]
+\textbf{核心课程：}算法设计（A-）、计算理论（A）、抽象代数（A）、自然语言处理（A+）
 
-% ===== Research Experience =====
+\section*{荣誉}
+\begin{itemize}
+  \item \textbf{2021 年全国青少年信息学奥林匹克竞赛（NOI 2021）}——金牌
+  \item \textbf{NOI 2022 广东省队选拔}——第 1 名
+\end{itemize}
+
 \section*{经历}
-
 \entry{本科生研究}{2026 年 8 月—至今}{清华大学张景昭教授指导}{\weblink{https://ezoicoder.github.io/blog/sampling-round-complexity-dlms-regular-language/}{博客文章}}
 \begin{itemize}
   \item 研究扩散语言模型对正则语言输入输出对分布的采样，证明允许 revision 时至多两轮即可完成采样，而对于不属于 $AC^0$ 的正则语言，无 revision 时需要 $\Theta(\log n/\log\log n)$ 轮。
   \item 构造对 Markov 轨迹进行采样的 randomized-$AC^0$ 电路。
 \end{itemize}
 
-\entry{研究实习生}{2026 年 1 月—2026 年 8 月}{袁彬航课题组，香港科技大学}{}
-\begin{itemize}
-  \item 开发面向 \textbf{Tree Attention} 的分布式训练方法，降低显存占用并提升多轮 LLM 训练吞吐量。
-  \item 参与 \textbf{$D^2$SD} 双扩散草稿模型研究，通过投机采样加速大语言模型推理。
-\end{itemize}
-
-\entry{研究实习生}{2025 年 10 月—2025 年 12 月}{吴翼课题组，清华大学}{}
-\begin{itemize}
-  \item 参与开发支持可扩展训练的 \textbf{serverless} 强化学习平台。
-\end{itemize}
-
-\entry{应用研究实习生}{2025 年 7 月—2025 年 9 月}{腾讯 CDG}{}
+\entry{应用研究实习生}{2025 年 7 月—2025 年 9 月}{腾讯 CDG}{金融大语言模型}
 \begin{itemize}
   \item 为金融大语言模型设计模型打分与提示词驱动的奖励评分方法，围绕引用有效性、内容准确性、时效性与指令遵循能力构建评测流程。
   \item 将引用格式准确率由 40\% 提升至 98\%，内容与时效性准确率由 78\% 提升至 97\%，IFEval 准确率由 38\% 提升至 80\%。
+\end{itemize}
+
+\entry{研究实习生}{2026 年 1 月—2026 年 8 月}{袁彬航课题组，香港科技大学}{高效机器学习系统}
+\begin{itemize}
+  \item 开发面向 Tree Attention 的分布式训练方法，降低显存占用并提升多轮大语言模型训练吞吐量。
+  \item 参与 $D^2$SD 双扩散草稿模型研究，通过投机采样加速大语言模型推理。
 \end{itemize}
 
 \section*{论文发表}
@@ -89,14 +87,6 @@ GPA: 3.78/4.0 \quad $\vert$ \quad TOEFL iBT: 5.5/6.0
 \end{itemize}
 {\footnotesize * 共同一作。}
 
-% ===== Awards =====
-\section*{荣誉}
-\begin{itemize}
-  \item \textbf{2021 年全国青少年信息学奥林匹克竞赛（NOI 2021）}——金牌
-  \item \textbf{NOI 2022 广东省队选拔}——第 1 名
-\end{itemize}
-
-% ===== Interests =====
 \section*{兴趣爱好}
 \begin{itemize}
   \item 毽球，清华大学毽球队队员
