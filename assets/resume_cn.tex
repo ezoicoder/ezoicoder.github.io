@@ -48,7 +48,7 @@
 \end{center}
 
 \vspace{-3pt}
-\textbf{个人概述：}我是清华大学\textbf{姚班}四年级本科生，主要关注 \textbf{AI infrastructure} 与 \textbf{ML systems}，致力于为大模型训练与推理构建高性能、可扩展的系统。同时，我也关注\textbf{理论计算机科学}，尤其希望探索如何利用 AI 工具推动该领域的发展。
+\textbf{个人概述：}我是清华大学\textbf{姚班}四年级本科生，主要关注 \textbf{AI 基础设施} 与 \textbf{机器学习系统}，致力于为大模型训练与推理构建高性能、可扩展的系统。同时，我也关注\textbf{理论计算机科学}，尤其希望探索如何利用 AI 工具推动该领域的发展。
 
 % ===== Education =====
 \section*{教育背景}
@@ -61,14 +61,14 @@ GPA: 3.78/4.0 \quad $\vert$ \quad TOEFL iBT: 5.5/6.0
 
 \entry{本科生研究}{2026 年 8 月—至今}{清华大学张景昭教授指导}{\weblink{https://ezoicoder.github.io/blog/sampling-round-complexity-dlms-regular-language/}{博客文章}}
 \begin{itemize}
-  \item 研究扩散语言模型对正则语言输入输出对分布的采样，证明允许 revision 时至多两轮即可完成采样，而对于不属于 $AC^0$ 的正则语言，无 revision 时需要 $\Theta(\log n/\log\log n)$ 轮。
-  \item 构造对 Markov 轨迹进行采样的 randomized-$AC^0$ 电路。
+  \item 在以多项式宽度、常数精度、常数深度 Transformer 为基础的扩散语言模型中，证明正则语言输入输出对分布的精确采样轮数紧界：允许 revision 时两轮足够；若正则语言不属于 $AC^0$，无 revision 时则需要 $\Theta(\log n/\log\log n)$ 轮。
+  \item 为固定的 path-dyadic 马尔可夫链构造 randomized-$AC^0$ 轨迹采样器。
 \end{itemize}
 
 \entry{研究实习生}{2026 年 1 月—2026 年 8 月}{袁彬航课题组，香港科技大学}{}
 \begin{itemize}
   \item 开发面向 \textbf{Tree Attention} 的分布式训练方法，降低显存占用并提升多轮 LLM 训练吞吐量。
-  \item 参与 \textbf{$D^2$SD} 双扩散草稿模型研究，通过投机采样加速大语言模型推理。
+  \item 参与 \textbf{$D^2$SD} 双扩散草稿模型研究，通过推测解码加速大语言模型推理。
 \end{itemize}
 
 \entry{研究实习生}{2025 年 10 月—2025 年 12 月}{吴翼课题组，清华大学}{}
@@ -84,8 +84,8 @@ GPA: 3.78/4.0 \quad $\vert$ \quad TOEFL iBT: 5.5/6.0
 
 \section*{论文发表}
 \begin{itemize}
-  \item \textbf{Jiarui Zhang*}, Yuchen Yang*, Ran Yan*, Zhiyu Mei, Liyuan Zhang, Daifeng Li, Wei Fu, Jiaxuan Gao, Shusheng Xu, Yi Wu, Binhang Yuan. ``AREAL-DTA: Dynamic Tree Attention for Efficient Reinforcement Learning of Large Language Models.'' \textbf{ICML 2026}.
-  \item Liyuan Zhang, \textbf{Jiarui Zhang}, Jinwei Yao, Ran Yan, Yuchen Yang, Jiahao Zhang, Tongkai Yang, Yi Wu, Binhang Yuan. ``$D^2$SD: Accelerating Speculative Decoding with Dual Diffusion Draft Models.'' arXiv:2606.04446.
+  \item \textbf{Jiarui Zhang*}, Yuchen Yang*, Ran Yan*, Zhiyu Mei, Liyuan Zhang, Daifeng Li, Wei Fu, Jiaxuan Gao, Shusheng Xu, Yi Wu, Binhang Yuan. \href{https://arxiv.org/abs/2602.00482}{``AREAL-DTA: Dynamic Tree Attention for Efficient Reinforcement Learning of Large Language Models.''} \textbf{ICML 2026}.
+  \item Liyuan Zhang, \textbf{Jiarui Zhang}, Jinwei Yao, Ran Yan, Yuchen Yang, Jiahao Zhang, Tongkai Yang, Yi Wu, Binhang Yuan. \href{https://arxiv.org/abs/2606.04446}{``$D^2$SD: Accelerating Speculative Decoding with Dual Diffusion Draft Models.''} arXiv:2606.04446.
 \end{itemize}
 {\footnotesize * 共同一作。}
 
