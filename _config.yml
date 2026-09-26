@@ -1,5 +1,5 @@
 title: Jiarui Zhang
-description: Technical notes on machine learning systems, theory, and infrastructure.
+description: Personal homepage of Jiarui Zhang.
 url: "https://ezoicoder.github.io"
 baseurl: ""
 
@@ -7,14 +7,6 @@ markdown: kramdown
 kramdown:
   input: ConventionalMathGFM
   math_engine: mathjax
-
-defaults:
-  - scope:
-      path: ""
-      type: posts
-    values:
-      layout: post
-      mathjax: true
 
 exclude:
   - .bundle
