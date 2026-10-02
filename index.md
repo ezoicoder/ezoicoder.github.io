@@ -19,6 +19,7 @@ jiarui-z23@mails.tsinghua.edu.cn
 
 [Resume]({{ '/assets/resume.pdf' | relative_url }}){: .button download="Jiarui_Zhang_Resume.pdf" }
 [简历]({{ '/assets/resume_cn.pdf' | relative_url }}){: .button download="张家瑞简历.pdf" }
+[Blog]({{ '/blog/' | relative_url }}){: .text-link }
 {: .actions }
 
 ## About Me
@@ -27,6 +28,16 @@ I am a fourth-year undergraduate in Yao Class, passionate about AI infrastructur
 I am dedicated to building high-performance, scalable systems for large-scale model training and inference.
 I also have a broad interest in theoretical computer science, especially in using AI tools to advance it.
 {: .about }
+
+## Blog
+
+{% for post in site.posts limit: 3 %}
+<section class="blog-post">
+  <h3><a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a></h3>
+  <p class="meta">Published {{ post.date | date: "%B %-d, %Y" }}{% if post.updated %} - Updated {{ post.updated | date: "%B %-d, %Y" }}{% endif %}</p>
+  <p class="detail">{{ post.summary }}</p>
+</section>
+{% endfor %}
 
 ## Publications
 

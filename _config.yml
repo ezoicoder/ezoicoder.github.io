@@ -8,6 +8,14 @@ kramdown:
   input: ConventionalMathGFM
   math_engine: mathjax
 
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+      mathjax: true
+
 exclude:
   - .bundle
   - .jekyll-cache
