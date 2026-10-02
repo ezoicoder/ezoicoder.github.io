@@ -62,9 +62,24 @@ I also have a broad interest in theoretical computer science, especially in usin
 </p>
 </section>
 
+<section class="publication">
+  <span class="badge">Zenodo preprint</span>
+
+  <h3>Revision Provably Reduces Sequential Computation in Diffusion Language Models</h3>
+
+<p class="meta">
+  <strong>Jiarui Zhang</strong>, Chengwei Liang, Haozhe Jiang, Binhang Yuan, Jingzhao Zhang.
+</p>
+
+<p class="paper-links">
+  <a href="https://zenodo.org/records/23105365">Paper</a>
+</p>
+</section>
+
 ## Blog
 
-{% for post in site.posts limit: 3 %}
+{% assign featured_posts = site.posts | where: 'slug', 'near-perfect-mod-q-ac-depth' %}
+{% for post in featured_posts %}
 <section class="blog-post">
 
   <h3><a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a></h3>

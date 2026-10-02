@@ -9,7 +9,8 @@ permalink: /blog/
 Technical notes on machine learning systems, theory, and infrastructure.
 {: .tagline }
 
-{% for post in site.posts %}
+{% assign featured_posts = site.posts | where: 'slug', 'near-perfect-mod-q-ac-depth' %}
+{% for post in featured_posts %}
 <section class="post">
 
   <h2><a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a></h2>
