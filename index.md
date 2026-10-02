@@ -68,7 +68,7 @@ I also have a broad interest in theoretical computer science, especially in usin
   <h3>Revision Provably Reduces Sequential Computation in Diffusion Language Models</h3>
 
 <p class="meta">
-  <strong>Jiarui Zhang</strong>, Chengwei Liang, Haozhe Jiang, Binhang Yuan, Jingzhao Zhang.
+  <strong>Jiarui Zhang*</strong>, Chengwei Liang*, Haozhe Jiang, Binhang Yuan, Jingzhao Zhang.
 </p>
 
 <p class="paper-links">
