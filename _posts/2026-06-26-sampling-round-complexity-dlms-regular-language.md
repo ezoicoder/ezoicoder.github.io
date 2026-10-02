@@ -1,7 +1,7 @@
 ---
 title: "Sampling round complexity for diffusion language models: regular-language input-output pairs"
 date: 2026-06-26
-updated: 2026-10-02
+updated: 2026-08-31
 slug: sampling-round-complexity-dlms-regular-language
 permalink: /blog/sampling-round-complexity-dlms-regular-language/
 tags: [diffusion language models, parallel sampling, circuit complexity]
@@ -214,7 +214,7 @@ $$
 
 whenever $L\notin AC^0$.
 
-![Marker profiles for the regular-language upper-bound construction]({{ '/assets/blog/regular-language-segments.png' | relative_url }})
+![Marker profiles for the regular-language upper-bound construction](../assets/blog/regular-language-segments.png)
 
 For the matching upper bound, use the standard finite-monoid product tree for
 regular languages. Lay the tree out in depth-first index order, so that each

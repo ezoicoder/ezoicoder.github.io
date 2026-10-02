@@ -29,16 +29,6 @@ I am dedicated to building high-performance, scalable systems for large-scale mo
 I also have a broad interest in theoretical computer science, especially in using AI tools to advance it.
 {: .about }
 
-## Blog
-
-{% for post in site.posts limit: 3 %}
-<section class="blog-post">
-  <h3><a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a></h3>
-  <p class="meta">Published {{ post.date | date: "%B %-d, %Y" }}{% if post.updated %} - Updated {{ post.updated | date: "%B %-d, %Y" }}{% endif %}</p>
-  <p class="detail">{{ post.summary }}</p>
-</section>
-{% endfor %}
-
 ## Publications
 
 <section class="publication">
@@ -71,3 +61,27 @@ I also have a broad interest in theoretical computer science, especially in usin
   <a href="https://arxiv.org/abs/2606.04446">Paper</a>
 </p>
 </section>
+
+## Blog
+
+{% for post in site.posts limit: 3 %}
+<section class="blog-post">
+
+  <h3><a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a></h3>
+
+<p class="meta">
+  Published {{ post.date | date: "%B %-d, %Y" }}
+  {% assign published = post.date | date: "%Y-%m-%d" %}
+  {% assign updated = post.updated | date: "%Y-%m-%d" %}
+  {% if post.updated and updated != published %}
+    - Updated {{ post.updated | date: "%B %-d, %Y" }}
+  {% endif %}
+  {% if post.tags and post.tags.size > 0 %}
+    - {{ post.tags | join: ", " }}
+  {% endif %}
+</p>
+
+  <p class="detail">{{ post.summary }}</p>
+
+</section>
+{% endfor %}
