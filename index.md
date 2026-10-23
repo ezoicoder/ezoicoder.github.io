@@ -26,7 +26,6 @@ jiarui-z23@mails.tsinghua.edu.cn
 
 I am a fourth-year undergraduate in Yao Class, passionate about AI infrastructure and ML systems.
 I am dedicated to building high-performance, scalable systems for large-scale model training and inference.
-I also have a broad interest in theoretical computer science, especially in using AI tools to advance it.
 {: .about }
 
 ## Publications
